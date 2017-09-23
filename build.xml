@@ -1,0 +1,83 @@
+<project name="FreeJ2ME">
+	<echo message="Building FreeJ2ME" />
+
+
+<!--
+****************************************************
+*    AWT, JavaFX, RetroPie, SDL
+****************************************************
+-->
+
+	<echo message="FreeJ2ME - AWT | JavaFx | Libretro | SDL" />
+	<javac
+		srcdir="src"
+		destdir="build/classes"
+		includeantruntime="false"
+		debug="true"
+		debuglevel="lines,vars,source"
+	>
+	<compilerarg value="-Xlint:unchecked"/>
+	<compilerarg value="-Xlint:deprecation"/>
+	</javac>
+
+
+<!--
+****************************************************
+*    Jar Files
+****************************************************
+-->
+
+	<echo message="Building JAR - AWT" />
+	<jar
+		destfile="build/freej2me.jar"
+		basedir="build/classes">
+		<fileset dir="resources" />
+		<metainf dir="META-INF" />
+		<manifest>
+			<!-- AWT Version -->
+			<attribute name="Main-Class" value="org.recompile.freej2me.FreeJ2ME"/>
+			<attribute name="Implementation-Title" value="FreeJ2ME"/>
+		</manifest>
+	</jar>
+
+	<echo message="Building JAR - JavaFx" />
+	<jar
+		destfile="build/freej2me-fx.jar"
+		basedir="build/classes">
+		<fileset dir="resources" />
+		<metainf dir="META-INF" />
+		<manifest>
+			<!-- JavaFx Version -->
+			<attribute name="Main-Class" value="org.recompile.freej2me.Main"/>
+			<attribute name="Implementation-Title" value="FreeJ2ME"/>
+		</manifest>
+	</jar>
+
+	<echo message="Building JAR - Libretro" />
+	<jar
+		destfile="build/freej2me-lr.jar"
+		basedir="build/classes">
+		<fileset dir="resources" />
+		<metainf dir="META-INF" />
+		<manifest>
+			<!-- Libretro Version -->
+			<attribute name="Main-Class" value="org.recompile.freej2me.Libretro"/>
+			<attribute name="Implementation-Title" value="FreeJ2ME"/>
+		</manifest>
+	</jar>
+
+	<echo message="Building JAR - SDL" />
+	<jar
+		destfile="build/freej2me-sdl.jar"
+		basedir="build/classes">
+		<fileset dir="resources" />
+		<metainf dir="META-INF" />
+		<manifest>
+			<!-- Libretro Version -->
+			<attribute name="Main-Class" value="org.recompile.freej2me.RetroPie"/>
+			<attribute name="Implementation-Title" value="FreeJ2ME"/>
+		</manifest>
+	</jar>
+
+
+</project>

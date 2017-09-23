@@ -1,0 +1,91 @@
+-----------------------------------------------------------------
+To Install FreeJ2ME on RetroPie 4.2:
+-----------------------------------------------------------------
+
+Installing FreeJ2ME is simple, though you'll need a basic
+understanding of file system operations and be comfortable
+working from the command line.
+
+Specifically, you'll need to know how to change directories,
+how to move or copy files, and how to edit text files.
+
+Familiarity with XML is helpful, but not essential.
+
+
+-----------------------------------------------------------------
+Step 1:
+-----------------------------------------------------------------
+
+Install Oracle's JDK:
+
+> sudo apt-get update
+> sudo apt-get install oracle-java8-jdk
+
+> sudo update-alternatives --config javac
+> sudo update-alternatives --config java
+
+-----------------------------------------------------------------
+Step 2:
+-----------------------------------------------------------------
+
+Create the necessary directories:
+
+> sudo mkdir /home/pi/Retropie/roms/j2me
+> sudo mkdir /opt/retropie/configs/j2me
+> sudo mkdir /opt/retropie/BIOS/freej2me
+> sudo mkdir /opt/retropie/libretrocores/lr-freej2me
+
+-----------------------------------------------------------------
+Step 3:
+-----------------------------------------------------------------
+
+Copy the file:
+
+	freej2me_libretro.so
+to:
+/opt/retropie/libretrocores/lr-freej2me
+
+Be sure to set permissions to 755:
+
+> sudo chmod 755 /opt/retropie/libretrocores/lr-freej2me/*
+
+-----------------------------------------------------------------
+Step 4:
+-----------------------------------------------------------------
+
+Copy the file:
+
+	freej2me-lr.jar
+to:
+/home/pi/Retropie/BIOS/freej2me
+
+-----------------------------------------------------------------
+Step 5:
+-----------------------------------------------------------------
+
+Add the files:
+
+	emulators.cfg
+	retroarch.cfg
+to:
+/opt/retropie/configs/j2me
+
+
+-----------------------------------------------------------------
+Step 6:
+-----------------------------------------------------------------
+
+Add the following to:
+
+	/etc/emulationstation/es_systems.cfg
+
+
+  <system>
+    <name>J2ME</name>
+    <fullname>Java 2 MicroEdition</fullname>
+    <path>/home/pi/RetroPie/roms/j2me</path>
+    <extension>.jar</extension>
+    <command>/opt/retropie/supplementary/runcommand/runcommand.sh 0 _SYS_ j2me %ROM%</command>
+    <platform>j2me</platform>
+    <theme>j2me</theme>
+  </system>
