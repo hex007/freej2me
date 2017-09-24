@@ -23,6 +23,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "libretro.h"
+#include "deps/libretro-common/include/file/file_path.h"
 
 #define DefaultFPS 30
 #define MaxWidth 800
@@ -126,8 +127,9 @@ void retro_init(void)
 	// start java process
 	char *javapath;
 	Environ(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &javapath);
-	strcat(javapath, "freej2me/freej2me-lr.jar");
-	char *params[] = { "java", "-jar", javapath, NULL };
+	char outPath[255];
+	fill_pathname_join(&outPath, javapath, "freej2me-lr.jar", 255);
+	char *params[] = { "java", "-jar", outPath, NULL };
 	javaProcess = javaOpen(params[0], params);
 
 	// wait for java process

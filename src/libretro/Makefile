@@ -117,8 +117,8 @@ include Makefile.common
 
 OBJECTS := $(SOURCES_C:.c=.o) $(SOURCES_CXX:.cpp=.o)
 
-CFLAGS   += -Wall -D__LIBRETRO__ $(fpic)
-CXXFLAGS += -Wall -D__LIBRETRO__ $(fpic)
+CFLAGS   += -Wall -D__LIBRETRO__ $(INCLUDES) $(fpic)
+CXXFLAGS += -Wall -D__LIBRETRO__ $(INCLUDES) $(fpic)
 
 all: $(TARGET)
 
@@ -130,7 +130,7 @@ else
 endif
 
 %.o: %.c
-	$(CXX) $(CXXFLAGS) $(fpic) -c -o $@ $<
+	$(CC) $(CFLAGS) $(fpic) -c -o $@ $<
 
 clean:
 	rm -f $(OBJECTS) $(TARGET)
