@@ -1,0 +1,2 @@
+SOURCES_C   := freej2me_libretro.c
+SOURCES_CXX := 
