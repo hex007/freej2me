@@ -61,9 +61,9 @@ public final class Font
 		return len;
 	}
 
-	public int charWidth(char ch) { return size; }
+	public int charWidth(char ch) { return convertSize(size); }
 
-	public int getBaselinePosition() { return size; }
+	public int getBaselinePosition() { return convertSize(size); }
 
 	public static Font getDefaultFont() { return defaultFont; }
 
@@ -73,20 +73,11 @@ public final class Font
 
 	public static Font getFont(int face, int style, int size) { return new Font(face, style, size); }
 
-	public int getHeight() { return size; }
+	public int getHeight() { return convertSize(size); }
 
 	public int getSize() { return size; }
 
-	public int getPointSize()
-	{
-		switch(size)
-		{
-			case Font.SIZE_LARGE: return 14;
-			case Font.SIZE_MEDIUM: return 12;
-			case Font.SIZE_SMALL: return 10;
-		}
-		return 14;
-	}
+	public int getPointSize() { return convertSize(size); }
 
 	public int getStyle() { return style; }
 
@@ -100,13 +91,22 @@ public final class Font
 
 	public int stringWidth(String str)
 	{
-		int psize = getPointSize();
-		return (psize/2)*str.length();
+		return str.length() * getPointSize();
 	}
 
 	public int substringWidth(String str, int offset, int len)
 	{
-		int psize = getPointSize();
-		return (psize/2)*(len-offset);
+		return (len - offset) * getPointSize();
+	}
+
+	private int convertSize(int size)
+	{
+		switch(size)
+		{
+			case SIZE_LARGE  : return 14;
+			case SIZE_MEDIUM : return 12;
+			case SIZE_SMALL  : return 10;
+			default          : return 10;
+		}
 	}
 }
