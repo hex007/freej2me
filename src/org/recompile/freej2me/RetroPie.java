@@ -51,11 +51,13 @@ public class RetroPie
 		lcdWidth = 240;
 		lcdHeight = 320;
 
-		if (args.length >= 3)
+		if (args.length < 3)
 		{
-			lcdWidth = Integer.parseInt(args[1]);
-			lcdHeight = Integer.parseInt(args[2]);
+			System.out.println("Insufficient parameters provided");
+			return;
 		}
+		lcdWidth = Integer.parseInt(args[1]);
+		lcdHeight = Integer.parseInt(args[2]);
 
 		Mobile.setPlatform(new MobilePlatform(lcdWidth, lcdHeight));
 
@@ -111,6 +113,12 @@ public class RetroPie
 			return loc;
 
 		File file = new File(loc);
+		if(!file.exists() || file.isDirectory())
+		{
+			System.out.println("File not found...");
+			System.exit(0);
+		}
+
 		return "file://" + file.getAbsolutePath();
 	}
 
@@ -127,7 +135,7 @@ public class RetroPie
 		{
 			try
 			{
-				args[0] = "sdl_interface";
+				args[0] = "/usr/local/bin/sdl_interface";
 				proc = new ProcessBuilder(args).start();
 
 				keys = proc.getInputStream();
