@@ -9,6 +9,7 @@
 -->
 
 	<echo message="FreeJ2ME - AWT | JavaFx | Libretro | SDL" />
+	<mkdir dir="build/classes"/>
 	<javac
 		srcdir="src"
 		destdir="build/classes"
