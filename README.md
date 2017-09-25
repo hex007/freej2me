@@ -5,7 +5,16 @@ Authors :
 - David Richardson [Recompile@retropie]
 - Saket Dandawate  [Hex@retropie]
 
-Discussion thread:
+---
+
+## Links
+Screenshots:
+  https://imgur.com/a/2vAeC
+
+Discussion/Support thread:
+  https://retropie.org.uk/forum/topic/13084/freej2me-support-thread
+  
+Development thread:
   https://retropie.org.uk/forum/topic/11441/would-you-like-to-play-nokia-j2me-games-on-retropie/
  
 ----
