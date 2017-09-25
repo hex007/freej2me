@@ -57,7 +57,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		clipHeight = canvas.getHeight();
 
 		gc.setBackground(new Color(0, 0, 0, 0));
-		gc.setFont(new java.awt.Font("SansSerif", java.awt.Font.PLAIN, font.getPointSize()));
+		gc.setFont(font.platformFont.font);
 	}
 
 	public Graphics2D getGraphics2D()
@@ -267,7 +267,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 	public void setFont(Font font)
 	{
 		super.setFont(font);
-		gc.setFont(new java.awt.Font("SansSerif", java.awt.Font.PLAIN, font.getPointSize()));
+		gc.setFont(font.platformFont.font);
 	}
 	//public void setGrayScale(int value)
 	//public void setStrokeStyle(int style)
