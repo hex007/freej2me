@@ -1,0 +1,8 @@
+SOURCES_C += freej2me_libretro.c \
+	deps/libretro-common/file/file_path.c \
+	deps/libretro-common/compat/compat_strl.c \
+	deps/libretro-common/compat/compat_strcasestr.c
+
+SOURCES_CXX += 
+
+INCLUDES += -Ideps/libretro-common/include
