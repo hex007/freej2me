@@ -128,10 +128,19 @@ public class MIDletLoader extends URLClassLoader
 		}
 		catch (Exception e)
 		{
-			System.out.println("Can't Find startApp Method");
-			e.printStackTrace();
-			System.exit(0);
-			return;
+			try
+			{
+				mainClass = loadClass(mainClass.getSuperclass().getName(), true);
+				start = mainClass.getDeclaredMethod("startApp");
+				start.setAccessible(true);
+			}
+			catch (Exception f)
+			{
+				System.out.println("Can't Find startApp Method");
+				f.printStackTrace();
+				System.exit(0);
+				return;
+			}
 		}
 
 		try
