@@ -23,6 +23,7 @@ import java.awt.Canvas;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -42,7 +43,6 @@ public class RetroPie
 
 	private int lcdWidth;
 	private int lcdHeight;
-	private String filter;
 
 	private Runnable painter;
 
@@ -50,19 +50,11 @@ public class RetroPie
 	{
 		lcdWidth = 240;
 		lcdHeight = 320;
-		filter = "nearest"; //"nearest", "linear", "best"
 
-		if(args.length>=3)
+		if (args.length >= 3)
 		{
 			lcdWidth = Integer.parseInt(args[1]);
 			lcdHeight = Integer.parseInt(args[2]);
-		}
-		if(args.length>=4) { filter = args[3]; }
-		if(args.length==2) { filter = args[1]; }
-
-		if(!(filter.equals("nearest") || filter.equals("linear") || filter.equals("best")))
-		{
-			filter = "nearest";
 		}
 
 		Mobile.setPlatform(new MobilePlatform(lcdWidth, lcdHeight));
@@ -75,18 +67,14 @@ public class RetroPie
 				{
 					// Send Frame to SDL interface
 					int[] data = Mobile.getPlatform().getLCD().getRGB(0, 0, lcdWidth, lcdHeight, null, 0, lcdWidth);
-					byte[] frame = new byte[data.length*3];
+					byte[] frame = new byte[data.length * 3];
 					int cb = 0;
-					for(int i=0; i<data.length; i++)
+					for(int i = 0; i < data.length; i++)
 					{
-
-						frame[cb] = (byte)(data[i]>>16);
-						frame[cb+1] = (byte)(data[i]>>8);
-						frame[cb+2] = (byte)(data[i]);
-						cb+=3;
-						//sdl.frame.write(data[i]>>16);
-						//sdl.frame.write(data[i]>>8);
-						//sdl.frame.write(data[i]);
+						frame[cb + 0] = (byte)(data[i] >> 16);
+						frame[cb + 1] = (byte)(data[i] >> 8);
+						frame[cb + 2] = (byte)(data[i]);
+						cb += 3;
 					}
 					sdl.frame.write(frame);
 				}
@@ -96,7 +84,7 @@ public class RetroPie
 
 		Mobile.getPlatform().setPainter(painter);
 
-		String file = args[0].startsWith("file://") ? args[0] : ("file://" + args[0]);
+		String file = getFormattedLocation(args[0]);
 		System.out.println(file);
 
 		if(Mobile.getPlatform().loadJar(file))
@@ -105,7 +93,7 @@ public class RetroPie
 
 			// Start SDL
 			sdl = new SDL();
-			sdl.start(lcdWidth, lcdHeight, filter);
+			sdl.start(args);
 
 			// Run jar
 			Mobile.getPlatform().runJar();
@@ -117,6 +105,15 @@ public class RetroPie
 		}
 	}
 
+	private static String getFormattedLocation(String loc)
+	{
+		if (loc.startsWith("file://") || loc.startsWith("http://"))
+			return loc;
+
+		File file = new File(loc);
+		return "file://" + file.getAbsolutePath();
+	}
+
 	private class SDL
 	{
 		private Timer keytimer;
@@ -126,11 +123,12 @@ public class RetroPie
 		private InputStream keys;
 		public OutputStream frame;
 
-		public void start(int width, int height, String filter)
+		public void start(String args[])
 		{
 			try
 			{
-				proc = new ProcessBuilder(new String[]{"sdl_interface", ""+width, ""+height, filter}).start();
+				args[0] = "sdl_interface";
+				proc = new ProcessBuilder(args).start();
 
 				keys = proc.getInputStream();
 				frame = proc.getOutputStream();
