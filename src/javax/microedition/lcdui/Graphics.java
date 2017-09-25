@@ -85,7 +85,7 @@ public class Graphics
 
 	public int getDisplayColor(int trycolor) { return trycolor; }
 
-	public Font getFont() { return Font.getDefaultFont(); }
+	public Font getFont() { return font; }
 
 	public int getGrayScale()
 	{
