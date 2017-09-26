@@ -27,7 +27,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
-
+import javax.imageio.ImageIO;
 
 public class FreeJ2ME
 {
@@ -56,6 +56,11 @@ public class FreeJ2ME
 		main = new Frame("FreeJ2ME");
 		main.setSize(350,450);
 		main.setBackground(new Color(0,0,64));
+		try
+		{
+			main.setIconImage(ImageIO.read(main.getClass().getResourceAsStream("/org/recompile/icon.png")));	
+		}
+		catch (Exception e) { }
 
 		main.addWindowListener(new WindowAdapter()
 		{
