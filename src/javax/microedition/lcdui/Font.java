@@ -17,7 +17,7 @@
 package javax.microedition.lcdui;
 
 import org.recompile.mobile.Mobile;
-
+import org.recompile.mobile.PlatformFont;
 
 public final class Font
 {
@@ -44,11 +44,14 @@ public final class Font
 
 	private static Font defaultFont = new Font(Font.FACE_SYSTEM, Font.STYLE_PLAIN, Font.SIZE_MEDIUM);
 
+	public PlatformFont platformFont;
+
 	private Font(int fontFace, int fontStyle, int fontSize)
 	{
 		face = fontFace;
 		style = fontStyle;
 		size = fontSize;
+		platformFont = new PlatformFont(this);
 	}
 
 	public int charsWidth(char[] ch, int offset, int length)
@@ -61,7 +64,7 @@ public final class Font
 		return len;
 	}
 
-	public int charWidth(char ch) { return convertSize(size); }
+	public int charWidth(char ch) { return stringWidth(""+ch); }
 
 	public int getBaselinePosition() { return convertSize(size); }
 
@@ -91,12 +94,12 @@ public final class Font
 
 	public int stringWidth(String str)
 	{
-		return str.length() * getPointSize();
+		return platformFont.stringWidth(str);
 	}
 
 	public int substringWidth(String str, int offset, int len)
 	{
-		return (len - offset) * getPointSize();
+		return stringWidth(str.substring(offset, offset+len));
 	}
 
 	private int convertSize(int size)
