@@ -73,6 +73,8 @@ public class MIDletLoader extends URLClassLoader
 			System.setProperty("microedition.configuration", "CLDC-1.0");
 			System.setProperty("microedition.locale", "en-US");
 			System.setProperty("microedition.encoding", "file.encoding");
+
+			System.setProperty("microedition.io.file.FileConnection.version", "1.0");
 		}
 		catch (Exception e)
 		{
