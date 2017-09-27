@@ -109,8 +109,8 @@ public class MIDletLoader extends URLClassLoader
 			constructor = mainClass.getConstructor();
 			constructor.setAccessible(true);
 
+			MIDlet.initAppProperties(properties);
 			mainInst = (MIDlet)constructor.newInstance();
-			mainInst.properties.putAll(properties);
 		}
 		catch (Exception e)
 		{

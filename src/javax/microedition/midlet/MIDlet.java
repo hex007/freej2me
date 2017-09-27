@@ -27,7 +27,7 @@ import javax.microedition.rms.*;
 public abstract class MIDlet
 {
 
-	public HashMap<String, String> properties = new HashMap<String, String>(32); 
+	public static HashMap<String, String> properties;
 
 	private Display display = new Display();
 
@@ -46,16 +46,14 @@ public abstract class MIDlet
 
 	protected abstract void destroyApp(boolean unconditional) throws MIDletStateChangeException;
 
-	public final String getAppProperty(String key)
+	public String getAppProperty(String key)
 	{ 
-		//System.out.print("getAppProperty: " + key);
-		if(properties.containsKey(key))
-		{
-			//System.out.println(" "+properties.get(key));
-			return properties.get(key);
-		}
-		//System.out.println(" null");
-		return null;
+		return properties.get(key);
+	}
+
+	public static void initAppProperties(HashMap<String, String> initProperties)
+	{
+		properties = initProperties;
 	}
 
 	public final void notifyDestroyed()
