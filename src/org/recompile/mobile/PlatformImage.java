@@ -270,7 +270,7 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 		}
 
 
-		BufferedImage transimage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage transimage = new BufferedImage(out_width, out_height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D gc = transimage.createGraphics();
 		gc.drawImage(image, af, null);
 

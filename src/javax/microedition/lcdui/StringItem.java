@@ -21,9 +21,7 @@ public class StringItem extends Item
 {
 
 	private String text;
-
 	private int appearance;
-
 	private Font font;
 
 
@@ -42,14 +40,14 @@ public class StringItem extends Item
 		font = Font.getDefaultFont();
 	}
 
-	int getAppearanceMode() { return appearance; }
+	public int getAppearanceMode() { return appearance; }
 
-	Font getFont() { return font; }
+	public Font getFont() { return font; }
 
-	String getText() { return text; }
+	public String getText() { return text; }
 
-	void setFont(Font newfont) { font = newfont; }
+	public void setFont(Font newfont) { font = newfont; }
 
-	void setText(String textvalue) { text = textvalue; }
+	public void setText(String textvalue) { text = textvalue; }
 
 }
