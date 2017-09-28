@@ -207,65 +207,69 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 
 	public static BufferedImage transformImage(BufferedImage image, int transform)
 	{
-		int Width = (int)image.getWidth();
-		int Height = (int)image.getHeight();
-		int width = Width;
-		int height = Height;
+		int width = (int)image.getWidth();
+		int height = (int)image.getHeight();
+		int out_width = width;
+		int out_height = height;
 
 		AffineTransform af = new AffineTransform();
 
-		switch (transform)
-		{
-			case Sprite.TRANS_MIRROR:
+		switch (transform) {
+			case Sprite.TRANS_NONE: {
+				break;
+			}
+			case Sprite.TRANS_ROT90: {
+				af.translate(height, 0);
+				af.rotate(Math.PI / 2);
+				out_width = height;
+				out_height = width;
+				break;
+			}
+			case Sprite.TRANS_ROT180: {
+				af.translate(width, height);
+				af.rotate(Math.PI);
+				break;
+			}
+			case Sprite.TRANS_ROT270: {
+				af.translate(0, width);
+				af.rotate(Math.PI * 3 / 2);
+				out_width = height;
+				out_height = width;
+				break;
+			}
+			case Sprite.TRANS_MIRROR: {
+				af.translate(width, 0);
 				af.scale(-1, 1);
-				af.translate(-Width, 0);
-				//System.out.println("Mirror");
-			break;
-
-			case Sprite.TRANS_MIRROR_ROT180:
+				break;
+			}
+			case Sprite.TRANS_MIRROR_ROT90: {
+				af.translate(width, 0);
 				af.scale(-1, 1);
-				af.translate(-Width, 0);
-				af.rotate(Math.PI, Width/2, Height/2);
-				//System.out.println("Mirror_180");
-			break;
-
-			case Sprite.TRANS_MIRROR_ROT270:
+				af.translate(height, 0);
+				af.rotate(Math.PI / 2);
+				out_width = height;
+				out_height = width;
+				break;
+			}
+			case Sprite.TRANS_MIRROR_ROT180: {
+				af.translate(width, 0);
 				af.scale(-1, 1);
-				af.translate(-Width, 0);
-				af.rotate(Math.PI+Math.PI/2, Width/2, Height/2);
-				width = Height;
-				height = Width;
-				//System.out.println("Mirror_270");
-			break;
-
-			case Sprite.TRANS_MIRROR_ROT90:
+				af.translate(width, height);
+				af.rotate(Math.PI);
+				break;
+			}
+			case Sprite.TRANS_MIRROR_ROT270: {
+				af.translate(height, 0);
+				af.rotate(Math.PI * 3 / 2);
+				af.translate(width, 0);
 				af.scale(-1, 1);
-				af.translate(-Width, 0);
-				width = Height;
-				height = Width;
-				af.rotate(Math.PI/2, Width/2, Height/2);
-				//System.out.println("Mirror_90");
-			break;
-
-			case Sprite.TRANS_ROT180:
-				af.rotate(Math.PI, Width/2, Height/2);
-				//System.out.println("Rot_180");
-			break;
-
-			case Sprite.TRANS_ROT270:
-				af.rotate(Math.PI+Math.PI/2, Width/2, Height/2);
-				width = Height;
-				height = Width;
-				//System.out.println("Rot_270");
-			break;
-
-			case Sprite.TRANS_ROT90:
-				af.rotate(Math.PI/2, Width/2, Height/2);
-				width = Height;
-				height = Width;
-				//System.out.println("Rot_90");
-			break;
+				out_width = height;
+				out_height = width;
+				break;
+			}
 		}
+
+
 		BufferedImage transimage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D gc = transimage.createGraphics();
 		gc.drawImage(image, af, null);
