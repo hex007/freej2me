@@ -16,7 +16,12 @@
 */
 package org.recompile.mobile;
 
+import java.io.File;
 import java.io.InputStream;
+import javax.imageio.ImageIO;
+import java.lang.Exception;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Canvas;
@@ -116,6 +121,26 @@ public class Mobile
 		if(!quiet)
 		{
 			System.out.println(text);
+		}
+	}
+
+	public static void takeScreenshot()
+	{
+		try
+		{
+			Date date = new Date();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+			String fileName = System.getProperty("user.home") + "/Pictures/Screenshot from "
+							+ dateFormat.format(date) + ".png";
+
+			File outputfile = new File(fileName);
+			ImageIO.write(platform.getLCD(), "png", outputfile);
+			System.out.printf("Saved screenshot: %s\n", outputfile.toString());
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error saving screenshot");
+			e.printStackTrace();
 		}
 	}
 

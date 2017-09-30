@@ -94,6 +94,7 @@ public class MobilePlatform
 
 	public void keyPressed(int keycode)
 	{
+		if (keycode == 112) Mobile.takeScreenshot();
 		updateKeyState(keycode, 1);
 		Mobile.getDisplay().getCurrent().keyPressed(keycode);
 	}
