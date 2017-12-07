@@ -139,7 +139,14 @@ public class PlatformPlayer implements Player
 		}
 	}
 
-	public void deallocate() { state = Player.CLOSED; }
+	public void deallocate() {
+		stop();
+		if (player instanceof midiPlayer) {
+			((midiPlayer) player).midi.close();
+		}
+		player = null;
+		state = Player.CLOSED;
+	}
 
 	public String getContentType() { return contentType; }
 
