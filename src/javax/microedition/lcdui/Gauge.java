@@ -17,11 +17,11 @@
 package javax.microedition.lcdui;
 
 import java.util.ArrayList;
-
-
+import java.util.logging.Logger;
 
 public class Gauge extends Item
 {
+	private static final Logger LOG = Logger.getLogger(Gauge.class.getName());
 
 	public static final int CONTINUOUS_IDLE = 0;
 	public static final int CONTINUOUS_RUNNING = 2;
@@ -43,7 +43,7 @@ public class Gauge extends Item
 
 	public Gauge(String label, boolean isInteractive, int maxvalue, int initialvalue)
 	{
-		System.out.println("Create Gauge");
+		LOG.info("Create Gauge");
 		setLabel(label);
 		interactive = isInteractive;
 		maxValue = maxvalue;

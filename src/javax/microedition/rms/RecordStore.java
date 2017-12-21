@@ -23,12 +23,14 @@ import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.util.Vector;
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 import org.recompile.mobile.Mobile;
 
 public class RecordStore
 {
 
+	private static final Logger LOG = Logger.getLogger(RecordStore.class.getName());
 	public static final int AUTHMODE_ANY = 1;
 	public static final int AUTHMODE_PRIVATE = 0;
 
@@ -55,7 +57,7 @@ public class RecordStore
 
 	private RecordStore(String recordStoreName, boolean createIfNecessary) throws RecordStoreException, RecordStoreNotFoundException
 	{
-		//System.out.println("> RecordStore "+recordStoreName);
+		//LOG.info("> RecordStore "+recordStoreName);
 
 		records = new Vector<byte[]>();
 		listeners = new Vector<RecordListener>();
@@ -79,8 +81,8 @@ public class RecordStore
 		}
 		catch (Exception e)
 		{
-			//System.out.println("> Problem Creating Record Store Path: "+rmsPath);
-			System.out.println(e.getMessage());
+			//LOG.severe("> Problem Creating Record Store Path: "+rmsPath);
+			LOG.severe(e.getMessage());
 			throw(new RecordStoreException("Problem Creating Record Store Path "+rmsPath));
 		}
 
@@ -91,7 +93,7 @@ public class RecordStore
 			{
 				if(createIfNecessary)
 				{
-					//System.out.println("> Creating New Record Store "+appname+"/"+recordStoreName);
+					//LOG.info("> Creating New Record Store "+appname+"/"+recordStoreName);
 					file.createNewFile();
 					version = 1;
 					nextid = 1;
@@ -107,8 +109,8 @@ public class RecordStore
 		}
 		catch (Exception e)
 		{
-			//System.out.println("> Problem Opening Record Store (createIfNecessary "+createIfNecessary+"): "+rmsFile);
-			System.out.println(e.getMessage());
+			//LOG.severe("> Problem Opening Record Store (createIfNecessary "+createIfNecessary+"): "+rmsFile);
+			LOG.severe(e.getMessage());
 			throw(new RecordStoreException("Problem Opening Record Store (createIfNecessary "+createIfNecessary+"): "+rmsFile));
 		}
 
@@ -135,8 +137,8 @@ public class RecordStore
 		}
 		catch (Exception e)
 		{
-			System.out.println("Problem Reading Record Store: "+rmsFile);
-			System.out.println(e.getMessage());
+			LOG.severe("Problem Reading Record Store: "+rmsFile);
+			LOG.severe(e.getMessage());
 			throw(new RecordStoreException("Problem Reading Record Store: "+rmsFile));
 		}
 	}
@@ -170,7 +172,7 @@ public class RecordStore
 		}
 		catch (Exception e)
 		{
-			System.out.println("Problem Saving RecordStore");
+			LOG.severe("Problem Saving RecordStore");
 			e.printStackTrace();
 		}
 	}
@@ -199,7 +201,7 @@ public class RecordStore
 
 	public int addRecord(byte[] data, int offset, int numBytes) throws RecordStoreException
 	{
-		//System.out.println("> Add Record "+nextid+ " to "+name);
+		//LOG.info("> Add Record "+nextid+ " to "+name);
 		try
 		{
 			byte[] rec = Arrays.copyOfRange(data, offset, offset+numBytes);
@@ -219,7 +221,7 @@ public class RecordStore
 		}
 		catch (Exception e)
 		{
-			//System.out.println("> Add Record Failed");
+			//LOG.severe("> Add Record Failed");
 			throw(new RecordStoreException("Can't Add RMS Record"));
 		}
 	}
@@ -234,7 +236,7 @@ public class RecordStore
 	public void deleteRecord(int recordId)
 	{
 		version++;
-		//System.out.println("> Delete Record");
+		//LOG.info("> Delete Record");
 		records.set(recordId, new byte[]{});
 		save();
 		for(int i=0; i<listeners.size(); i++)
@@ -252,7 +254,7 @@ public class RecordStore
 		}
 		catch (Exception e)
 		{
-			System.out.println("Problem deleting RecordStore "+recordStoreName);
+			LOG.severe("Problem deleting RecordStore "+recordStoreName);
 			e.printStackTrace();
 		}
 		System.gc();
@@ -260,7 +262,7 @@ public class RecordStore
 
 	public RecordEnumeration enumerateRecords(RecordFilter filter, RecordComparator comparator, boolean keepUpdated)
 	{
-		System.out.println("RecordStore.enumerateRecords");
+		LOG.info("RecordStore.enumerateRecords");
 		return new enumeration(filter, comparator, keepUpdated);
 	}
 
@@ -273,13 +275,13 @@ public class RecordStore
 
 	public int getNextRecordID()
 	{
-		//System.out.println("> getNextRecordID");
+		//LOG.info("> getNextRecordID");
 		return nextid;
 	}
 
 	public int getNumRecords()
 	{
-		//System.out.println("> getNumRecords");
+		//LOG.info("> getNumRecords");
 		int count = 0;
 		for(int i=1; i<records.size(); i++) // count deleted records
 		{
@@ -292,10 +294,10 @@ public class RecordStore
 
 	public byte[] getRecord(int recordId) throws InvalidRecordIDException, RecordStoreException
 	{
-		//System.out.println("> getRecord("+recordId+")");
+		//LOG.info("> getRecord("+recordId+")");
 		if(recordId >= records.size())
 		{
-			//System.out.println("getRecord Invalid RecordId "+recordId);
+			//LOG.info("getRecord Invalid RecordId "+recordId);
 			throw(new InvalidRecordIDException("(A) Invalid Record ID: "+recordId));
 		}
 		try
@@ -306,7 +308,7 @@ public class RecordStore
 		}
 		catch (Exception e)
 		{
-			System.out.println("(getRecord) Record Store Exception: "+recordId);
+			LOG.severe("(getRecord) Record Store Exception: "+recordId);
 			e.printStackTrace();
 			throw(new RecordStoreException());
 		}
@@ -314,7 +316,7 @@ public class RecordStore
 
 	public int getRecord(int recordId, byte[] buffer, int offset) throws InvalidRecordIDException, RecordStoreException
 	{
-		//System.out.println("> getRecord(id, buffer, offset)");
+		//LOG.info("> getRecord(id, buffer, offset)");
 		byte[] temp = getRecord(recordId);
 
 		if(temp == null)
@@ -335,7 +337,7 @@ public class RecordStore
 
 	public int getRecordSize(int recordId) throws InvalidRecordIDException, RecordStoreException
 	{
-		//System.out.println("> Get Record Size");
+		//LOG.info("> Get Record Size");
 		return getRecord(recordId).length;
 	}
 
@@ -347,7 +349,7 @@ public class RecordStore
 
 	public static String[] listRecordStores()
 	{
-		//System.out.println("List Record Stores");
+		//LOG.info("List Record Stores");
 		if(rmsPath==null)
 		{
 			rmsPath = "rms/"+Mobile.getPlatform().loader.name;
@@ -366,7 +368,7 @@ public class RecordStore
 
 			for(int i=0; i<files.length; i++)
 			{
-				//System.out.println((files[i].toString()).substring(rmsPath.length()+1));
+				//LOG.info((files[i].toString()).substring(rmsPath.length()+1));
 				out[i] = (files[i].toString()).substring(rmsPath.length()+1);
 			}
 
@@ -378,19 +380,19 @@ public class RecordStore
 
 	public static RecordStore openRecordStore(String recordStoreName, boolean createIfNecessary) throws RecordStoreException, RecordStoreNotFoundException
 	{
-		//System.out.println("Open Record Store A "+createIfNecessary);
+		//LOG.info("Open Record Store A "+createIfNecessary);
 		return new RecordStore(recordStoreName, createIfNecessary);
 	}
 
 	public static RecordStore openRecordStore(String recordStoreName, boolean createIfNecessary, int authmode, boolean writable) throws RecordStoreException, RecordStoreNotFoundException
 	{
-		//System.out.println("Open Record Store B "+createIfNecessary);
+		//LOG.info("Open Record Store B "+createIfNecessary);
 		return new RecordStore(recordStoreName, createIfNecessary);
 	}
 
 	public static RecordStore openRecordStore(String recordStoreName, String vendorName, String suiteName) throws RecordStoreException, RecordStoreNotFoundException
 	{
-		System.out.println("Open Record Store C");
+		LOG.info("Open Record Store C");
 		return new RecordStore(recordStoreName, false);
 	}
 
@@ -403,7 +405,7 @@ public class RecordStore
 
 	public void setRecord(int recordId, byte[] newData, int offset, int numBytes) throws RecordStoreException, InvalidRecordIDException
 	{
-		//System.out.println("> Set Record "+recordId+" in "+name);
+		//LOG.info("> Set Record "+recordId+" in "+name);
 		if(recordId >= records.size())
 		{
 			throw(new InvalidRecordIDException("(C) Invalid Record ID: "+recordId));
@@ -415,7 +417,7 @@ public class RecordStore
 		}
 		catch (Exception e)
 		{
-			System.out.println("Problem in Set Record");
+			LOG.severe("Problem in Set Record");
 			e.printStackTrace();
 		}
 		lastModified = recordId;
@@ -460,7 +462,7 @@ public class RecordStore
 			count = 0;
 			if(filter==null)
 			{
-				//System.out.println("Not Filtered");
+				//LOG.info("Not Filtered");
 				for(int i=1; i<records.size(); i++)
 				{
 					if(records.get(i).length>0) // not deleted
@@ -472,7 +474,7 @@ public class RecordStore
 			}
 			else
 			{
-				//System.out.println("Filtered");
+				//LOG.info("Filtered");
 				for(int i=1; i<records.size(); i++)
 				{
 					if(filter.matches(records.get(i)))
@@ -490,7 +492,7 @@ public class RecordStore
 			int temp;
 			if(comparator!=null)
 			{
-				//System.out.println("Comparator");
+				//LOG.info("Comparator");
 				for(int i=0; i<count-1; i++)
 				{
 					for(int j=0; j<count-(1+i); j++)
@@ -536,7 +538,7 @@ public class RecordStore
 
 		public byte[] nextRecord() throws InvalidRecordIDException
 		{
-			//System.out.println("> Next Record");
+			//LOG.info("> Next Record");
 			if(keepupdated) { rebuild(); }
 			if(index>=count)
 			{
@@ -548,7 +550,7 @@ public class RecordStore
 
 		public int nextRecordId() throws InvalidRecordIDException
 		{
-			//System.out.println("> Next Record ID (idx:"+index+" cnt:"+count+")");
+			//LOG.info("> Next Record ID (idx:"+index+" cnt:"+count+")");
 			if(keepupdated) { rebuild(); }
 			if(index>=count) { throw(new InvalidRecordIDException()); }
 			return elements[index];
@@ -556,14 +558,14 @@ public class RecordStore
 
 		public int numRecords()
 		{
-			//System.out.println("> numRecords()");
+			//LOG.info("> numRecords()");
 			if(keepupdated) { rebuild(); }
 			return count;
 		}
 
 		public byte[] previousRecord() throws InvalidRecordIDException
 		{
-			//System.out.println("> Previous Record");
+			//LOG.info("> Previous Record");
 			if(keepupdated) { rebuild(); }
 			index--;
 			if(index>=0)
@@ -580,7 +582,7 @@ public class RecordStore
 
 		public int previousRecordId() throws InvalidRecordIDException
 		{
-			//System.out.println("> Previous Record ID");
+			//LOG.info("> Previous Record ID");
 			if(keepupdated) { rebuild(); }
 			if(index==0) { throw(new InvalidRecordIDException()); }
 			return elements[index-1];

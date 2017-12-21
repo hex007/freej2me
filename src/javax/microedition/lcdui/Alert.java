@@ -16,14 +16,14 @@
 */
 package javax.microedition.lcdui;
 
-import java.util.ArrayList;
-
 import org.recompile.mobile.Mobile;
 
+import java.util.logging.Logger;
 
 public class Alert extends Screen
 {
 
+	private static final Logger LOG = Logger.getLogger(Alert.class.getName());
 	public static final Command DISMISS_COMMAND = new Command("OK", Command.OK, 0);
 
 	public static final int FOREVER = -2;
@@ -44,15 +44,15 @@ public class Alert extends Screen
 
 	public Alert(String title)
 	{
-		System.out.println("Alert: " + title);
+		LOG.info("Alert: " + title);
 		setTitle(title);
 		Thread.dumpStack();
 	}
 
 	public Alert(String title, String alertText, Image alertImage, AlertType alertType)
 	{
-		System.out.println("Alert: " + title);
-		System.out.println("Alert: " + alertText);
+		LOG.info("Alert: " + title);
+		LOG.info("Alert: " + alertText);
 
 		setTitle(title);
 		setString(alertText);
@@ -80,7 +80,7 @@ public class Alert extends Screen
 
 	public void setString(String text)
 	{
-		System.out.println(text);
+		LOG.info(text);
 		message = text;
 	}
 

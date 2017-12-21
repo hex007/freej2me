@@ -18,6 +18,7 @@ package org.recompile.mobile;
 
 import java.io.InputStream;
 import java.util.Vector;
+import java.util.logging.Logger;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequencer;
 import javax.sound.sampled.AudioInputStream;
@@ -32,6 +33,7 @@ import javax.microedition.media.Controllable;
 
 public class PlatformPlayer implements Player
 {
+	private static final Logger LOG = Logger.getLogger(PlatformPlayer.class.getName());
 
 	private String contentType = "";
 
@@ -62,7 +64,7 @@ public class PlatformPlayer implements Player
 			}
 			else
 			{
-				System.out.println("No Player For: "+contentType);
+				LOG.info("No Player For: "+contentType);
 				player = new audioplayer();
 			}
 		}
@@ -71,14 +73,14 @@ public class PlatformPlayer implements Player
 		controls[1] = new tempoControl();
 		controls[2] = new midiControl();
 
-		//System.out.println("media type: "+type);
+		//LOG.info("media type: "+type);
 	}
 
 	public PlatformPlayer(String locator)
 	{
 		listeners = new Vector<PlayerListener>();
 		controls = new Control[3];
-		System.out.println("Player locator: "+locator);
+		LOG.info("Player locator: "+locator);
 	}
 
 
@@ -100,7 +102,7 @@ public class PlatformPlayer implements Player
 
 	public void start()
 	{
-		//System.out.println("Play "+contentType);
+		//LOG.info("Play "+contentType);
 		if(Mobile.getPlatform().sound)
 		{
 			try
@@ -122,7 +124,7 @@ public class PlatformPlayer implements Player
 
 	public void addPlayerListener(PlayerListener playerListener)
 	{
-		//System.out.println("Add Player Listener");
+		//LOG.info("Add Player Listener");
 		listeners.add(playerListener);
 	}
 

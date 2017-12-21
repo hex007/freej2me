@@ -17,6 +17,7 @@
 package	javax.microedition.lcdui.game;
 
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
@@ -24,6 +25,7 @@ import javax.microedition.lcdui.Image;
 
 public class Sprite	extends	Layer
 {
+	private static final Logger LOG = Logger.getLogger(Sprite.class.getName());
 
 	public static final	int	TRANS_MIRROR = 2;
 	public static final	int	TRANS_MIRROR_ROT180	= 1;
@@ -68,7 +70,7 @@ public class Sprite	extends	Layer
 
 	public Sprite(Sprite s)
 	{
-		System.out.println("Sprite sprite");
+		LOG.info("Sprite sprite");
 		sprite = s.sprite;
 	}
 
@@ -149,7 +151,7 @@ public class Sprite	extends	Layer
 		}
 		catch (Exception e)
 		{
-			System.out.println("Problem drawing sprite");
+			LOG.severe("Problem drawing sprite");
 		}
 	}
 
@@ -169,7 +171,7 @@ public class Sprite	extends	Layer
 
 	public void setFrameSequence(int[] fsequence)
 	{
-		//System.out.println("Set Frame Sequence");
+		//LOG.info("Set Frame Sequence");
 		try
 		{
 			frame = 0;
@@ -181,7 +183,7 @@ public class Sprite	extends	Layer
 		}
 		catch (Exception e)
 		{
-			System.out.println("Problem with Sequence");
+			LOG.severe("Problem with Sequence");
 		}
 	}
 

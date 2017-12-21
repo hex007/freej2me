@@ -28,9 +28,11 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.geom.AffineTransform;
+import java.util.logging.Logger;
 
 public class PlatformGraphics extends javax.microedition.lcdui.Graphics implements DirectGraphics
 {
+	private static final Logger LOG = Logger.getLogger(PlatformGraphics.class.getName());
 	protected BufferedImage canvas;
 	protected Graphics2D gc;
 
@@ -114,7 +116,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		}
 		catch (Exception e)
 		{
-			//System.out.println("drawImage A:"+e.getMessage());
+			//LOG.severe("drawImage A:"+e.getMessage());
 		}
 	}
 
@@ -132,7 +134,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		}
 		catch (Exception e)
 		{
-			//System.out.println("drawImage B:"+e.getMessage());
+			//LOG.severe("drawImage B:"+e.getMessage());
 		}
 	}
 
@@ -147,7 +149,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		}
 		catch (Exception e)
 		{
-			//System.out.println("flushGraphics A:"+e.getMessage());
+			//LOG.severe("flushGraphics A:"+e.getMessage());
 		}
 	}
 
@@ -172,7 +174,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		}
 		catch (Exception e)
 		{
-			//System.out.println("drawRegion A (x:"+x+" y:"+y+" w:"+subw+" h:"+subh+"):"+e.getMessage());
+			//LOG.severe("drawRegion A (x:"+x+" y:"+y+" w:"+subw+" h:"+subh+"):"+e.getMessage());
 		}
 	}
 
@@ -341,7 +343,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
 	public void drawImage(javax.microedition.lcdui.Image img, int x, int y, int anchor, int manipulation)
 	{
-		//System.out.println("Nokia drawImage");
+		//LOG.info("Nokia drawImage");
 		BufferedImage image = manipulateImage(img.platformImage.getCanvas(), manipulation);
 		x = AnchorX(x, image.getWidth(), anchor);
 		y = AnchorY(y, image.getHeight(), anchor);
@@ -350,13 +352,13 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
 	public void drawPixels(byte[] pixels, byte[] transparencyMask, int offset, int scanlength, int x, int y, int width, int height, int manipulation, int format)
 	{
-		System.out.println("drawPixels A");
+		LOG.info("drawPixels A");
 		//drawRGB(pixels, offset, scanlength, x, y, width, height, true);
 	}
 
 	public void drawPixels(int[] pixels, boolean transparency, int offset, int scanlength, int x, int y, int width, int height, int manipulation, int format)
 	{
-		//System.out.println("drawPixels B"); // Found In Use
+		//LOG.info("drawPixels B"); // Found In Use
 		BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		temp.setRGB(0, 0, width, height, pixels, offset, scanlength);
 		BufferedImage temp2 = manipulateImage(temp, manipulation);
@@ -365,7 +367,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
 	public void drawPixels(short[] pixels, boolean transparency, int offset, int scanlength, int x, int y, int width, int height, int manipulation, int format)
 	{
-		//System.out.println("drawPixels C"); // Found In Use
+		//LOG.info("drawPixels C"); // Found In Use
 		int[] data = new int[pixels.length];
 
 		for(int i=0; i<pixels.length; i++)
@@ -393,7 +395,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
 	public void drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, int argbColor)
 	{
-		//System.out.println("drawTriange");
+		//LOG.info("drawTriange");
 		int temp = color;
 		setColor(argbColor);
 		gc.drawPolygon(new int[]{x1,x2,x3}, new int[]{y1,y2,y3}, 3);
@@ -415,7 +417,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
 	public void fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, int argbColor)
 	{
-		//System.out.println("fillTriangle"); // Found In Use
+		//LOG.info("fillTriangle"); // Found In Use
 		int temp = color;
 		setColor(argbColor);
 		gc.fillPolygon(new int[]{x1,x2,x3}, new int[]{y1,y2,y3}, 3);
@@ -424,18 +426,18 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
 	public void getPixels(byte[] pixels, byte[] transparencyMask, int offset, int scanlength, int x, int y, int width, int height, int format)
 	{
-		System.out.println("getPixels A");
+		LOG.info("getPixels A");
 	}
 
 	public void getPixels(int[] pixels, int offset, int scanlength, int x, int y, int width, int height, int format)
 	{
-		//System.out.println("getPixels B");
+		//LOG.info("getPixels B");
 		canvas.getRGB(x, y, width, height, pixels, offset, scanlength);
 	}
 
 	public void getPixels(short[] pixels, int offset, int scanlength, int x, int y, int width, int height, int format)
 	{
-		//System.out.println("getPixels C"); // Found In Use
+		//LOG.info("getPixels C"); // Found In Use
 		int i = offset;
 		for(int row=0; row<height; row++)
 		{

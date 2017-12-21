@@ -19,6 +19,8 @@ package javax.microedition.lcdui;
 import org.recompile.mobile.Mobile;
 import org.recompile.mobile.PlatformImage;
 
+import java.util.logging.Logger;
+
 public abstract class Canvas extends Displayable
 {
 	public static final int UP = 1;
@@ -45,13 +47,15 @@ public abstract class Canvas extends Displayable
 	public static final int KEY_STAR = 42;
 	public static final int KEY_POUND = 35;
 
+	private static final Logger LOG = Logger.getLogger(Canvas.class.getName());
+
 
 	protected Canvas()
 	{
 		width = Mobile.getPlatform().lcdWidth;
 		height = Mobile.getPlatform().lcdHeight;
 
-		System.out.println("Create Canvas:"+width+", "+height);
+		LOG.info(String.format("Create Canvas: %d, %d", width, height));
 
 		platformImage = new PlatformImage(width, height);
 	}
@@ -161,7 +165,7 @@ public abstract class Canvas extends Displayable
 		}
 		catch (Exception e)
 		{
-			System.out.print("Canvas repaint(): "+e.getMessage());
+			LOG.severe("Canvas repaint(): "+e.getMessage());
 			e.printStackTrace();
 		}
 	}

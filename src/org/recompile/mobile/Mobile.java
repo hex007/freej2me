@@ -22,6 +22,7 @@ import javax.imageio.ImageIO;
 import java.lang.Exception;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.logging.Logger;
 
 import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Canvas;
@@ -37,6 +38,7 @@ import javax.microedition.m3g.Graphics3D;
 
 public class Mobile
 {
+	private static final Logger LOG = Logger.getLogger(Mobile.class.getName());
 	private static MobilePlatform platform;
 
 	private static Display display;
@@ -120,7 +122,7 @@ public class Mobile
 	{
 		if(!quiet)
 		{
-			System.out.println(text);
+			LOG.info(text);
 		}
 	}
 
@@ -139,7 +141,7 @@ public class Mobile
 		}
 		catch (Exception e)
 		{
-			System.out.println("Error saving screenshot");
+			LOG.severe("Error saving screenshot");
 			e.printStackTrace();
 		}
 	}

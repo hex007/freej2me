@@ -17,37 +17,33 @@
 package javax.microedition.midlet;
 
 import java.util.HashMap;
-
-import javax.microedition.io.*;
+import java.util.logging.Logger;
 import javax.microedition.lcdui.*;
-import javax.microedition.lcdui.game.*;
-import javax.microedition.pki.*;
-import javax.microedition.rms.*;
 
 public abstract class MIDlet
 {
-
+	private static final Logger LOG = Logger.getLogger(MIDlet.class.getName());
 	public static HashMap<String, String> properties;
 
 	private Display display = new Display();
 
 	protected MIDlet()
 	{
-		System.out.println("Create MIDlet");
+		LOG.info("Create MIDlet");
 	}
 
 
 	public final int checkPermission(String permission)
 	{
 		// 0 - denied; 1 - allowed; -1 unknown
-		System.out.println("checkPermission: "+permission);
+		LOG.info("checkPermission: " + permission);
 		return -1;
 	}
 
 	protected abstract void destroyApp(boolean unconditional) throws MIDletStateChangeException;
 
 	public String getAppProperty(String key)
-	{ 
+	{
 		return properties.get(key);
 	}
 
@@ -57,8 +53,8 @@ public abstract class MIDlet
 	}
 
 	public final void notifyDestroyed()
-	{ 
-		System.out.println("MIDlet sent Destroyed Notification");
+	{
+		LOG.info("MIDlet sent Destroyed Notification");
 		System.exit(0);
 	}
 

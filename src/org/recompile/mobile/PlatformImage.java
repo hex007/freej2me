@@ -16,24 +16,24 @@
 */
 package org.recompile.mobile;
 
-import java.net.URL;
 import java.util.Arrays;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 
 import javax.microedition.lcdui.Image;
-import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.game.Sprite;
-import javax.microedition.lcdui.game.GameCanvas;
+
 
 import javax.imageio.ImageIO;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.geom.AffineTransform;
+import java.util.logging.Logger;
 
 public class PlatformImage extends javax.microedition.lcdui.Image
 {
+	private static final Logger LOG = Logger.getLogger(PlatformImage.class.getName());
+
 	protected BufferedImage canvas;
 	protected PlatformGraphics gc;
 
@@ -70,14 +70,14 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 	public PlatformImage(String name)
 	{
 		// Create Image from resource name
-		// System.out.println("Image From Resource Name");
+		// LOG.info("Image From Resource Name");
 		BufferedImage temp;
 
 		InputStream stream = Mobile.getPlatform().loader.getMIDletResourceAsStream(name);
 
 		if(stream==null)
 		{
-			System.out.println("Couldn't Load Image Stream (can't find "+name+")");
+			LOG.info("Couldn't Load Image Stream (can't find "+name+")");
 		}
 		else
 		{
@@ -94,7 +94,7 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 			}
 			catch (Exception e)
 			{
-				System.out.println("Couldn't Load Image Stream " + name);
+				LOG.severe("Couldn't Load Image Stream " + name);
 				e.printStackTrace();
 			}
 		}
@@ -104,13 +104,13 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 	public PlatformImage(InputStream stream)
 	{
 		// Create Image from InputStream
-		// System.out.println("Image From Stream");
+		// LOG.info("Image From Stream");
 		BufferedImage temp;
 		try
 		{
 			temp = ImageIO.read(stream);
-			width = (int)temp.getWidth();
-			height = (int)temp.getHeight();
+			width = temp.getWidth();
+			height = temp.getHeight();
 
 			canvas = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 			createGraphics();
@@ -119,7 +119,7 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 		}
 		catch(Exception e)
 		{
-			System.out.println("Couldn't Load Image Stream");
+			LOG.severe("Couldn't Load Image Stream");
 		}
 
 		platformImage = this;
@@ -160,9 +160,9 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 		}
 		catch(Exception e)
 		{
-			System.out.println("Couldn't Load Image Data From Byte Array");
+			LOG.severe("Couldn't Load Image Data From Byte Array");
 
-			//System.out.println(e.getMessage());
+			//LOG.severe(e.getMessage());
 			//e.printStackTrace();
 		}
 
@@ -194,8 +194,8 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 		canvas = transformImage(sub, transform);
 		createGraphics();
 
-		width = (int)canvas.getWidth();
-		height = (int)canvas.getHeight();
+		width = canvas.getWidth();
+		height = canvas.getHeight();
 
 		platformImage = this;
 	}
@@ -207,8 +207,8 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 
 	public static BufferedImage transformImage(BufferedImage image, int transform)
 	{
-		int width = (int)image.getWidth();
-		int height = (int)image.getHeight();
+		int width = image.getWidth();
+		int height = image.getHeight();
 		int out_width = width;
 		int out_height = height;
 

@@ -30,10 +30,11 @@ import java.util.TimerTask;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ProcessBuilder;
+import java.util.logging.Logger;
 
 public class RetroPie
 {
-
+	private static final Logger LOG = Logger.getLogger(RetroPie.class.getName());
 	public static void main(String[] args)
 	{
 		RetroPie app = new RetroPie(args);
@@ -53,7 +54,7 @@ public class RetroPie
 
 		if (args.length < 3)
 		{
-			System.out.println("Insufficient parameters provided");
+			LOG.info("Insufficient parameters provided");
 			return;
 		}
 		lcdWidth = Integer.parseInt(args[1]);
@@ -87,7 +88,7 @@ public class RetroPie
 		Mobile.getPlatform().setPainter(painter);
 
 		String file = getFormattedLocation(args[0]);
-		System.out.println(file);
+		LOG.info(file);
 
 		if(Mobile.getPlatform().loadJar(file))
 		{
@@ -102,7 +103,7 @@ public class RetroPie
 		}
 		else
 		{
-			System.out.println("Couldn't load jar...");
+			LOG.info("Couldn't load jar...");
 			System.exit(0);
 		}
 	}
@@ -115,7 +116,7 @@ public class RetroPie
 		File file = new File(loc);
 		if(!file.exists() || file.isDirectory())
 		{
-			System.out.println("File not found...");
+			LOG.info("File not found...");
 			System.exit(0);
 		}
 
@@ -147,8 +148,8 @@ public class RetroPie
 			}
 			catch (Exception e)
 			{
-				System.out.println("Failed to start sdl_interface");
-				System.out.println(e.getMessage());
+				LOG.severe("Failed to start sdl_interface");
+				LOG.severe(e.getMessage());
 				System.exit(0);
 			}
 		}
@@ -191,7 +192,7 @@ public class RetroPie
 								case 5: Mobile.getPlatform().keyPressed(getMobileKeyJoy(code)); break;
 
 							}
-							System.out.println(" ("+code+") <- Key");
+							LOG.info(" ("+code+") <- Key");
 						}
 					}
 				}

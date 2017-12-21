@@ -17,6 +17,7 @@
 package javax.microedition.media;
 
 import java.io.InputStream;
+import java.util.logging.Logger;
 
 import org.recompile.mobile.PlatformPlayer;
 
@@ -24,35 +25,35 @@ public final class Manager
 {
 
 	public static final String TONE_DEVICE_LOCATOR = "device://tone";
-
+	private static final Logger LOG = Logger.getLogger(Manager.class.getName());
 
 	public static Player createPlayer(InputStream stream, String type) throws MediaException
 	{
-		//System.out.println("Create Player Stream "+type);
+		//LOG.info("Create Player Stream "+type);
 		return new PlatformPlayer(stream, type);
 	}
 
 	public static Player createPlayer(String locator) throws MediaException
 	{
-		System.out.println("Create Player "+locator);
+		LOG.info("Create Player "+locator);
 		return new PlatformPlayer(locator);
 	}
-	
+
 	public static String[] getSupportedContentTypes(String protocol)
 	{
-		//System.out.println("Get Supported Media Content Types");
+		//LOG.info("Get Supported Media Content Types");
 		return new String[]{"audio/midi", "audio/x-wav"};
 	}
-	
+
 	public static String[] getSupportedProtocols(String content_type)
 	{
-		System.out.println("Get Supported Media Protocols");
+		LOG.info("Get Supported Media Protocols");
 		return new String[]{};
 	}
-	
+
 	public static void playTone(int note, int duration, int volume)
 	{
-		System.out.println("Play Tone");
+		LOG.info("Play Tone");
 	}
 
 }

@@ -25,11 +25,14 @@ import javax.microedition.lcdui.Image;
 import java.util.Vector;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Logger;
 
 import org.recompile.mobile.Mobile;
 
 public class Display
 {
+	private static final Logger LOG = Logger.getLogger(Display.class.getName());
+
 	public static final int LIST_ELEMENT = 1;
 	public static final int CHOICE_GROUP_ELEMENT = 2;
 	public static final int ALERT = 3;
@@ -133,11 +136,11 @@ public class Display
 		{
 			current = next;
 			Mobile.getPlatform().flushGraphics(current.platformImage, 0,0, current.width, current.height);
-			System.out.println("Set Current "+current.width+", "+current.height);
+			LOG.info("Set Current "+current.width+", "+current.height);
 		}
 		catch (Exception e)
 		{
-			System.out.println("Problem with setCurrent(next)");
+			LOG.severe("Problem with setCurrent(next)");
 			e.printStackTrace();
 		}
 	}
@@ -151,16 +154,16 @@ public class Display
 		}
 		catch (Exception e)
 		{
-			System.out.println("Problem with setCurrent(alert, next)");
+			LOG.severe("Problem with setCurrent(alert, next)");
 			e.printStackTrace();
 		}
 	}
 
-	public void setCurrentItem(Item item) { System.out.println("Display.setCurrentItem"); }
+	public void setCurrentItem(Item item) { LOG.info("Display.setCurrentItem"); }
 
 	public boolean vibrate(int duration)
 	{
-		//System.out.println("Vibrate");
+		//LOG.info("Vibrate");
 		return true;
 	}
 

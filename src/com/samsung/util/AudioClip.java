@@ -16,8 +16,11 @@
 	along with FreeJ2ME.  If not, see http://www.gnu.org/licenses/
 */package com.samsung.util;
 
+import java.util.logging.Logger;
+
 public class AudioClip
 {
+	private static final Logger LOG = Logger.getLogger(AudioClip.class.getName());
 	public static final int TYPE_MMF = 1;
 	public static final int TYPE_MP3 = 2;
 	public static final int TYPE_MIDI = 3;
@@ -26,13 +29,13 @@ public class AudioClip
 
 	public AudioClip(int clipType, byte[] audioData, int audioOffset, int audioLength)
 	{
-		System.out.println("Samsung AudioClip");
+		LOG.info("Samsung AudioClip");
 		type = clipType;
 	}
 
 	public AudioClip(int clipType, String filename)
 	{
-		System.out.println("Samsung AudioClip");
+		LOG.info("Samsung AudioClip");
 		type = clipType;
 	}
 

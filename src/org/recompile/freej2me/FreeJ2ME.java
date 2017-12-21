@@ -24,13 +24,14 @@ import org.recompile.mobile.*;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 public class FreeJ2ME
 {
+	private static final Logger LOG = Logger.getLogger(FreeJ2ME.class.getName());
 	public static void main(String args[])
 	{
 		FreeJ2ME app = new FreeJ2ME(args);
@@ -58,7 +59,7 @@ public class FreeJ2ME
 		main.setBackground(new Color(0,0,64));
 		try
 		{
-			main.setIconImage(ImageIO.read(main.getClass().getResourceAsStream("/org/recompile/icon.png")));	
+			main.setIconImage(ImageIO.read(main.getClass().getResourceAsStream("/org/recompile/icon.png")));
 		}
 		catch (Exception e) { }
 
@@ -191,7 +192,7 @@ public class FreeJ2ME
 		}
 		else
 		{
-			System.out.println("Couldn't load jar...");
+			LOG.severe("Couldn't load jar...");
 		}
 	}
 
@@ -329,7 +330,7 @@ public class FreeJ2ME
 			}
 			catch (Exception e)
 			{
-				System.out.println(e.getMessage());
+				LOG.severe(e.getMessage());
 			}
 		}
 	}

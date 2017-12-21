@@ -35,6 +35,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -51,6 +52,8 @@ import javax.microedition.midlet.MIDletStateChangeException;
 
 public class MIDletLoader extends URLClassLoader
 {
+	private static final Logger LOG = Logger.getLogger(MIDlet.class.getName());
+
 	public String name;
 	public String icon;
 	private String className;
@@ -76,7 +79,7 @@ public class MIDletLoader extends URLClassLoader
 		}
 		catch (Exception e)
 		{
-			System.out.println("Can't add CLDC System Properties");
+			LOG.severe("Can't add CLDC System Properties");
 		}
 
 		try
@@ -91,7 +94,7 @@ public class MIDletLoader extends URLClassLoader
 		}
 		catch (Exception e)
 		{
-			System.out.println("Can't Read Manifest!");
+			LOG.severe("Can't Read Manifest!");
 			return;
 		}
 
@@ -114,8 +117,8 @@ public class MIDletLoader extends URLClassLoader
 		}
 		catch (Exception e)
 		{
-			System.out.println("Problem Constructing " + name + " class: " +className);
-			System.out.println("Reason: "+e.getMessage());
+			LOG.severe("Problem Constructing " + name + " class: " +className);
+			LOG.severe("Reason: "+e.getMessage());
 			e.printStackTrace();
 			System.exit(0);
 			return;
@@ -136,7 +139,7 @@ public class MIDletLoader extends URLClassLoader
 			}
 			catch (Exception f)
 			{
-				System.out.println("Can't Find startApp Method");
+				LOG.severe("Can't Find startApp Method");
 				f.printStackTrace();
 				System.exit(0);
 				return;
@@ -175,7 +178,7 @@ public class MIDletLoader extends URLClassLoader
 			{
 				if(line.startsWith("MIDlet-1:"))
 				{
-					System.out.println(line);
+					LOG.info(line);
 					line = line.substring(9);
 					parts = line.split(",");
 					if(parts.length == 3)
@@ -185,7 +188,7 @@ public class MIDletLoader extends URLClassLoader
 						className = parts[2].trim();
 						suitename = name;
 					}
-					//System.out.println("Loading " + name);
+					//LOG.info("Loading " + name);
 				}
 
 				split = line.indexOf(":");
@@ -202,7 +205,7 @@ public class MIDletLoader extends URLClassLoader
 		}
 		catch (Exception e)
 		{
-			System.out.println("Can't Read Jar Manifest!");
+			LOG.severe("Can't Read Jar Manifest!");
 			e.printStackTrace();
 		}
 
@@ -212,7 +215,7 @@ public class MIDletLoader extends URLClassLoader
 	public InputStream getResourceAsStream(String resource)
 	{
 		URL url;
-		//System.out.println("Loading Resource: " + resource);
+		//LOG.info("Loading Resource: " + resource);
 
 		if(resource.startsWith("/"))
 		{
@@ -226,7 +229,7 @@ public class MIDletLoader extends URLClassLoader
 		}
 		catch (Exception e)
 		{
-			System.out.println(resource + " Not Found");
+			LOG.severe(resource + " Not Found");
 			return super.getResourceAsStream(resource);
 		}
 	}
@@ -245,7 +248,7 @@ public class MIDletLoader extends URLClassLoader
 		}
 		catch (Exception e)
 		{
-			System.out.println(resource + " Not Found");
+			LOG.severe(resource + " Not Found");
 			return super.getResource(resource);
 		}
 	}
@@ -259,7 +262,7 @@ public class MIDletLoader extends URLClassLoader
 
 	public InputStream getMIDletResourceAsStream(String resource)
 	{
-		//System.out.println("Get Resource: "+resource);
+		//LOG.info("Get Resource: "+resource);
 
 		URL url = getResource(resource);
 
@@ -290,7 +293,7 @@ public class MIDletLoader extends URLClassLoader
 		String resource;
 		byte[] code;
 
-		//System.out.println("Load Class "+name);
+		//LOG.info("Load Class "+name);
 
 		if(
 			name.startsWith("java.") || name.startsWith("javax.") || name.startsWith("com.nokia") ||
@@ -303,7 +306,7 @@ public class MIDletLoader extends URLClassLoader
 
 		try
 		{
-			//System.out.println("Instrumenting Class "+name);
+			//LOG.info("Instrumenting Class "+name);
 			resource = name.replace(".", "/") + ".class";
 			stream = super.getResourceAsStream(resource);
 			code = instrument(stream);
@@ -311,7 +314,7 @@ public class MIDletLoader extends URLClassLoader
 		}
 		catch (Exception e)
 		{
-			System.out.println("Error Adapting Class "+name);
+			LOG.severe("Error Adapting Class "+name);
 			return null;
 		}
 

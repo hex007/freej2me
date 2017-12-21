@@ -22,9 +22,11 @@ import javax.microedition.lcdui.Image;
 import org.recompile.mobile.PlatformImage;
 import org.recompile.mobile.PlatformGraphics;
 
+import java.util.logging.Logger;
 
 public class TiledLayer extends Layer
 {
+	private static final Logger LOG = Logger.getLogger(Layer.class.getName());
 
 	private Image image;
 	private Image canvas;
@@ -46,7 +48,7 @@ public class TiledLayer extends Layer
 
 	public TiledLayer(int colsw, int rowsh, Image baseimage, int tilewidth, int tileheight)
 	{
-		System.out.println("Tiled Layer");
+		LOG.info("Tiled Layer");
 		setStaticTileSet(baseimage, tilewidth, tileheight);
 
 		rows = rowsh;

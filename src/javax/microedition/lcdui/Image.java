@@ -17,15 +17,14 @@
 package javax.microedition.lcdui;
 
 import java.io.InputStream;
+import java.util.logging.Logger;
 
-
-import org.recompile.mobile.Mobile;
 import org.recompile.mobile.PlatformImage;
 
 
 public class Image
 {
-
+	private static final Logger LOG = Logger.getLogger(Image.class.getName());
 	public PlatformImage platformImage;
 
 	public int width;
@@ -33,43 +32,43 @@ public class Image
 
 	public static Image createImage(byte[] imageData, int imageOffset, int imageLength)
 	{
-		//System.out.println("Create Image from image data ");
+		//LOG.info("Create Image from image data ");
 		return new PlatformImage(imageData, imageOffset, imageLength);
 	}
 
 	public static Image createImage(Image source)
 	{
-		//System.out.println("Create Image from Image ");
+		//LOG.info("Create Image from Image ");
 		return new PlatformImage(source);
 	}
 
 	public static Image createImage(Image img, int x, int y, int width, int height, int transform)
 	{
-		//System.out.println("Create Image from sub-image ");
+		//LOG.info("Create Image from sub-image ");
 		return new PlatformImage(width-x, height-y);
 	}
 
 	public static Image createImage(InputStream stream)
 	{
-		//System.out.println("Create Image stream");
+		//LOG.info("Create Image stream");
 		return new PlatformImage(stream);
 	}
 
 	public static Image createImage(int width, int height)
 	{
-		//System.out.println("Create Image w,h " + width + ", " + height);
+		//LOG.info("Create Image w,h " + width + ", " + height);
 		return new PlatformImage(width, height);
 	}
 
 	public static Image createImage(String name)
 	{
-		//System.out.println("Create Image " + name);
+		//LOG.info("Create Image " + name);
 		return new PlatformImage(name);
 	}
 
 	public static Image createRGBImage(int[] rgb, int width, int height, boolean processAlpha)
 	{
-		//System.out.println("Create Image RGB " + width + ", " + height);
+		//LOG.info("Create Image RGB " + width + ", " + height);
 		return new PlatformImage(rgb, width, height, processAlpha);
 	}
 

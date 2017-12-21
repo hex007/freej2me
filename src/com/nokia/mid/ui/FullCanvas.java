@@ -18,9 +18,11 @@ package com.nokia.mid.ui;
 
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
+import java.util.logging.Logger;
 
 public abstract class FullCanvas extends javax.microedition.lcdui.Canvas
 {
+	private static final Logger LOG = Logger.getLogger(FullCanvas.class.getName());
 
 	public static final int KEY_DOWN_ARROW = -2;
 	public static final int KEY_END = -11;
@@ -35,12 +37,12 @@ public abstract class FullCanvas extends javax.microedition.lcdui.Canvas
 
 	protected FullCanvas()
 	{
-		//System.out.println("Nokia FullCanvas");
+		//LOG.info("Nokia FullCanvas");
 	}
 
 	public void addCommand(Command cmd)
 	{
-		//System.out.println("Nokia FullCanvas addCommand");
+		//LOG.info("Nokia FullCanvas addCommand");
 	}
 
 	public void setCommandListener(CommandListener l) { }

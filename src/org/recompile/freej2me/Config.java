@@ -29,6 +29,7 @@ import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
+import java.util.logging.Logger;
 
 import javax.microedition.lcdui.Graphics;
 
@@ -37,6 +38,7 @@ import org.recompile.mobile.PlatformImage;
 
 public class Config
 {
+	private static final Logger LOG = Logger.getLogger(Config.class.getName());
 	public boolean isRunning = false;
 
 	private PlatformImage lcd;
@@ -93,8 +95,8 @@ public class Config
 		}
 		catch (Exception e)
 		{
-			System.out.println("Problem Creating Config Path "+configPath);
-			System.out.println(e.getMessage());
+			LOG.severe("Problem Creating Config Path "+configPath);
+			LOG.severe(e.getMessage());
 		}
 
 		try // Check Config File
@@ -113,8 +115,8 @@ public class Config
 		}
 		catch (Exception e)
 		{
-			System.out.println("Problem Opening Config "+configFile);
-			System.out.println(e.getMessage());
+			LOG.severe("Problem Opening Config "+configFile);
+			LOG.severe(e.getMessage());
 		}
 
 		try // Read Records
@@ -153,8 +155,8 @@ public class Config
 		}
 		catch (Exception e)
 		{
-			System.out.println("Problem Reading Config: "+configFile);
-			System.out.println(e.getMessage());
+			LOG.severe("Problem Reading Config: "+configFile);
+			LOG.severe(e.getMessage());
 		}
 
 	}
@@ -175,8 +177,8 @@ public class Config
 		}
 		catch (Exception e)
 		{
-			System.out.println("Problem Opening Config "+configFile);
-			System.out.println(e.getMessage());
+			LOG.severe("Problem Opening Config "+configFile);
+			LOG.severe(e.getMessage());
 		}
 	}
 
@@ -367,7 +369,7 @@ public class Config
 
 	private void updateSound(String value)
 	{
-		System.out.println("Config: sound "+value);
+		LOG.info("Config: sound "+value);
 		settings.put("sound", value);
 		saveConfig();
 		onChange.run();
@@ -375,7 +377,7 @@ public class Config
 
 	private void updateNokia(String value)
 	{
-		System.out.println("Config: nokia "+value);
+		LOG.info("Config: nokia "+value);
 		settings.put("nokia", value);
 		saveConfig();
 		onChange.run();
@@ -383,7 +385,7 @@ public class Config
 
 	private void updateRotate(String value)
 	{
-		System.out.println("Config: rotate "+value);
+		LOG.info("Config: rotate "+value);
 		settings.put("rotate", value);
 		saveConfig();
 		onChange.run();

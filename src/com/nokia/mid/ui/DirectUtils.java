@@ -21,18 +21,20 @@ import javax.microedition.lcdui.Graphics;
 
 import org.recompile.mobile.PlatformGraphics;
 
+import java.util.logging.Logger;
+
 public class DirectUtils
 {
-
+	private static final Logger LOG = Logger.getLogger(DirectUtils.class.getName());
 	public static Image createImage(byte[] imageData, int imageOffset, int imageLength)
 	{
-		//System.out.println("Nokia Create Image A");
+		//LOG.info("Nokia Create Image A");
 		return Image.createImage(imageData, imageOffset, imageLength);
 	}
 
 	public static Image createImage(int width, int height, int ARGBcolor)
 	{
-		//System.out.println("Nokia Create Image B");
+		//LOG.info("Nokia Create Image B");
 		Image image = Image.createImage(width, height);
 		Graphics gc = image.getGraphics();
 		gc.setColor(ARGBcolor);
@@ -42,7 +44,7 @@ public class DirectUtils
 
 	public static DirectGraphics getDirectGraphics(javax.microedition.lcdui.Graphics g)
 	{
-		//System.out.println("Nokia DirectGraphics");
+		//LOG.info("Nokia DirectGraphics");
 		return (PlatformGraphics)g;
 	}
 
