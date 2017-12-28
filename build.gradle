@@ -27,7 +27,7 @@ task awtJar(type: Jar, dependsOn: compileJava) {
     }
     from sourceSets.main.output
     destinationDir = file("${buildDir}")
-    baseName = 'freej2me'
+    archiveName = 'freej2me.jar'
 }
 
 task fxJar(type: Jar, dependsOn: compileJava) {
@@ -58,6 +58,21 @@ task sdlJar(type: Jar, dependsOn: compileJava) {
     from sourceSets.main.output
     destinationDir = file("${buildDir}")
     baseName = 'freej2me-sdl'
+}
+
+task anbuMake(type: Exec) {
+    workingDir 'src/sdl2'
+    commandLine 'make'
+}
+
+task anbuInstall(type: Exec, dependsOn: anbuMake) {
+    workingDir 'src/sdl2'
+    commandLine 'make', 'install'
+}
+
+task libretroMake(type: Exec) {
+    workingDir 'src/libretro'
+    commandLine 'make'
 }
 
 artifacts {
