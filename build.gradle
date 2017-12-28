@@ -47,7 +47,7 @@ task libretroJar(type: Jar, dependsOn: compileJava) {
     }
     from sourceSets.main.output
     destinationDir = file("${buildDir}")
-    baseName = 'freej2me-lr'
+    archiveName = 'freej2me-lr.jar'
 }
 
 task sdlJar(type: Jar, dependsOn: compileJava) {
@@ -57,7 +57,7 @@ task sdlJar(type: Jar, dependsOn: compileJava) {
     }
     from sourceSets.main.output
     destinationDir = file("${buildDir}")
-    baseName = 'freej2me-sdl'
+    archiveName = 'freej2me-sdl.jar'
 }
 
 task anbuMake(type: Exec) {
