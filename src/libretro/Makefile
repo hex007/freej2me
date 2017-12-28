@@ -29,6 +29,9 @@ else ifneq ($(findstring MINGW,$(shell uname -a)),)
 	system_platform = win
 endif
 
+ifeq ($(DESTDIR),)
+    DESTDIR := /usr/lib/libretro
+endif
 
 CORE_DIR    += .
 TARGET_NAME := freej2me
@@ -131,6 +134,11 @@ endif
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(fpic) -c -o $@ $<
+
+.PHONY: install
+install:
+	@echo "Installing Libretro core as $(DESTDIR)/freej2me_libretro.so"
+	@cp ./freej2me_libretro.so $(DESTDIR)/
 
 clean:
 	rm -f $(OBJECTS) $(TARGET)

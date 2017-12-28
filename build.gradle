@@ -60,13 +60,21 @@ task sdlJar(type: Jar, dependsOn: compileJava) {
     archiveName = 'freej2me-sdl.jar'
 }
 
-task anbuMake(type: Exec) {
+task jars(dependsOn: [awtJar, fxJar, libretroJar, sdlJar])
+
+task sdlInterfaceMake(type: Exec) {
     workingDir 'src/sdl2'
     commandLine 'make'
 }
 
-task anbuInstall(type: Exec, dependsOn: anbuMake) {
+task sdlInterfaceInstall(type: Exec, dependsOn: sdlInterfaceMake) {
     workingDir 'src/sdl2'
+    commandLine 'make', 'install'
+}
+
+task sdlInterface(type: Exec, dependsOn: sdlInterfaceMake) {
+    workingDir 'src/sdl2'
+    environment(DESTDIR: "${buildDir}")
     commandLine 'make', 'install'
 }
 
@@ -75,8 +83,23 @@ task libretroMake(type: Exec) {
     commandLine 'make'
 }
 
+task libretroInstall(type: Exec) {
+    workingDir 'src/libretro'
+    commandLine 'make', 'install'
+}
+
+task libretro(type: Exec, dependsOn: [libretroMake, libretroJar]) {
+    workingDir 'src/libretro'
+    environment(DESTDIR: "${buildDir}")
+    commandLine 'make', 'all', 'install'
+}
+
+task sdl(dependsOn: [sdlInterface, sdlJar])
+
+task binaries(dependsOn: [sdlInterface, libretro])
+
 artifacts {
     archives awtJar, fxJar, libretroJar, sdlJar
 }
 
-build.dependsOn(awtJar, fxJar, libretroJar, sdlJar)
+build.dependsOn(jars, binaries)
