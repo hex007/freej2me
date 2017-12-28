@@ -1,0 +1,67 @@
+apply plugin: 'java'
+
+sourceCompatibility = '1.8'
+project.version = '1.0.0'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+}
+
+sourceSets {
+    main {
+    }
+}
+
+sourceSets.all {
+    java.srcDirs = ['src']
+    resources.srcDirs = ['resources']
+}
+
+task awtJar(type: Jar, dependsOn: compileJava) {
+    manifest {
+        attributes("Main-Class": "org.recompile.freej2me.FreeJ2ME",
+                "Implementation-Title": "FreeJ2ME")
+    }
+    from sourceSets.main.output
+    destinationDir = file("${buildDir}")
+    baseName = 'freej2me'
+}
+
+task fxJar(type: Jar, dependsOn: compileJava) {
+    manifest {
+        attributes("Main-Class": "org.recompile.freej2me.JavaFx",
+                "Implementation-Title": "FreeJ2ME")
+    }
+    from sourceSets.main.output
+    destinationDir = file("${buildDir}")
+    archiveName = 'freej2me-fx.jar'
+}
+
+task libretroJar(type: Jar, dependsOn: compileJava) {
+    manifest {
+        attributes("Main-Class": "org.recompile.freej2me.Libretro",
+                "Implementation-Title": "FreeJ2ME")
+    }
+    from sourceSets.main.output
+    destinationDir = file("${buildDir}")
+    baseName = 'freej2me-lr'
+}
+
+task sdlJar(type: Jar, dependsOn: compileJava) {
+    manifest {
+        attributes("Main-Class": "org.recompile.freej2me.RetroPie",
+                "Implementation-Title": "FreeJ2ME")
+    }
+    from sourceSets.main.output
+    destinationDir = file("${buildDir}")
+    baseName = 'freej2me-sdl'
+}
+
+artifacts {
+    archives awtJar, fxJar, libretroJar, sdlJar
+}
+
+build.dependsOn(awtJar, fxJar, libretroJar, sdlJar)
