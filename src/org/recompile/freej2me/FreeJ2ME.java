@@ -248,8 +248,8 @@ public class FreeJ2ME
 			case KeyEvent.VK_9: return Mobile.KEY_NUM9;
 			case KeyEvent.VK_ASTERISK: return Mobile.KEY_STAR;
 			case KeyEvent.VK_NUMBER_SIGN: return Mobile.KEY_POUND;
-            
-            case KeyEvent.VK_NUMPAD0: return Mobile.KEY_NUM0;
+
+			case KeyEvent.VK_NUMPAD0: return Mobile.KEY_NUM0;
 			case KeyEvent.VK_NUMPAD7: return Mobile.KEY_NUM1;
 			case KeyEvent.VK_NUMPAD8: return Mobile.KEY_NUM2;
 			case KeyEvent.VK_NUMPAD9: return Mobile.KEY_NUM3;
