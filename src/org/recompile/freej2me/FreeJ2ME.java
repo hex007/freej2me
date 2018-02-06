@@ -236,16 +236,16 @@ public class FreeJ2ME
 
 		switch(keycode)
 		{
-			case KeyEvent.VK_0: return Mobile.KEY_NUM0;
-			case KeyEvent.VK_1: return Mobile.KEY_NUM1;
-			case KeyEvent.VK_2: return Mobile.KEY_NUM2;
-			case KeyEvent.VK_3: return Mobile.KEY_NUM3;
-			case KeyEvent.VK_4: return Mobile.KEY_NUM4;
-			case KeyEvent.VK_5: return Mobile.KEY_NUM5;
-			case KeyEvent.VK_6: return Mobile.KEY_NUM6;
-			case KeyEvent.VK_7: return Mobile.KEY_NUM7;
-			case KeyEvent.VK_8: return Mobile.KEY_NUM8;
-			case KeyEvent.VK_9: return Mobile.KEY_NUM9;
+			case KeyEvent.VK_0: case KeyEvent.VK_NUMPAD0: return Mobile.KEY_NUM0;
+			case KeyEvent.VK_1: case KeyEvent.VK_NUMPAD7: return Mobile.KEY_NUM1;
+			case KeyEvent.VK_2: case KeyEvent.VK_NUMPAD8: return Mobile.KEY_NUM2;
+			case KeyEvent.VK_3: case KeyEvent.VK_NUMPAD9: return Mobile.KEY_NUM3;
+			case KeyEvent.VK_4: case KeyEvent.VK_NUMPAD4: return Mobile.KEY_NUM4;
+			case KeyEvent.VK_5: case KeyEvent.VK_NUMPAD5: return Mobile.KEY_NUM5;
+			case KeyEvent.VK_6: case KeyEvent.VK_NUMPAD6: return Mobile.KEY_NUM6;
+			case KeyEvent.VK_7: case KeyEvent.VK_NUMPAD1: return Mobile.KEY_NUM7;
+			case KeyEvent.VK_8: case KeyEvent.VK_NUMPAD2: return Mobile.KEY_NUM8;
+			case KeyEvent.VK_9: case KeyEvent.VK_NUMPAD3: return Mobile.KEY_NUM9;
 			case KeyEvent.VK_ASTERISK: return Mobile.KEY_STAR;
 			case KeyEvent.VK_NUMBER_SIGN: return Mobile.KEY_POUND;
 
