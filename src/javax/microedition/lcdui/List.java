@@ -25,10 +25,10 @@ public class List extends Screen implements Choice
 
 	public static Command SELECT_COMMAND = new Command("Select", Command.SCREEN, 0);
 
-
-	private ArrayList<String> strings;
-
-	private ArrayList<Image> images;
+	
+	private ArrayList<String> strings = new ArrayList<String>();
+	
+	private ArrayList<Image> images = new ArrayList<Image>();
 
 	private int fitPolicy = Choice.TEXT_WRAP_ON;
 
@@ -53,12 +53,12 @@ public class List extends Screen implements Choice
 		}
 	}
 
-
 	public int append(String stringPart, Image imagePart)
-	{
-		strings.add(stringPart);
-		images.add(imagePart);
-		return strings.size()-1;
+	{ 
+			System.out.println("List append string, image: "+stringPart);
+			strings.add(stringPart);
+			images.add(imagePart);
+			return strings.size()-1;
 	}
 
 	public void delete(int elementNum) { strings.remove(elementNum); images.remove(elementNum); }
@@ -70,7 +70,7 @@ public class List extends Screen implements Choice
 	public Font getFont(int elementNum) { return Font.getDefaultFont(); }
 
 	public Image getImage(int elementNum) { return images.get(elementNum); }
-
+	
 	public int getSelectedFlags(boolean[] selectedArray_return) { return 0; }
 
 	public int getSelectedIndex() { return 0; }
@@ -92,19 +92,19 @@ public class List extends Screen implements Choice
 		strings.set(elementNum, stringPart);
 		images.set(elementNum, imagePart);
 	}
-
+	
 	public void setFitPolicy(int fitpolicy) { fitPolicy = fitpolicy; }
 
 	public void setFont(int elementNum, Font font) { }
-
+		
 	public void setSelectCommand(Command command) { SELECT_COMMAND = command; }
-
+ 
 	public void setSelectedFlags(boolean[] selectedArray) { }
 
 	public void setSelectedIndex(int elementNum, boolean selected) { }
 
 	//void setTicker(Ticker ticker)
-
+	
 	//void setTitle(String s)
 
 	public int size() { return strings.size(); }

@@ -26,16 +26,18 @@ public abstract class Displayable
 {
 
 	public PlatformImage platformImage;
-
+	
 	public int width = 0;
 
 	public int height = 0;
 
 	public boolean fullScreen = false;
-
+	
 	private String title = "";
 
-	private ArrayList<Command> commands;
+	private ArrayList<Command> commands = new ArrayList<Command>();
+
+	private CommandListener commandlistener;
 
 	public Ticker ticker;
 
@@ -46,10 +48,10 @@ public abstract class Displayable
 	}
 
 	public void addCommand(Command cmd)
-	{
+	{ 
 		try
 		{
-			commands.add(cmd);
+			commands.add(cmd);	
 		}
 		catch (Exception e)
 		{
@@ -58,22 +60,22 @@ public abstract class Displayable
 	}
 
 	public void removeCommand(Command cmd) { commands.remove(cmd); }
-
+	
 	public int getWidth() { return width; }
 
 	public int getHeight() { return height; }
-
+	
 	public String getTitle() { return title; }
 
-	public void setTitle(String text) { title = text; }
+	public void setTitle(String text) { title = text; }        
 
 	public boolean isShown() { return true; }
 
 	public Ticker getTicker() { return ticker; }
 
 	public void setTicker(Ticker tick) { ticker = tick; }
-
-	public void setCommandListener(CommandListener listener) { }
+	
+	public void setCommandListener(CommandListener listener) { commandlistener = listener; }
 
 	protected void sizeChanged(int width, int height) { }
 
