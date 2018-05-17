@@ -248,6 +248,8 @@ public class RetroPie
 				// ESC - Quit
 				case 0x1B: System.exit(0);
 
+				case 112: ScreenShot.takeScreenshot();
+
 				/*
 				case : return Mobile.GAME_UP;
 				case : return Mobile.GAME_DOWN;
