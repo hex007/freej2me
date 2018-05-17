@@ -350,8 +350,34 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
 	public void drawPixels(byte[] pixels, byte[] transparencyMask, int offset, int scanlength, int x, int y, int width, int height, int manipulation, int format)
 	{
-		System.out.println("drawPixels A");
-		//drawRGB(pixels, offset, scanlength, x, y, width, height, true);
+		//System.out.println("drawPixels A"); // Found In Use
+		
+		int[] Type1 = {0xFFFFFFFF, 0xFF000000, 0, 0};
+		int c = 0;
+		switch(format)
+		{
+			case 1: // TYPE_BYTE_1_GRAY // used by Monkiki's Castles
+				int[] data = new int[pixels.length*8];
+
+				for(int i=0; i<pixels.length; i++)
+				{
+					for(int j=7; j>=0; j--)
+					{
+						c = ((pixels[i]>>j)&1);
+						if(transparencyMask!=null) { c += 2*((transparencyMask[i]>>j)&1); }
+						data[(i*8)+(7-j)] = Type1[c];
+					}
+					System.out.print(String.format("%02X", pixels[i]));
+				}
+				System.out.println();
+
+				BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+				temp.setRGB(0, 0, width, height, data, offset, scanlength);
+				drawImage(manipulateImage(temp, manipulation), x, y);
+			break;
+
+			default: System.out.println("drawPixels A : Format " + format + " Not Implemented");
+		}
 	}
 
 	public void drawPixels(int[] pixels, boolean transparency, int offset, int scanlength, int x, int y, int width, int height, int manipulation, int format)
