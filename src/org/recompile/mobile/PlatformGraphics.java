@@ -367,10 +367,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 						if(transparencyMask!=null) { c += 2*((transparencyMask[i]>>j)&1); }
 						data[(i*8)+(7-j)] = Type1[c];
 					}
-					System.out.print(String.format("%02X", pixels[i]));
 				}
-				System.out.println();
-
 				BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 				temp.setRGB(0, 0, width, height, data, offset, scanlength);
 				drawImage(manipulateImage(temp, manipulation), x, y);
