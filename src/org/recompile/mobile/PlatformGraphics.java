@@ -359,7 +359,6 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		switch(format)
 		{
 			case -1: // TYPE_BYTE_1_GRAY_VERTICAL // used by Monkiki's Castles
-				
 				data = new int[pixels.length*8];
 				int rows = (int)Math.ceil(height/8);
 				int b = 0;
@@ -567,15 +566,15 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		{
 			case DirectGraphics.FLIP_HORIZONTAL:
 				return PlatformImage.transformImage(image, Sprite.TRANS_MIRROR);
-			case DirectGraphics.FLIP_VERTICAL:
+			case DirectGraphics.FLIP_VERTICAL: 
 				return PlatformImage.transformImage(image, Sprite.TRANS_MIRROR_ROT180);
-			case DirectGraphics.ROTATE_90:
+			case DirectGraphics.ROTATE_90: 
 				return PlatformImage.transformImage(image, Sprite.TRANS_ROT90);
 			case DirectGraphics.ROTATE_180:
 				return PlatformImage.transformImage(image, Sprite.TRANS_ROT180);
 			case DirectGraphics.ROTATE_270:
 				return PlatformImage.transformImage(image, Sprite.TRANS_ROT270);
-			case HV:
+			case HV: 
 				return PlatformImage.transformImage(image, Sprite.TRANS_ROT180);
 		}
 		return image;
