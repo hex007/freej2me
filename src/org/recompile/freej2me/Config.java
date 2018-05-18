@@ -66,7 +66,7 @@ public class Config
 
 		menu = new ArrayList<String[]>();
 		menu.add(new String[]{"Resume Game", "Display Size", "Sound", "Nokia", "Rotate", "Exit"});
-		menu.add(new String[]{"128x128","176x208", "208x208", "240x320", "320x240", "240x400", "360x640", "480x800"});
+		menu.add(new String[]{"96x65","128x128","176x208", "208x208", "240x320", "320x240", "240x400", "360x640", "480x800"});
 		menu.add(new String[]{"Quit", "Main Menu"});
 		menu.add(new String[]{"On", "Off"});
 		menu.add(new String[]{"On", "Off"});
