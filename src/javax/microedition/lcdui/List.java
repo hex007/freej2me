@@ -47,6 +47,8 @@ public class List extends Screen implements Choice
 
 		platformImage = new PlatformImage(width, height);
 		gc = platformImage.getGraphics();
+
+		render();
 	}
 
 	public List(String title, int listType, String[] stringElements, Image[] imageElements)
@@ -57,11 +59,15 @@ public class List extends Screen implements Choice
 		for(int i=0; i<stringElements.length; i++)
 		{
 			strings.add(stringElements[i]);
-			images.add(imageElements[i]);
+			if(i<images.size())
+			{
+				images.add(imageElements[i]);
+			}	
 		}
 
 		platformImage = new PlatformImage(width, height);
 		gc = platformImage.getGraphics();
+		render();
 	}
 
 	public int append(String stringPart, Image imagePart)
@@ -128,6 +134,7 @@ public class List extends Screen implements Choice
 		{
 			selectedItem = 0;
 		}
+		render();
 	}
 
 	//void setTicker(Ticker ticker)
@@ -171,12 +178,24 @@ public class List extends Screen implements Choice
 
 	private void doLeftCommand()
 	{
-
+		if(commands.size()>1)
+		{
+			if(commandlistener!=null)
+			{
+				commandlistener.commandAction(commands.get(1), this);
+			}
+		}
 	}
 
 	private void doRightCommand()
 	{
-
+		if(commands.size()>2)
+		{
+			if(commandlistener!=null)
+			{
+				commandlistener.commandAction(commands.get(2), this);
+			}
+		}
 	}
 
 	private void render()
@@ -204,7 +223,7 @@ public class List extends Screen implements Choice
 			
 			if(strings.size()<max) { max = strings.size(); }
 			
-			page = (int)Math.floor(selectedItem/strings.size()); // current page
+			page = (int)Math.floor(selectedItem/max); // current page
 
 			int first = page * max; // first item to show
 			
@@ -215,12 +234,13 @@ public class List extends Screen implements Choice
 				{
 					gc.fillRect(0,y,width,15);
 					gc.setColor(0xFFFFFF);
-					gc.drawString(strings.get(first+i), width/2, y, Graphics.HCENTER);
-					gc.setColor(0x000000);
 				}
-				else
+				gc.drawString(strings.get(first+i), width/2, y, Graphics.HCENTER);
+				gc.setColor(0x000000);
+
+				if((first+i)<images.size())
 				{
-					gc.drawString(strings.get(first+i), width/2, y, Graphics.HCENTER);
+					gc.drawImage(images.get(first+i), 0, y, Graphics.LEFT);
 				}
 				y+=15;
 			}
@@ -229,13 +249,19 @@ public class List extends Screen implements Choice
 		switch(commands.size())
 		{
 			case 0: break;
-			case 1: break;
+			case 1:
+				gc.drawString(""+(selectedItem+1)+" of "+strings.size(), width/2, height-17, Graphics.HCENTER);
+				break;
 			case 2:
 				gc.drawString(commands.get(1).getLabel(), 3, height-17, Graphics.LEFT);
+				break;
 			default:
 				gc.drawString(commands.get(1).getLabel(), 3, height-17, Graphics.LEFT);
 				gc.drawString(commands.get(2).getLabel(), width-3, height-17, Graphics.RIGHT);
 		}
-		Mobile.getPlatform().repaint(platformImage, 0, 0, width, height);
+		if(this.getDisplay().getCurrent() == this)
+		{
+			Mobile.getPlatform().repaint(platformImage, 0, 0, width, height);
+		}
 	}
 }
