@@ -17,6 +17,8 @@
 
 package com.nokia.mid.m3d;
 
+import javax.microedition.lcdui.Graphics;
+
 public class M3D
 {
 	public M3D() { }
@@ -24,6 +26,8 @@ public class M3D
 	public static M3D createInstance() { return new M3D(); }
 
 	public void setupBuffers(int a, int b, int c) {  }
+
+	public void color4ub(byte a, byte b, byte c, byte d) {  }
 
 	public void clearColor4ub(byte a, byte b, byte c, byte d) {  }
 
@@ -39,5 +43,34 @@ public class M3D
 
 	public void enableClientState(int a) {  }
 
+	public void loadIdentity() {  }
+
+	public void clear(int a) {  }
+
+	public void scalexi(int a, int b, int c) {  }
+
+	public void translatexi(int a, int b, int c) {  }
+
+	public void vertexPointerub(int a, int b, byte[] c) {  }
+
+	public void drawArrays(int a, int b, int c) {  }
+
+	public void rotatexi(int a, int b, int c, int d) {  }
+
+	public void pushMatrix() {  }
+
+	public void drawElementsub(int a, int b, byte[] c) {  }
+
+	public void popMatrix() {  }
+
+	public void bindTexture(int a, Texture b) {  }
+
+	public void texCoordPointerub(int a, int b, byte[] c) {  }
+
+	public void disableClientState(int a) {  }
+
+	public void disable(int a) {  }
+
+	public void blit(Graphics a, int b, int c, int d, int e) {  }
 
 }
