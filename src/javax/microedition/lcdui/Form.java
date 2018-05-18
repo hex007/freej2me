@@ -22,7 +22,7 @@ import java.util.ArrayList;
 public class Form extends Screen
 {
 
-	ArrayList<Item> items;
+	ArrayList<Item> items = new ArrayList<Item>();
 
 	ItemStateListener listener;
 

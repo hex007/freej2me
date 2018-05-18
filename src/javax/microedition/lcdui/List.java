@@ -16,9 +16,11 @@
 */
 package javax.microedition.lcdui;
 
+import org.recompile.mobile.Mobile;
+import org.recompile.mobile.PlatformImage;
+import org.recompile.mobile.PlatformGraphics;
+
 import java.util.ArrayList;
-
-
 
 public class List extends Screen implements Choice
 {
@@ -34,11 +36,17 @@ public class List extends Screen implements Choice
 
 	private int type;
 
+	private int selectedItem = -1;
+
+	private Graphics gc;
 
 	public List(String title, int listType)
 	{
 		setTitle(title);
 		type = listType;
+
+		platformImage = new PlatformImage(width, height);
+		gc = platformImage.getGraphics();
 	}
 
 	public List(String title, int listType, String[] stringElements, Image[] imageElements)
@@ -51,19 +59,27 @@ public class List extends Screen implements Choice
 			strings.add(stringElements[i]);
 			images.add(imageElements[i]);
 		}
+
+		platformImage = new PlatformImage(width, height);
+		gc = platformImage.getGraphics();
 	}
 
 	public int append(String stringPart, Image imagePart)
 	{ 
-			System.out.println("List append string, image: "+stringPart);
 			strings.add(stringPart);
 			images.add(imagePart);
+			render();
 			return strings.size()-1;
 	}
 
-	public void delete(int elementNum) { strings.remove(elementNum); images.remove(elementNum); }
+	public void delete(int elementNum)
+	{
+		strings.remove(elementNum);
+		images.remove(elementNum);
+		render();
+	}
 
-	public void deleteAll() { strings.clear(); images.clear(); }
+	public void deleteAll() { strings.clear(); images.clear(); render(); }
 
 	public int getFitPolicy() { return fitPolicy; }
 
@@ -73,7 +89,7 @@ public class List extends Screen implements Choice
 	
 	public int getSelectedFlags(boolean[] selectedArray_return) { return 0; }
 
-	public int getSelectedIndex() { return 0; }
+	public int getSelectedIndex() { return selectedItem; }
 
 	public String getString(int elementNum) { return strings.get(elementNum); }
 
@@ -81,9 +97,10 @@ public class List extends Screen implements Choice
 	{
 		strings.add(elementNum, stringPart);
 		images.add(elementNum, imagePart);
+		render();
 	}
 
-	public boolean isSelected(int elementNum) { return false; }
+	public boolean isSelected(int elementNum) { return elementNum==selectedItem; }
 
 	public void removeCommand(Command cmd) { super.removeCommand(cmd); }
 
@@ -101,11 +118,124 @@ public class List extends Screen implements Choice
  
 	public void setSelectedFlags(boolean[] selectedArray) { }
 
-	public void setSelectedIndex(int elementNum, boolean selected) { }
+	public void setSelectedIndex(int elementNum, boolean selected)
+	{
+		if(selected == true)
+		{
+			selectedItem = elementNum;
+		}
+		else
+		{
+			selectedItem = 0;
+		}
+	}
 
 	//void setTicker(Ticker ticker)
 	
 	//void setTitle(String s)
 
 	public int size() { return strings.size(); }
+
+	/*
+		Draw list, handle input
+	*/
+
+	public void keyPressed(int key)
+	{
+		if(strings.size()<1) { return; }
+		switch(key)
+		{
+			case Mobile.KEY_NUM2: selectedItem--; break;
+			case Mobile.KEY_NUM8: selectedItem++; break;
+			case Mobile.NOKIA_UP: selectedItem--; break;
+			case Mobile.NOKIA_DOWN: selectedItem++; break;
+			case Mobile.NOKIA_SOFT1: doLeftCommand(); break;
+			case Mobile.NOKIA_SOFT2: doRightCommand(); break;
+			case Mobile.KEY_NUM5: doDefaultCommand(); break;
+		}
+		if (selectedItem>=strings.size()) { selectedItem=0; }
+		if (selectedItem<0) { selectedItem = 0; }
+		render();
+	}
+
+	private void doDefaultCommand()
+	{
+		if(SELECT_COMMAND!=null)
+		{
+			if(commandlistener!=null)
+			{
+				commandlistener.commandAction(SELECT_COMMAND, this);
+			}
+		}
+	}
+
+	private void doLeftCommand()
+	{
+
+	}
+
+	private void doRightCommand()
+	{
+
+	}
+
+	private void render()
+	{
+		// platformImage
+		
+		// Draw Background:
+		gc.setColor(0xFFFFFF);
+		gc.fillRect(0,0,width,height);
+		gc.setColor(0x000000);
+		
+		// Draw Title:
+		gc.drawString(title, width/2, 2, Graphics.HCENTER);
+		gc.drawLine(0, 20, width, 20);
+		gc.drawLine(0, height-20, width, height-20);
+
+		if(strings.size()>0)
+		{
+			if(selectedItem<0) { selectedItem = 0; }
+			// Draw list items //
+			int ah = height - 50; // allowed height
+			int max = (int)Math.floor(ah / 15); // max items per page
+			if (max==0) { max = 1; }
+			int page = 0;
+			
+			if(strings.size()<max) { max = strings.size(); }
+			
+			page = (int)Math.floor(selectedItem/strings.size()); // current page
+
+			int first = page * max; // first item to show
+			
+			int y = 25;
+			for(int i=0; i<max; i++)
+			{	
+				if(selectedItem == (first+i))
+				{
+					gc.fillRect(0,y,width,15);
+					gc.setColor(0xFFFFFF);
+					gc.drawString(strings.get(first+i), width/2, y, Graphics.HCENTER);
+					gc.setColor(0x000000);
+				}
+				else
+				{
+					gc.drawString(strings.get(first+i), width/2, y, Graphics.HCENTER);
+				}
+				y+=15;
+			}
+		}
+		// Draw Commands
+		switch(commands.size())
+		{
+			case 0: break;
+			case 1: break;
+			case 2:
+				gc.drawString(commands.get(1).getLabel(), 3, height-17, Graphics.LEFT);
+			default:
+				gc.drawString(commands.get(1).getLabel(), 3, height-17, Graphics.LEFT);
+				gc.drawString(commands.get(2).getLabel(), width-3, height-17, Graphics.RIGHT);
+		}
+		Mobile.getPlatform().repaint(platformImage, 0, 0, width, height);
+	}
 }

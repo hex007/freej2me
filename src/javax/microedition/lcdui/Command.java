@@ -28,13 +28,13 @@ public class Command
 	public static final int EXIT = 7;
 	public static final int ITEM = 8;
 
-	String label;
+	private String label;
 
-	String shortLabel;
+	private String shortLabel;
 
-	int type;
+	private int type;
 
-	int priority;
+	private int priority;
 
 
 	public Command(String text, int cmdType, int cmdPriority)

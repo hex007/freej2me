@@ -27,9 +27,9 @@ public class ChoiceGroup extends Item implements Choice
 
     private int type;
 
-	private ArrayList<String> strings;
+	private ArrayList<String> strings = new ArrayList<String>();
 
-	private ArrayList<Image> images;
+	private ArrayList<Image> images = new ArrayList<Image>();
 
 	private int fitPolicy;
 
