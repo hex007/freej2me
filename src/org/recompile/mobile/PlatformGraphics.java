@@ -354,10 +354,35 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		
 		int[] Type1 = {0xFFFFFFFF, 0xFF000000, 0, 0};
 		int c = 0;
+		int[] data;
+		BufferedImage temp;
 		switch(format)
 		{
+			case -1: // TYPE_BYTE_1_GRAY_VERTICAL // used by Monkiki's Castles
+				
+				data = new int[pixels.length*8];
+				int rows = (int)Math.ceil(height/8);
+				int b = 0;
+				for (int row=0; row<rows; row++)
+				{
+					for(int col=0; col<width; col++)
+					{
+						for(int i=0; i<8; i++)
+						{
+							c = ((pixels[b]>>i)&1);
+							if(transparencyMask!=null) { c += 2*((transparencyMask[b]>>i)&1); }
+							data[b+(width*i)] = Type1[c];
+						}
+						b++;
+					}
+				}
+				temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+				temp.setRGB(0, 0, width, height, data, offset, scanlength);
+				drawImage(manipulateImage(temp, manipulation), x, y);
+			break;
+
 			case 1: // TYPE_BYTE_1_GRAY // used by Monkiki's Castles
-				int[] data = new int[pixels.length*8];
+				data = new int[pixels.length*8];
 
 				for(int i=0; i<pixels.length; i++)
 				{
@@ -368,7 +393,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 						data[(i*8)+(7-j)] = Type1[c];
 					}
 				}
-				BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+				temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 				temp.setRGB(0, 0, width, height, data, offset, scanlength);
 				drawImage(manipulateImage(temp, manipulation), x, y);
 			break;
