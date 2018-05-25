@@ -235,13 +235,19 @@ public class List extends Screen implements Choice
 					gc.fillRect(0,y,width,15);
 					gc.setColor(0xFFFFFF);
 				}
-				gc.drawString(strings.get(first+i), width/2, y, Graphics.HCENTER);
-				gc.setColor(0x000000);
-
-				if((first+i)<images.size())
+				
+				try
 				{
-					gc.drawImage(images.get(first+i), 0, y, Graphics.LEFT);
+					gc.drawString(strings.get(first+i), width/2, y, Graphics.HCENTER);
+					gc.setColor(0x000000);
+					
+					if(images.get(first+i)!=null)
+					{
+						gc.drawImage(images.get(first+i), 0, y, Graphics.LEFT);
+					}	
 				}
+				catch (Exception e) { }
+				
 				y+=15;
 			}
 		}
@@ -263,5 +269,10 @@ public class List extends Screen implements Choice
 		{
 			Mobile.getPlatform().repaint(platformImage, 0, 0, width, height);
 		}
+	}
+
+	public void notifySetCurrent()
+	{
+		render();
 	}
 }

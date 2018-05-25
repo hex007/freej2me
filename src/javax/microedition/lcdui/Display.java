@@ -133,7 +133,8 @@ public class Display
 		{
 			current = next;
 			Mobile.getPlatform().flushGraphics(current.platformImage, 0,0, current.width, current.height);
-			System.out.println("Set Current "+current.width+", "+current.height);
+			current.notifySetCurrent();
+			//System.out.println("Set Current "+current.width+", "+current.height);
 		}
 		catch (Exception e)
 		{

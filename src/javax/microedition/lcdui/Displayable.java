@@ -26,18 +26,18 @@ public abstract class Displayable
 {
 
 	public PlatformImage platformImage;
-	
+
 	public int width = 0;
 
 	public int height = 0;
 
 	public boolean fullScreen = false;
 	
-	private String title = "";
+	protected String title = "";
 
-	private ArrayList<Command> commands = new ArrayList<Command>();
+	protected ArrayList<Command> commands = new ArrayList<Command>();
 
-	private CommandListener commandlistener;
+	protected CommandListener commandlistener;
 
 	public Ticker ticker;
 
@@ -89,5 +89,7 @@ public abstract class Displayable
 	public void pointerDragged(int x, int y) { }
 	public void pointerPressed(int x, int y) { }
 	public void pointerReleased(int x, int y) { }
+
+	public void notifySetCurrent() { }
 
 }

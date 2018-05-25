@@ -209,4 +209,9 @@ public class Form extends Screen
 		}
 	}
 
+	public void notifySetCurrent()
+	{
+		render();
+	}
+
 }
