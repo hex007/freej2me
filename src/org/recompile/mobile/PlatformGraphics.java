@@ -56,6 +56,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		clipWidth = canvas.getWidth();
 		clipHeight = canvas.getHeight();
 
+		setColor(0,0,0);
 		gc.setBackground(new Color(0, 0, 0, 0));
 		gc.setFont(font.platformFont.awtFont);
 	}
@@ -104,8 +105,8 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 	{
 		try
 		{
-			int imgWidth = image.platformImage.width;
-			int imgHeight = image.platformImage.height;
+			int imgWidth = image.getWidth();
+			int imgHeight = image.getHeight();
 
 			x = AnchorX(x, imgWidth, anchor);
 			y = AnchorY(y, imgHeight, anchor);
@@ -114,13 +115,20 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		}
 		catch (Exception e)
 		{
-			//System.out.println("drawImage A:"+e.getMessage());
+			System.out.println("drawImage A:"+e.getMessage());
 		}
 	}
 
 	public void drawImage(Image image, int x, int y)
 	{
-		gc.drawImage(image.platformImage.getCanvas(), x, y, null);
+		try
+		{
+			gc.drawImage(image.platformImage.getCanvas(), x, y, null);	
+		}
+		catch (Exception e)
+		{
+			System.out.println("drawImage B:"+e.getMessage());
+		}
 	}
 
 	public void drawImage(BufferedImage image, int x, int y)
@@ -132,7 +140,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		}
 		catch (Exception e)
 		{
-			//System.out.println("drawImage B:"+e.getMessage());
+			System.out.println("drawImage C:"+e.getMessage());
 		}
 	}
 
@@ -326,6 +334,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 			Nokia Direct Graphics
 		****************************
 	*/
+	// http://www.j2megame.org/j2meapi/Nokia_UI_API_1_1/com/nokia/mid/ui/DirectGraphics.html
 
 	private int colorAlpha;
 
@@ -352,7 +361,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 	{
 		//System.out.println("drawPixels A"); // Found In Use
 		
-		int[] Type1 = {0xFFFFFFFF, 0xFF000000, 0, 0};
+		int[] Type1 = {0xFFFFFFFF, 0xFF000000, 0x00FFFFFF, 0x00000000};
 		int c = 0;
 		int[] data;
 		BufferedImage temp;
@@ -360,40 +369,39 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		{
 			case -1: // TYPE_BYTE_1_GRAY_VERTICAL // used by Monkiki's Castles
 				data = new int[pixels.length*8];
-				int rows = (int)Math.ceil(height/8);
-				int b = 0;
-				for (int row=0; row<rows; row++)
+				int row = 0;
+				int col = 0;
+				for(int b = (offset/8); b<pixels.length; b++)
 				{
-					for(int col=0; col<width; col++)
+					for(int j=0; j<8; j++)
 					{
-						for(int i=0; i<8; i++)
-						{
-							c = ((pixels[b]>>i)&1);
-							if(transparencyMask!=null) { c += 2*((transparencyMask[b]>>i)&1); }
-							data[b+(width*i)] = Type1[c];
-						}
-						b++;
+						c = ((pixels[b]>>j)&1);
+						if(transparencyMask!=null) { c |= (((transparencyMask[b]>>j)&1)^1)<<1; }
+						data[((row+j)*width)+col] = Type1[c];
 					}
+					col++;
+					if(col==width) { col=0; row+=8; }
 				}
+
 				temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-				temp.setRGB(0, 0, width, height, data, offset, scanlength);
+				temp.setRGB(0, 0, width, height, data, 0, scanlength);
 				drawImage(manipulateImage(temp, manipulation), x, y);
 			break;
 
 			case 1: // TYPE_BYTE_1_GRAY // used by Monkiki's Castles
 				data = new int[pixels.length*8];
 
-				for(int i=0; i<pixels.length; i++)
+				for(int i=(offset/8); i<pixels.length; i++)
 				{
 					for(int j=7; j>=0; j--)
 					{
 						c = ((pixels[i]>>j)&1);
-						if(transparencyMask!=null) { c += 2*((transparencyMask[i]>>j)&1); }
+						if(transparencyMask!=null) { c |= (((transparencyMask[i]>>j)&1)^1)<<1; }
 						data[(i*8)+(7-j)] = Type1[c];
 					}
 				}
 				temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-				temp.setRGB(0, 0, width, height, data, offset, scanlength);
+				temp.setRGB(0, 0, width, height, data, 0, scanlength);
 				drawImage(manipulateImage(temp, manipulation), x, y);
 			break;
 
@@ -503,7 +511,8 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		switch(format)
 		{
 			case DirectGraphics.TYPE_USHORT_1555_ARGB:
-				a = (c>>15) & 0x01; r = (c>>10) & 0x1F; g = (c>>5) & 0x1F; b = c & 0x1F;
+				a = ((c>>15) & 0x01)*0xFF;
+				r = (c>>10) & 0x1F; g = (c>>5) & 0x1F; b = c & 0x1F;
 				r = (r<<3)|(r>>2); g = (g<<3)|(g>>2); b = (b<<3)|(b>>2);
 				break;
 			case DirectGraphics.TYPE_USHORT_444_RGB:

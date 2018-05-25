@@ -50,6 +50,7 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 	protected void createGraphics()
 	{
 		gc = new PlatformGraphics(this);
+		gc.setColor(0x000000);
 	}
 
 	public PlatformImage(int Width, int Height)
@@ -63,6 +64,7 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 
 		gc.setColor(0xFFFFFF);
 		gc.fillRect(0, 0, width, height);
+		gc.setColor(0x000000);
 
 		platformImage = this;
 	}
