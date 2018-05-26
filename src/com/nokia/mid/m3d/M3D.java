@@ -26,18 +26,24 @@ import javax.microedition.lcdui.Graphics;
 public class M3D
 {
 	private double[] matrix = new double[16];
-	
-	private double[] transm = new double[16];
 
 	private double[] scalem = new double[16];
-	
-	private double[] q1m = new double[16];
-
-	private double[] q2m = new double[16];
 
 	private double[] stackm = new double[16];
+
+	private double[] transm = new double[16];
+
+	private double[] rotm   = new double[16];
+	
+	private double[] stackr = new double[16];
+	
+	private double[] stackt = new double[16];
 	
 	private double[] tempm = new double[16];
+
+	private double[] tempr = new double[16];
+
+	private double[] tempt = new double[16];
 
 	private int width;
 
@@ -49,236 +55,257 @@ public class M3D
 	private PlatformImage platformImage;
 	private PlatformGraphics gc;
 
+	private int color = 0xFF000000;
+	private int clearcolor = 0xFFFFFFFF;
+
+
 	private M3D() {  }
 
 	public static M3D createInstance()
 	{
-		//System.out.println("CREATE M3D");
 		return new M3D();
 	}
 
 
 	public void setupBuffers(int a, int displayWidth, int displayHeight)
 	{
-		// a == 33 max faces?
+		// a == flags c.c (init?) passes 0x20 | 0x1
 
 		width = displayWidth;
 		height = displayHeight;
 		platformImage = new PlatformImage(width, height);
 		gc = platformImage.getGraphics();
 	}
-	public void removeBuffers() {  }
 
-	public void cullFace(int a) {  }
+	public void removeBuffers() {  } // runs only on app shutdown
+
+	public void cullFace(int a) {  } // guessing front or back facing? set to 1029
 
 	public void viewport(int a, int b, int c, int d) {  }
 
-	public void clear(int a)
+	public void clear(int a) // what is a? c.z (Get Ready) passes 0x4100 (16640)
 	{
-		//System.out.println("clear();");
-		gc.setColor(0xFFFFFF);
+		////System.out.println("clear();");
+		gc.setColor(clearcolor);
 		gc.fillRect(0, 0, width, height);
-		gc.setColor(0x000000);
+		gc.setColor(color);
+		identity(matrix);
 	}
 
 
-	public void matrixMode(int a) {  }
+	public void matrixMode(int mode)
+	{
+		//System.out.println("matrixMode("+mode+");");
+		// mode is 5889 for frustrum, 5888 , 
+	}
 
 	public void loadIdentity()
 	{
 		identity(matrix);
 	}
 
-	public void frustumxi(int a, int b, int c, int d, int e, int f)
+	public void frustumxi(int a, int b, int c, int d, int near, int far)
 	{
-		//System.out.println("frustrumxi("+a+", "+b+", "+c+", "+d+", "+e+", "+f+");");
+		//System.out.println("frustrumxi("+a+", "+b+", "+c+", "+d+", "+near+", "+far+");");
+
+		// c.c: bu.frustumxi(-bp << 11, bp << 11, -bo << 11, bo << 11, 196608, 65536000);
 	}
 
-	public void scalexi(int a, int b, int c)
+	public void scalexi(int x, int y, int z)
 	{ 
-		//System.out.println("scalexi("+a+", "+b+", "+c+");");
+		//System.out.println("scalexi("+x+", "+y+", "+z+");");
 	}
 
-	public void translatexi(int x, int y, int z)
+	public void translatexi(int x, int y, int z) // This seems to work correctly
 	{
 		//System.out.println("translatexi("+x+", "+y+", "+z+");");
 		x = (x/65536);
 		y = (y/65536);
 		z = (z/65536);
-		transm[0]  = 1; transm[1]  = 0; transm[2]  = 0; transm[3]  = 0;
-		transm[4]  = 0; transm[5]  = 1; transm[6]  = 0; transm[7]  = 0;
-		transm[8]  = 0; transm[9]  = 0; transm[10] = 1; transm[11] = 0;
-		transm[12] = x; transm[13] = y; transm[14] = z; transm[15] = 1;
+		tempt[0]  = 1; tempt[1]  = 0; tempt[2]  = 0; tempt[3]  = 0;
+		tempt[4]  = 0; tempt[5]  = 1; tempt[6]  = 0; tempt[7]  = 0;
+		tempt[8]  = 0; tempt[9]  = 0; tempt[10] = 1; tempt[11] = 0;
+		tempt[12] = x; tempt[13] = y; tempt[14] = z; tempt[15] = 1;
 
-		matmul(matrix, transm);
+		clone(transm, tempt);
 	}
 
-	public void rotatexi(int X, int Y, int Z, int W) // quaternion? 
+	public void rotatexi(int Y, int Z, int X, int W) // probably not a quaternion 
 	{
-		//System.out.println("rotatexi("+x+", "+y+", "+z+", "+w+");");
-		double x = X/65536;
-		double y = Y/65536;
-		double z = Z/65536;
-		double w = W/65536;
+		//System.out.println("rotatexi("+Y+", "+Z+", "+X+", "+W+");");
+		// 1 degree = 0.0174533 rad
+		// from d:1343 rotatexi(1310720, 65536, 0, 0);
+		// from d:1347 rotatexi(c0, 65536, 0, 0);
+		// from d:1354 rotatexi(cx * 90, 0, 65536, 0);
 
-		// normalize //
-		double l = Math.sqrt(x*x + y*y + z*z + w*w);
-		x = x/l;
-		y = y/l;
-		z = z/l;
-		w = w/l;
+		double x = (X/65536)*0.0174533;
+		double y = (Y/65536)*0.0174533;
+		double z = (Z/65536)*0.0174533;
 
-		// quat to mat4
-		q1m[0]  =  w; q1m[1]  =  z; q1m[2]  =  y; q1m[3]  =  x;
-		q1m[4]  = -z; q1m[5]  =  w; q1m[6]  =  x; q1m[7]  =  y;
-		q1m[8]  =  y; q1m[9]  = -x; q1m[10] =  w; q1m[11] =  z;
-		q1m[12] = -x; q1m[13] = -y; q1m[14] = -z; q1m[15] =  w;
+		/*
+		// rotate on x
+		q1m[0]  =  1; q1m[1]  =  0;            q1m[2]  =  0;           q1m[3]  =  0;
+		q1m[4]  =  0; q1m[5]  =  Math.cos(x);  q1m[6]  =  Math.sin(x); q1m[7]  =  0;
+		q1m[8]  =  0; q1m[9]  = -Math.sin(x);  q1m[10] =  Math.cos(x); q1m[11] =  0;
+		q1m[12] =  0; q1m[13] =  0;            q1m[14] =  0;           q1m[15] =  1;
+		matmul(matrix, q1m);
+		*/
 
-		q2m[0]  =  w; q2m[1]  =  z; q2m[2]  = -y; q2m[3]  = -x;
-		q2m[4]  = -z; q2m[5]  =  w; q2m[6]  =  x; q2m[7]  = -y;
-		q2m[8]  =  y; q2m[9]  = -x; q2m[10] =  w; q2m[11] = -z;
-		q2m[12] =  x; q2m[13] =  y; q2m[14] =  z; q2m[15] =  w;
+		// rotate on y
+		tempr[0]  =  Math.cos(y); tempr[1]  =  0; tempr[2]  = -Math.sin(y); tempr[3]  =  0;
+		tempr[4]  =  0;           tempr[5]  =  1; tempr[6]  =  0;           tempr[7]  =  0;
+		tempr[8]  =  Math.sin(y); tempr[9]  =  0; tempr[10] =  Math.cos(y); tempr[11] =  0;
+		tempr[12] =  0;           tempr[13] =  0; tempr[14] =  0;           tempr[15] =  1;
+		clone(rotm, tempr);
 
-		matmul(q1m, q2m);
-		//matmul(matrix, q1m);
+		/*
+		// rotate on z
+		q1m[0]  =  Math.cos(z); q1m[1]  =  Math.sin(z); q1m[2]  =  0; q1m[3]  =  0;
+		q1m[4]  = -Math.sin(z); q1m[5]  =  Math.cos(z); q1m[6]  =  0; q1m[7]  =  0;
+		q1m[8]  =  0;           q1m[9]  =  0;           q1m[10] =  1; q1m[11] =  0;
+		q1m[12] =  0;           q1m[13] =  0;           q1m[14] =  0; q1m[15] =  1;
+		matmul(matrix, q1m);
+		*/
 	}
 
-	public void pushMatrix()
+	public void pushMatrix() // game doesn't seem to push more than one thing at a time
 	{ 
 		//System.out.println("pushMatrix();");
-		clone(stackm, matrix);
+		//clone(stackm, matrix);
+		clone(stackr, rotm);
+		clone(stackt, transm);
 	}
 
 	public void popMatrix()
 	{
 		//System.out.println("popMatrix();");
-		clone(matrix, stackm);
+		//clone(matrix, stackm);
+		clone(rotm, stackr);
+		clone(transm, stackt);
 	}
 
 	
-	public void vertexPointerub(int a, int b, byte[] c)
+	public void vertexPointerub(int a, int b, byte[] vertices) 
 	{
-		/*
-		System.out.print("vertexPointerub("+a+", "+b+", [ ");
-		for(int i=0; i<c.length; i++)
-		{
-			System.out.print(""+((int)c[i])+", ");
-		}
-		System.out.println("]); // "+a+", "+b+", len "+c.length);
-		*/
+		//System.out.println("vertexPointerub");
 
-		for(int i=0; i<c.length; i++)
+		for(int i=0; i<vertices.length; i++)
 		{
-			verts[i] = c[i];
+			verts[i] = vertices[i];
 		}
-		vertCount = c.length;
+		vertCount = vertices.length;
 	}
 
-	public void color4ub(byte a, byte b, byte c, byte d) {  }
+	public void color4ub(byte r, byte g, byte b, byte a)
+	{
+		color = ((r&0xFF)<<16) | ((g&0xFF)<<8) | (b&0xFF);
+	}
 
-	public void clearColor4ub(byte a, byte b, byte c, byte d) {  }
+	public void clearColor4ub(byte r, byte g, byte b, byte a)
+	{
+		clearcolor = ((r&0xFF)<<16) | ((g&0xFF)<<8) | (b&0xFF);
+	}
 
 	
-	public void drawElementsub(int a, int b, byte[] c)
+	public void drawElementsub(int a, int b, byte[] faces)
 	{
-		/*
-		System.out.print("drawElements("+a+", "+b+", [ ");
-		for(int i=0; i<c.length; i++)
-		{
-			System.out.print(""+((int)c[i])+", ");
-		}
-		System.out.println("]); // "+a+", "+b+", len "+c.length);
-		*/
+		gc.setColor(color);
+		
+		//System.out.println("drawElementsub");
 
 		double x, y, z, theta;
-		for(int i=0; i<verts.length; i+=3)
-		{
-			x = verts[i];
-			y = verts[i+1]; 
-			z = verts[i+2];
-			verts[i]   = x*matrix[0] + y*matrix[4] + z*matrix[8]  + matrix[12];
-			verts[i+1] = x*matrix[1] + y*matrix[5] + z*matrix[9]  + matrix[13];
-			verts[i+2] = x*matrix[2] + y*matrix[6] + z*matrix[10] + matrix[14]; 
-		}
+
+		identity(matrix);
+		matmul(matrix, rotm);
+		matmul(matrix, transm);
+		matmul(matrix, stackt);
+		matmul(matrix, stackr);
+		applyMatrix(matrix);
 
 		for(int i=0; i<vertCount; i+=3)
 		{
 			x = verts[i];
 			y = verts[i+1]; 
 			z = verts[i+2];
-			verts[i] *=0.25;
-			verts[i+1]*=0.25; 
-			verts[i+2]*=0.25;
-			//theta = 4;
-			//verts[i+1] = y*Math.cos(theta) - z*Math.sin(theta);
-			//verts[i+2] = y*Math.sin(theta) + z*Math.cos(theta); 
+			verts[i] *=0.45;
+			verts[i+1]*=0.45; 
+			verts[i+2]*=0.45;
 		}
 
 		// draw elements
-		double x1, y1, z1, x2, y2, z2, x3, y3, z3;
-		for(int i=0; i<c.length; i+=3)
+		int x1, y1, z1, x2, y2, z2, x3, y3, z3;
+		x1=0; y1=0; z1=0;
+		for(int i=0; i<faces.length; i+=3)
 		{
-			x1 = verts[(c[i]*3)];
-			y1 = verts[(c[i]*3)+1];
-			z1 = verts[(c[i]*3)+2];
+			x1 = (int)verts[(faces[i]*3)];
+			y1 = (int)verts[(faces[i]*3)+1];
+			z1 = (int)verts[(faces[i]*3)+2];
 
-			x2 = verts[(c[i+1]*3)];
-			y2 = verts[(c[i+1]*3)+1];
-			z2 = verts[(c[i+1]*3)+2];
+			x2 = (int)verts[(faces[i+1]*3)];
+			y2 = (int)verts[(faces[i+1]*3)+1];
+			z2 = (int)verts[(faces[i+1]*3)+2];
+			
+			x3 = (int)verts[(faces[i+2]*3)];
+			y3 = (int)verts[(faces[i+2]*3)+1];
+			z3 = (int)verts[(faces[i+2]*3)+2];
+			
+			int ox = 50;
+			int oy = 30;
+			x1 = x1+ox;
+			x2 = x2+ox;
+			x3 = x3+ox;
+			y1 = z1+oy;
+			y2 = z2+oy;
+			y3 = z3+oy;
 
-			x3 = verts[(c[i+2]*3)];
-			y3 = verts[(c[i+2]*3)+1];
-			z3 = verts[(c[i+2]*3)+2];
-
-			int tx=30; int ty=30; int tz=30;
-
-			gc.drawLine((int)x1+tx, (int)z1+tz, (int)x2+tx, (int)z2+tz);
-			gc.drawLine((int)x2+tx, (int)z2+tz, (int)x3+tx, (int)z3+tz);
-			gc.drawLine((int)x3+tx, (int)z3+tz, (int)x1+tx, (int)z1+tz);
+			gc.fillTriangle(x1, y1, x2, y2, x3, y3, color);
+			gc.drawTriangle(x1, y1, x2, y2, x3, y3, 0);
+			
 		}
+		//System.out.println("one of em: "+x1+", "+z1);
 	}
 
-	public void drawArrays(int a, int b, int c)
+	public void drawArrays(int a, int b, int c)  // called after clear -- background?
 	{
-		//System.out.println("drawArrays("+a+", "+b+", "+c+");");
+		//System.out.println("drawArrays");
 	}
 
 
 	public void bindTexture(int a, Texture b)
 	{
-		//System.out.println("bindTexture("+a+");");
+		//System.out.println("bindTexture");
 	}
 
-	public void texCoordPointerub(int a, int b, byte[] c)
+	public void texCoordPointerub(int a, int b, byte[] UVs)
 	{
-		/*
-		System.out.print("texCoords("+a+", "+b+", [ ");
-		for(int i=0; i<c.length; i++)
-		{
-			System.out.print(""+((int)c[i])+", ");
-		}
-		System.out.println("]); // "+a+", "+b+", len "+c.length);
-		*/
+		//System.out.println("texCoordPointerub");
 	}
 
 
-	public void enableClientState(int a) {  }
-
-	public void disableClientState(int a) {  }
-
-	public void enable(int a) {  }
-
-	public void disable(int a) {  }
-
-	public void blit(Graphics a, int b, int c, int d, int e)
+	public void enableClientState(int flags)
 	{
-		//System.out.println("blit("+b+", "+c+", "+d+", "+e+");");
-		a.drawImage(platformImage, 0, 0, Graphics.LEFT|Graphics.TOP);
-		//g.drawLine(0,0,96,65);
-		//for(int i=0; i<65; i++)
-		//{
-		//	g.drawLine(0,i,96,i);
-		//}
+		//System.out.println("enableClientState("+flags+")");
+	}
+
+	public void disableClientState(int flags)
+	{
+		//System.out.println("disableClientState("+flags+")");
+	}
+
+	public void enable(int feature)
+	{
+		//System.out.println("enable("+feature+")");
+	}
+
+	public void disable(int feature)
+	{
+		//System.out.println("disable("+feature+")");
+	}
+
+	public void blit(Graphics g, int x, int y, int w, int h) // 0, 0, 95, 65
+	{
+		//System.out.println("blit("+x+", "+y+", "+w+", "+h+");");
+		g.drawImage(platformImage, x, y, Graphics.LEFT|Graphics.TOP);
 	}
 
 
@@ -322,5 +349,16 @@ public class M3D
 
 		clone(m1, tempm);
 	}
-
+	void applyMatrix(double[] m)
+	{
+		for(int i=0; i<vertCount; i+=3)
+		{	
+			double x = verts[i];
+			double y = verts[i+1]; 
+			double z = verts[i+2];
+			verts[i]   = x*m[0] + y*m[4] + z*m[8]  + m[12];
+			verts[i+1] = x*m[1] + y*m[5] + z*m[9]  + m[13];
+			verts[i+2] = x*m[2] + y*m[6] + z*m[10] + m[14]; 
+		}
+	}
 }
