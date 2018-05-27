@@ -2,3 +2,4 @@ build/
 *.o
 *.so
 src/sdl2/sdl_interface
+config/
