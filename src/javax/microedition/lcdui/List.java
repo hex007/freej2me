@@ -101,8 +101,22 @@ public class List extends Screen implements Choice
 
 	public void insert(int elementNum, String stringPart, Image imagePart)
 	{
-		strings.add(elementNum, stringPart);
-		images.add(elementNum, imagePart);
+		if(elementNum<strings.size() && elementNum>0)
+		{
+			try
+			{
+				strings.add(elementNum, stringPart);
+				images.add(elementNum, imagePart);
+			}
+			catch(Exception e)
+			{
+				append(stringPart, imagePart);
+			} 
+		}
+		else
+		{
+			append(stringPart, imagePart);
+		}
 		render();
 	}
 
