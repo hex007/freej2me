@@ -45,6 +45,8 @@ public class M3D
 
 	private double[] tempt = new double[16];
 
+	private double[] projm = new double[16];
+
 	private int width;
 
 	private int height;
@@ -67,9 +69,9 @@ public class M3D
 	}
 
 
-	public void setupBuffers(int a, int displayWidth, int displayHeight)
+	public void setupBuffers(int flags, int displayWidth, int displayHeight)
 	{
-		// a == flags c.c (init?) passes 0x20 | 0x1
+		// flags c.c (init?) passes 0x20 | 0x1
 
 		width = displayWidth;
 		height = displayHeight;
@@ -92,7 +94,6 @@ public class M3D
 		identity(matrix);
 	}
 
-
 	public void matrixMode(int mode)
 	{
 		//System.out.println("matrixMode("+mode+");");
@@ -104,11 +105,11 @@ public class M3D
 		identity(matrix);
 	}
 
-	public void frustumxi(int a, int b, int c, int d, int near, int far)
+	public void frustumxi(int left, int right, int top, int bottom, int near, int far)
 	{
 		//System.out.println("frustrumxi("+a+", "+b+", "+c+", "+d+", "+near+", "+far+");");
-
 		// c.c: bu.frustumxi(-bp << 11, bp << 11, -bo << 11, bo << 11, 196608, 65536000);
+		projection(projm, width, height, 30, near, far);
 	}
 
 	public void scalexi(int x, int y, int z)
@@ -142,15 +143,6 @@ public class M3D
 		double y = (Y/65536)*0.0174533;
 		double z = (Z/65536)*0.0174533;
 
-		/*
-		// rotate on x
-		q1m[0]  =  1; q1m[1]  =  0;            q1m[2]  =  0;           q1m[3]  =  0;
-		q1m[4]  =  0; q1m[5]  =  Math.cos(x);  q1m[6]  =  Math.sin(x); q1m[7]  =  0;
-		q1m[8]  =  0; q1m[9]  = -Math.sin(x);  q1m[10] =  Math.cos(x); q1m[11] =  0;
-		q1m[12] =  0; q1m[13] =  0;            q1m[14] =  0;           q1m[15] =  1;
-		matmul(matrix, q1m);
-		*/
-
 		// rotate on y
 		tempr[0]  =  Math.cos(y); tempr[1]  =  0; tempr[2]  = -Math.sin(y); tempr[3]  =  0;
 		tempr[4]  =  0;           tempr[5]  =  1; tempr[6]  =  0;           tempr[7]  =  0;
@@ -158,20 +150,26 @@ public class M3D
 		tempr[12] =  0;           tempr[13] =  0; tempr[14] =  0;           tempr[15] =  1;
 		clone(rotm, tempr);
 
+		// rotate on x
+		tempr[0]  =  1; tempr[1]  =  0;            tempr[2]  =  0;           tempr[3]  =  0;
+		tempr[4]  =  0; tempr[5]  =  Math.cos(x);  tempr[6]  =  Math.sin(x); tempr[7]  =  0;
+		tempr[8]  =  0; tempr[9]  = -Math.sin(x);  tempr[10] =  Math.cos(x); tempr[11] =  0;
+		tempr[12] =  0; tempr[13] =  0;            tempr[14] =  0;           tempr[15] =  1;
+		matmul(matrix, tempr);
+
 		/*
 		// rotate on z
-		q1m[0]  =  Math.cos(z); q1m[1]  =  Math.sin(z); q1m[2]  =  0; q1m[3]  =  0;
-		q1m[4]  = -Math.sin(z); q1m[5]  =  Math.cos(z); q1m[6]  =  0; q1m[7]  =  0;
-		q1m[8]  =  0;           q1m[9]  =  0;           q1m[10] =  1; q1m[11] =  0;
-		q1m[12] =  0;           q1m[13] =  0;           q1m[14] =  0; q1m[15] =  1;
-		matmul(matrix, q1m);
+		tempr[0]  =  Math.cos(z); tempr[1]  =  Math.sin(z); tempr[2]  =  0; tempr[3]  =  0;
+		tempr[4]  = -Math.sin(z); tempr[5]  =  Math.cos(z); tempr[6]  =  0; tempr[7]  =  0;
+		tempr[8]  =  0;           tempr[9]  =  0;           tempr[10] =  1; tempr[11] =  0;
+		tempr[12] =  0;           tempr[13] =  0;           tempr[14] =  0; tempr[15] =  1;
+		matmul(matrix, tempr);
 		*/
 	}
 
 	public void pushMatrix() // game doesn't seem to push more than one thing at a time
 	{ 
 		//System.out.println("pushMatrix();");
-		//clone(stackm, matrix);
 		clone(stackr, rotm);
 		clone(stackt, transm);
 	}
@@ -179,12 +177,10 @@ public class M3D
 	public void popMatrix()
 	{
 		//System.out.println("popMatrix();");
-		//clone(matrix, stackm);
 		clone(rotm, stackr);
 		clone(transm, stackt);
 	}
 
-	
 	public void vertexPointerub(int a, int b, byte[] vertices) 
 	{
 		//System.out.println("vertexPointerub");
@@ -206,7 +202,6 @@ public class M3D
 		clearcolor = ((r&0xFF)<<16) | ((g&0xFF)<<8) | (b&0xFF);
 	}
 
-	
 	public void drawElementsub(int a, int b, byte[] faces)
 	{
 		gc.setColor(color);
@@ -221,20 +216,22 @@ public class M3D
 		matmul(matrix, stackt);
 		matmul(matrix, stackr);
 		applyMatrix(matrix);
-
+		
 		for(int i=0; i<vertCount; i+=3)
 		{
 			x = verts[i];
 			y = verts[i+1]; 
 			z = verts[i+2];
-			verts[i] *=0.45;
-			verts[i+1]*=0.45; 
-			verts[i+2]*=0.45;
+			z = -((z-150)/450);
+			verts[i]   =  x/z;
+			verts[i+1] =  (-y)/z; 
 		}
 
 		// draw elements
 		int x1, y1, z1, x2, y2, z2, x3, y3, z3;
 		x1=0; y1=0; z1=0;
+		int ox = width/2;
+		int oy = height/2;
 		for(int i=0; i<faces.length; i+=3)
 		{
 			x1 = (int)verts[(faces[i]*3)];
@@ -249,17 +246,21 @@ public class M3D
 			y3 = (int)verts[(faces[i+2]*3)+1];
 			z3 = (int)verts[(faces[i+2]*3)+2];
 			
-			int ox = 50;
-			int oy = 30;
+			if(z3>=1 && z2>=1 && z1>=1) { continue; }
+
 			x1 = x1+ox;
 			x2 = x2+ox;
 			x3 = x3+ox;
-			y1 = z1+oy;
-			y2 = z2+oy;
-			y3 = z3+oy;
+			y1 = y1+oy;
+			y2 = y2+oy;
+			y3 = y3+oy;
 
 			gc.fillTriangle(x1, y1, x2, y2, x3, y3, color);
-			gc.drawTriangle(x1, y1, x2, y2, x3, y3, 0);
+			
+			if( (color & 0xFF) == 0xFF)
+			{
+				gc.drawTriangle(x1, y1, x2, y2, x3, y3, 0);
+			}
 			
 		}
 		//System.out.println("one of em: "+x1+", "+z1);
@@ -317,6 +318,19 @@ public class M3D
 		m[12] = 0; m[13] = 0; m[14] = 0; m[15] = 1;
 	}
 
+	private void projection(double[] m, double w, double h, double fov, double near, double far)
+	{
+		double a = 1/Math.tan(fov/2);
+		double b = a/(h/w);
+		double c = -(far+near)/(far-near);
+		double d =  -((2*far*near)/(far-near));
+
+		m[0]  = a; m[1]  = 0;   m[2]  = 0; m[3]  = 0;
+		m[4]  = 0; m[5]  = b;   m[6]  = 0; m[7]  = 0;
+		m[8]  = 0; m[9]  = 0;   m[10] = c; m[11] = d;
+		m[12] = 0; m[13] = 0;   m[14] =-1; m[15] = 0;
+	}
+
 	private void clone(double[] m1, double[] m2)
 	{
 		for(int i=0; i<16; i++)
@@ -349,7 +363,46 @@ public class M3D
 
 		clone(m1, tempm);
 	}
-	void applyMatrix(double[] m)
+
+	private void invert(double[] m)
+	{
+		double a0  = m[0],  a1  = m[1],  a2  = m[2],  a3  = m[3];
+		double a4  = m[4],  a5  = m[5],  a6  = m[6],  a7  = m[7];
+		double a8  = m[8],  a9  = m[9],  a10 = m[10], a11 = m[11];
+		double a12 = m[12], a13 = m[13], a14 = m[14], a15 = m[15];
+
+		double b0  =  a0 * a5  -  a1 * a4,  b1  =  a0 * a6  -  a2 * a4;
+		double b2  =  a0 * a7  -  a3 * a4,  b3  =  a1 * a6  -  a2 * a5;
+		double b4  =  a1 * a7  -  a3 * a5,  b5  =  a2 * a7  -  a3 * a6;
+		double b6  =  a8 * a13 -  a9 * a12, b7  =  a8 * a14 - a10 * a12;
+		double b8  =  a8 * a15 - a11 * a12, b9  =  a9 * a14 - a10 * a13;
+		double b10 =  a9 * a15 - a11 * a13, b11 = a10 * a15 - a11 * a14;
+
+		double det = b0 * b11 - b1 * b10 + b2 * b9 + b3 * b8 - b4 * b7 + b5 * b6;
+
+		if (det == 0) { return; } // should be an error
+
+		det = 1 / det;
+
+		m[0]  = ( a5  * b11 - a6  * b10 + a7  * b9 ) * det;
+		m[1]  = ( a2  * b10 - a1  * b11 - a3  * b9 ) * det;
+		m[2]  = ( a13 * b5  - a14 * b4  + a15 * b3 ) * det;
+		m[3]  = ( a10 * b4  - a9  * b5  - a11 * b3 ) * det;
+		m[4]  = ( a6  * b8  - a4  * b11 - a7  * b7 ) * det;
+		m[5]  = ( a0  * b11 - a2  * b8  + a3  * b7 ) * det;
+		m[6]  = ( a14 * b2  - a12 * b5  - a15 * b1 ) * det;
+		m[7]  = ( a8  * b5  - a10 * b2  + a11 * b1 ) * det;
+		m[8]  = ( a4  * b10 - a5  * b8  + a7  * b6 ) * det;
+		m[9]  = ( a1  * b8  - a0  * b10 - a3  * b6 ) * det;
+		m[10] = ( a12 * b4  - a13 * b2  + a15 * b0 ) * det;
+		m[11] = ( a9  * b2  - a8  * b4  - a11 * b0 ) * det;
+		m[12] = ( a5  * b7  - a4  * b9  - a6  * b6 ) * det;
+		m[13] = ( a0  * b9  - a1  * b7  + a2  * b6 ) * det;
+		m[14] = ( a13 * b1  - a12 * b3  - a14 * b0 ) * det;
+		m[15] = ( a8  * b3  - a9  * b1  + a10 * b0 ) * det;
+	}
+
+	private void applyMatrix(double[] m)
 	{
 		for(int i=0; i<vertCount; i+=3)
 		{	
