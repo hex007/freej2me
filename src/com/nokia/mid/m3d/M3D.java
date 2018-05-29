@@ -57,6 +57,8 @@ public class M3D
 	private PlatformImage platformImage;
 	private PlatformGraphics gc;
 
+	private double[] zbuffer;
+
 	private int color = 0xFF000000;
 	private int clearcolor = 0xFFFFFFFF;
 
@@ -77,6 +79,8 @@ public class M3D
 		height = displayHeight;
 		platformImage = new PlatformImage(width, height);
 		gc = platformImage.getGraphics();
+		zbuffer = new double[width*height];
+		clear(0);
 	}
 
 	public void removeBuffers() {  } // runs only on app shutdown
@@ -92,6 +96,10 @@ public class M3D
 		gc.fillRect(0, 0, width, height);
 		gc.setColor(color);
 		identity(matrix);
+		for(int i=0; i<zbuffer.length; i++)
+		{
+			zbuffer[i] = -500;
+		}
 	}
 
 	public void matrixMode(int mode)
@@ -172,6 +180,8 @@ public class M3D
 		//System.out.println("pushMatrix();");
 		clone(stackr, rotm);
 		clone(stackt, transm);
+		identity(rotm);
+		identity(transm);
 	}
 
 	public void popMatrix()
@@ -222,7 +232,7 @@ public class M3D
 			x = verts[i];
 			y = verts[i+1]; 
 			z = verts[i+2];
-			z = -((z-150)/450);
+			z = -((z-30)/90);
 			verts[i]   =  x/z;
 			verts[i+1] =  (-y)/z; 
 		}
@@ -246,7 +256,7 @@ public class M3D
 			y3 = (int)verts[(faces[i+2]*3)+1];
 			z3 = (int)verts[(faces[i+2]*3)+2];
 			
-			if(z3>=1 && z2>=1 && z1>=1) { continue; }
+			if(z3>0 && z2>0 && z1>0) { continue; }
 
 			x1 = x1+ox;
 			x2 = x2+ox;
@@ -255,8 +265,8 @@ public class M3D
 			y2 = y2+oy;
 			y3 = y3+oy;
 
-			gc.fillTriangle(x1, y1, x2, y2, x3, y3, color);
-			
+			//gc.fillTriangle(x1, y1, x2, y2, x3, y3, color);
+			fillTriangle(x1, y1, z1, x2, y2, z2, x3, y3, z3);
 			if( (color & 0xFF) == 0xFF)
 			{
 				gc.drawTriangle(x1, y1, x2, y2, x3, y3, 0);
@@ -414,4 +424,38 @@ public class M3D
 			verts[i+2] = x*m[2] + y*m[6] + z*m[10] + m[14]; 
 		}
 	}
+
+	private void fillTriangle(int x1, int y1, int z1, int x2, int y2, int z2,  int x3, int y3, int z3)
+	{
+		double a, b, c, d;
+		double depth = Math.min(Math.min(z1, z2),z3);
+
+		int maxX = Math.max(x1, Math.max(x2, x3));
+		int minX = Math.min(x1, Math.min(x2, x3));
+		int maxY = Math.max(y1, Math.max(y2, y3));
+		int minY = Math.min(y1, Math.min(y2, y3));
+
+		//if (minX>=width || minY>=height || maxX<0 || maxX<0) { return; }
+
+		for (int x = minX; x <= maxX; x++)
+		{
+			for (int y = minY; y <= maxY; y++)
+			{
+				d = ((y2 - y3)*(x1 - x3) + (x3 - x2)*(y1 - y3));
+				a = ((y2 - y3)*(x  - x3) + (x3 - x2)*(y  - y3)) / d;
+				b = ((y3 - y1)*(x  - x3) + (x1 - x3)*(y  - y3)) / d;
+				c = 1 - a - b; 
+				if((a >= 0) && (a <= 1) && (b >= 0) && (b <= 1) && (c >= 0) && (c <= 1) && (x>=0 && x<width && y>=0 && y<height))
+				{
+					// plot
+					if(zbuffer[x+(y*width)]<=depth)
+					{
+						zbuffer[x+(y*width)] = depth;	
+						gc.drawLine(x,y,x,y);
+					}
+				}
+			}
+		}
+	}
+
 }
