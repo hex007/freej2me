@@ -329,6 +329,11 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		return yout;
 	}
 
+	public void setAlphaRGB(int ARGB)
+	{
+		gc.setColor(new Color(ARGB, true));
+	}
+
 	/*
 		****************************
 			Nokia Direct Graphics
