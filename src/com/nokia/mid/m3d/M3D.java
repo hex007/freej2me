@@ -51,7 +51,12 @@ public class M3D
 
 	private int height;
 
-	private double[] verts = new double[300];
+	private Texture texture;
+
+	private boolean boundTexture = false;
+
+	private double[] verts = new double[600];
+	private double[] UVs = new double[600];
 	private int vertCount;
 
 	private PlatformImage platformImage;
@@ -95,11 +100,15 @@ public class M3D
 		gc.setColor(clearcolor);
 		gc.fillRect(0, 0, width, height);
 		gc.setColor(color);
-		identity(matrix);
+		identity(rotm);
+		identity(transm);
+		identity(stackr);
+		identity(stackt);
 		for(int i=0; i<zbuffer.length; i++)
 		{
 			zbuffer[i] = -500;
 		}
+		boundTexture = false;
 	}
 
 	public void matrixMode(int mode)
@@ -163,7 +172,7 @@ public class M3D
 		tempr[4]  =  0; tempr[5]  =  Math.cos(x);  tempr[6]  =  Math.sin(x); tempr[7]  =  0;
 		tempr[8]  =  0; tempr[9]  = -Math.sin(x);  tempr[10] =  Math.cos(x); tempr[11] =  0;
 		tempr[12] =  0; tempr[13] =  0;            tempr[14] =  0;           tempr[15] =  1;
-		matmul(matrix, tempr);
+		matmul(rotm, tempr);
 
 		/*
 		// rotate on z
@@ -171,7 +180,7 @@ public class M3D
 		tempr[4]  = -Math.sin(z); tempr[5]  =  Math.cos(z); tempr[6]  =  0; tempr[7]  =  0;
 		tempr[8]  =  0;           tempr[9]  =  0;           tempr[10] =  1; tempr[11] =  0;
 		tempr[12] =  0;           tempr[13] =  0;           tempr[14] =  0; tempr[15] =  1;
-		matmul(matrix, tempr);
+		matmul(rotm, tempr);
 		*/
 	}
 
@@ -204,7 +213,7 @@ public class M3D
 
 	public void color4ub(byte r, byte g, byte b, byte a)
 	{
-		color = ((r&0xFF)<<16) | ((g&0xFF)<<8) | (b&0xFF);
+		color = ((a&0xFF)<<24) | ((r&0xFF)<<16) | ((g&0xFF)<<8) | (b&0xFF);
 	}
 
 	public void clearColor4ub(byte r, byte g, byte b, byte a)
@@ -264,14 +273,13 @@ public class M3D
 			y1 = y1+oy;
 			y2 = y2+oy;
 			y3 = y3+oy;
-
-			//gc.fillTriangle(x1, y1, x2, y2, x3, y3, color);
-			fillTriangle(x1, y1, z1, x2, y2, z2, x3, y3, z3);
-			if( (color & 0xFF) == 0xFF)
-			{
-				gc.drawTriangle(x1, y1, x2, y2, x3, y3, 0);
-			}
 			
+			if(boundTexture)
+			{
+				texture.setUVs((int)UVs[(faces[i]*2)], (int)UVs[(faces[i]*2)+1], (int)UVs[(faces[i+1]*2)], (int)UVs[(faces[i+1]*2)+1], (int)UVs[(faces[i+2]*2)], (int)UVs[(faces[i+2]*2)+1]);
+				texture.mapto(x1,y1,x2,y2,x3,y3);
+			}
+			fillTriangle(x1, y1, z1, x2, y2, z2, x3, y3, z3);
 		}
 		//System.out.println("one of em: "+x1+", "+z1);
 	}
@@ -285,13 +293,18 @@ public class M3D
 	public void bindTexture(int a, Texture b)
 	{
 		//System.out.println("bindTexture");
+		texture = b;
+		boundTexture = true;
 	}
 
-	public void texCoordPointerub(int a, int b, byte[] UVs)
+	public void texCoordPointerub(int a, int b, byte[] uvs)
 	{
 		//System.out.println("texCoordPointerub");
+		for(int i=0; i<uvs.length; i++)
+		{
+			UVs[i] = uvs[i];
+		}
 	}
-
 
 	public void enableClientState(int flags)
 	{
@@ -435,7 +448,7 @@ public class M3D
 		int maxY = Math.max(y1, Math.max(y2, y3));
 		int minY = Math.min(y1, Math.min(y2, y3));
 
-		//if (minX>=width || minY>=height || maxX<0 || maxX<0) { return; }
+		if (minX>=width || minY>=height || maxX<0 || maxX<0) { return; }
 
 		for (int x = minX; x <= maxX; x++)
 		{
@@ -448,9 +461,14 @@ public class M3D
 				if((a >= 0) && (a <= 1) && (b >= 0) && (b <= 1) && (c >= 0) && (c <= 1) && (x>=0 && x<width && y>=0 && y<height))
 				{
 					// plot
+					depth = z1*a + z2*b + z3*c;
 					if(zbuffer[x+(y*width)]<=depth)
 					{
 						zbuffer[x+(y*width)] = depth;	
+						if(boundTexture)
+						{ 
+							gc.setAlphaRGB(texture.map(x,y));
+						}
 						gc.drawLine(x,y,x,y);
 					}
 				}
