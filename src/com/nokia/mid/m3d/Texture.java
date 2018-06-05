@@ -19,9 +19,11 @@ package com.nokia.mid.m3d;
 
 import javax.microedition.lcdui.Image;
 
+import org.recompile.mobile.PlatformImage;
+
 public class Texture
 {
-	public Image texture;
+	public PlatformImage texture;
 
 	public int[] imagedata;
 
@@ -37,17 +39,18 @@ public class Texture
 
 	private double[] tempm = new double[9]; // scratch
 
-	private int[] colors = {0x00FFFFFF, 0xFF000000};
+	private int[] colors = {0xFFFFFFFF, 0xFF000000};
 
 	public Texture() { }
 	public Texture(int a, int b, Image c)
 	{
-		texture = c;
+		texture = (PlatformImage)c;
 		width = texture.getWidth();
 		height = texture.getHeight();
 		imagedata = new int[width*height];
 		texture.platformImage.getRGB(imagedata, 0, width, 0, 0, width, height);
-
+		// Fix Alpha //
+		for (int i=0; i<imagedata.length; i++) { imagedata[i] |= 0x00000000; imagedata[i] &= 0xFFFFFFFF; }
 	}
 
 	// Texture mapping stuff //

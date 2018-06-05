@@ -92,11 +92,10 @@ public class M3D
 
 	public void cullFace(int a) {  } // guessing front or back facing? set to 1029
 
-	public void viewport(int a, int b, int c, int d) {  }
+	public void viewport(int x, int y, int w, int h) {  } // called once, always 0, 0, 96, 65
 
 	public void clear(int a) // what is a? c.z (Get Ready) passes 0x4100 (16640)
 	{
-		////System.out.println("clear();");
 		gc.setColor(clearcolor);
 		gc.fillRect(0, 0, width, height);
 		gc.setColor(color);
@@ -111,32 +110,24 @@ public class M3D
 		boundTexture = false;
 	}
 
-	public void matrixMode(int mode)
-	{
-		//System.out.println("matrixMode("+mode+");");
-		// mode is 5889 for frustrum, 5888 , 
-	}
+	public void matrixMode(int mode) {  } // mode is 5889 for frustrum, 5888 other times, 
 
 	public void loadIdentity()
 	{
 		identity(matrix);
 	}
 
-	public void frustumxi(int left, int right, int top, int bottom, int near, int far)
+	public void frustumxi(int left, int right, int top, int bottom, int near, int far) //-3,3, -2,2, 3,1000
 	{
 		//System.out.println("frustrumxi("+a+", "+b+", "+c+", "+d+", "+near+", "+far+");");
 		// c.c: bu.frustumxi(-bp << 11, bp << 11, -bo << 11, bo << 11, 196608, 65536000);
 		projection(projm, width, height, 30, near, far);
 	}
 
-	public void scalexi(int x, int y, int z)
-	{ 
-		//System.out.println("scalexi("+x+", "+y+", "+z+");");
-	}
+	public void scalexi(int x, int y, int z) {  }
 
-	public void translatexi(int x, int y, int z) // This seems to work correctly
+	public void translatexi(int x, int y, int z)
 	{
-		//System.out.println("translatexi("+x+", "+y+", "+z+");");
 		x = (x/65536);
 		y = (y/65536);
 		z = (z/65536);
@@ -186,7 +177,6 @@ public class M3D
 
 	public void pushMatrix() // game doesn't seem to push more than one thing at a time
 	{ 
-		//System.out.println("pushMatrix();");
 		clone(stackr, rotm);
 		clone(stackt, transm);
 		identity(rotm);
@@ -195,15 +185,12 @@ public class M3D
 
 	public void popMatrix()
 	{
-		//System.out.println("popMatrix();");
 		clone(rotm, stackr);
 		clone(transm, stackt);
 	}
 
 	public void vertexPointerub(int a, int b, byte[] vertices) 
 	{
-		//System.out.println("vertexPointerub");
-
 		for(int i=0; i<vertices.length; i++)
 		{
 			verts[i] = vertices[i];
@@ -213,19 +200,17 @@ public class M3D
 
 	public void color4ub(byte r, byte g, byte b, byte a)
 	{
-		color = ((a&0xFF)<<24) | ((r&0xFF)<<16) | ((g&0xFF)<<8) | (b&0xFF);
+		color = ((0xFF)<<24) | ((r&0xFF)<<16) | ((g&0xFF)<<8) | (b&0xFF);
 	}
 
 	public void clearColor4ub(byte r, byte g, byte b, byte a)
 	{
-		clearcolor = ((r&0xFF)<<16) | ((g&0xFF)<<8) | (b&0xFF);
+		clearcolor = ((0xFF)<<24) | ((r&0xFF)<<16) | ((g&0xFF)<<8) | (b&0xFF);
 	}
 
 	public void drawElementsub(int a, int b, byte[] faces)
 	{
 		gc.setColor(color);
-		
-		//System.out.println("drawElementsub");
 
 		double x, y, z, theta;
 
@@ -236,7 +221,7 @@ public class M3D
 		matmul(matrix, stackr);
 		applyMatrix(matrix);
 		
-		for(int i=0; i<vertCount; i+=3)
+		for(int i=0; i<vertCount; i+=3) // projection
 		{
 			x = verts[i];
 			y = verts[i+1]; 
@@ -281,54 +266,42 @@ public class M3D
 			}
 			fillTriangle(x1, y1, z1, x2, y2, z2, x3, y3, z3);
 		}
-		//System.out.println("one of em: "+x1+", "+z1);
 	}
 
 	public void drawArrays(int a, int b, int c)  // called after clear -- background?
 	{
-		//System.out.println("drawArrays");
-	}
+		// The expected result.  No idea how to get there from here:
+		//vertexPointerub(3, 0, [ -100, 20, -100, 0, -20, 0, 100, 20, -100, ]); // 3, 0, len 9
+		//drawArrays(4, 0, 3);
+		gc.setColor(color);
+		gc.fillRect(0,20, width, height);
 
+	}
 
 	public void bindTexture(int a, Texture b)
 	{
-		//System.out.println("bindTexture");
 		texture = b;
 		boundTexture = true;
 	}
 
 	public void texCoordPointerub(int a, int b, byte[] uvs)
 	{
-		//System.out.println("texCoordPointerub");
 		for(int i=0; i<uvs.length; i++)
 		{
 			UVs[i] = uvs[i];
 		}
 	}
 
-	public void enableClientState(int flags)
-	{
-		//System.out.println("enableClientState("+flags+")");
-	}
+	public void enableClientState(int flags) {  }
 
-	public void disableClientState(int flags)
-	{
-		//System.out.println("disableClientState("+flags+")");
-	}
+	public void disableClientState(int flags) {  }
 
-	public void enable(int feature)
-	{
-		//System.out.println("enable("+feature+")");
-	}
+	public void enable(int feature) {  }
 
-	public void disable(int feature)
-	{
-		//System.out.println("disable("+feature+")");
-	}
+	public void disable(int feature) {  }
 
 	public void blit(Graphics g, int x, int y, int w, int h) // 0, 0, 95, 65
 	{
-		//System.out.println("blit("+x+", "+y+", "+w+", "+h+");");
 		g.drawImage(platformImage, x, y, Graphics.LEFT|Graphics.TOP);
 	}
 
@@ -448,7 +421,7 @@ public class M3D
 		int maxY = Math.max(y1, Math.max(y2, y3));
 		int minY = Math.min(y1, Math.min(y2, y3));
 
-		if (minX>=width || minY>=height || maxX<0 || maxX<0) { return; }
+		if (minX>=width || minY>=height || maxX<0 || maxY<0) { return; }
 
 		for (int x = minX; x <= maxX; x++)
 		{
