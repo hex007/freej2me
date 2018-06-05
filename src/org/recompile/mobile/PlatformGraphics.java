@@ -425,7 +425,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
 	public void drawPixels(short[] pixels, boolean transparency, int offset, int scanlength, int x, int y, int width, int height, int manipulation, int format)
 	{
-		//System.out.println("drawPixels C"); // Found In Use
+		//System.out.println("drawPixels C"+format); // Found In Use
 		int[] data = new int[pixels.length];
 
 		for(int i=0; i<pixels.length; i++)
@@ -558,8 +558,8 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 				out=(r<<8)|(g<<4)|b;
 				break;
 			case DirectGraphics.TYPE_USHORT_4444_ARGB:
-				a=c>>>28; r=((c>>20)&0xF); g=((c>>12)&0xF); b=((c>>4)&0xF);
-				out=(0xF000)|(r<<8)|(g<<4)|b;
+				a=((c>>>28)&0xF); r=((c>>20)&0xF); g=((c>>12)&0xF); b=((c>>4)&0xF);
+				out=(a<<12)|(r<<8)|(g<<4)|b;
 				break;
 			case DirectGraphics.TYPE_USHORT_555_RGB:
 				r=((c>>19)&0x1F); g=((c>>11)&0x1F); b=((c>>3)&0x1F);
@@ -576,6 +576,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 	private BufferedImage manipulateImage(BufferedImage image, int manipulation)
 	{
 		final int HV = DirectGraphics.FLIP_HORIZONTAL | DirectGraphics.FLIP_VERTICAL;
+		final int H90 = DirectGraphics.FLIP_HORIZONTAL | DirectGraphics.ROTATE_90;
 		switch(manipulation)
 		{
 			case DirectGraphics.FLIP_HORIZONTAL:
@@ -590,6 +591,8 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 				return PlatformImage.transformImage(image, Sprite.TRANS_ROT270);
 			case HV: 
 				return PlatformImage.transformImage(image, Sprite.TRANS_ROT180);
+			case H90: 
+				return PlatformImage.transformImage(PlatformImage.transformImage(image, Sprite.TRANS_MIRROR), Sprite.TRANS_ROT270);
 		}
 		return image;
 	}

@@ -295,7 +295,7 @@ public class MIDletLoader extends URLClassLoader
 		if(
 			name.startsWith("java.") || name.startsWith("javax.") || name.startsWith("com.nokia") ||
 			name.startsWith("com.mascotcapsule") || name.startsWith("com.samsung") || name.startsWith("sun.") ||
-			name.startsWith("org.recompile")
+			name.startsWith("com.siemens") || name.startsWith("org.recompile")
 			)
 		{
 			return loadClass(name, true);
