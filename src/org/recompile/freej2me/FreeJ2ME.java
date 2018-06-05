@@ -50,6 +50,7 @@ public class FreeJ2ME
 	private Config config;
 	private boolean useNokiaControls = true;
 	private boolean rotateDisplay = false;
+	private int limitFPS = 0;
 
 	public FreeJ2ME(String args[])
 	{
@@ -200,6 +201,9 @@ public class FreeJ2ME
 		int w = Integer.parseInt(config.settings.get("width"));
 		int h = Integer.parseInt(config.settings.get("height"));
 
+		limitFPS = Integer.parseInt(config.settings.get("fps"));
+		if(limitFPS>0) { limitFPS = 1000 / limitFPS; }
+
 		String sound = config.settings.get("sound");
 		if(sound.equals("on")) { Mobile.getPlatform().sound = true; }
 		if(sound.equals("off")) { Mobile.getPlatform().sound = false; }
@@ -336,6 +340,10 @@ public class FreeJ2ME
 				else
 				{
 					g.drawImage(Mobile.getPlatform().getLCD(), cx, cy, cw, ch, null);
+					if(limitFPS>0)
+					{
+						Thread.sleep(limitFPS);
+					}
 				}
 			}
 			catch (Exception e)

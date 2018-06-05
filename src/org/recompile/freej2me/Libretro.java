@@ -46,6 +46,7 @@ public class Libretro
 	private Config config;
 	private boolean useNokiaControls = true;
 	private boolean rotateDisplay = false;
+	private int limitFPS = 0;
 
 	private byte[] frameBuffer = new byte[800*800*3];
 	private byte[] frameHeader = new byte[]{(byte)0xFE, 0, 0, 0, 0, 0};
@@ -231,6 +232,10 @@ public class Libretro
 										else
 										{
 											data = surface.getRGB(0, 0, lcdWidth, lcdHeight, null, 0, lcdWidth);
+											if(limitFPS>0)
+											{
+												Thread.sleep(limitFPS);
+											}
 										}
 										int bufferLength = data.length*3;
 										int cb = 0;
@@ -273,6 +278,9 @@ public class Libretro
 	{
 		int w = Integer.parseInt(config.settings.get("width"));
 		int h = Integer.parseInt(config.settings.get("height"));
+
+		limitFPS = Integer.parseInt(config.settings.get("fps"));
+		if(limitFPS>0) { limitFPS = 1000 / limitFPS; }
 
 		String sound = config.settings.get("sound");
 		if(sound.equals("on")) { Mobile.getPlatform().sound = true; }

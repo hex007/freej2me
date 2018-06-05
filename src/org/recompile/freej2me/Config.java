@@ -65,12 +65,14 @@ public class Config
 		gc = lcd.getGraphics();
 
 		menu = new ArrayList<String[]>();
-		menu.add(new String[]{"Resume Game", "Display Size", "Sound", "Nokia", "Rotate", "Exit"});
-		menu.add(new String[]{"96x65","128x128","176x208", "208x208", "240x320", "320x240", "240x400", "360x640", "480x800"});
-		menu.add(new String[]{"Quit", "Main Menu"});
-		menu.add(new String[]{"On", "Off"});
-		menu.add(new String[]{"On", "Off"});
-		menu.add(new String[]{"On", "Off"});
+		menu.add(new String[]{"Resume Game", "Display Size", "Sound", "Limit FPS", "Nokia", "Rotate", "Exit"}); // 0 - Main Menu
+		menu.add(new String[]{"96x65","128x128","176x208", "208x208", "240x320", "320x240", "240x400", "360x640", "480x800"}); // 1 - Size
+		menu.add(new String[]{"Quit", "Main Menu"}); // 2 - Restart Notice
+		menu.add(new String[]{"On", "Off"}); // 3 - sound
+		menu.add(new String[]{"On", "Off"}); // 4 - nokia
+		menu.add(new String[]{"On", "Off"}); // 5 - rotate 
+		menu.add(new String[]{"Auto", "60 - Fast", "30 - Slow", "15 - Turtle"}); // 6 - FPS
+
 
 		onChange = new Runnable()
 		{
@@ -108,6 +110,7 @@ public class Config
 				settings.put("sound", "on");
 				settings.put("nokia", "on");
 				settings.put("rotate", "off");
+				settings.put("fps", "0");
 				saveConfig();
 			}
 		}
@@ -140,6 +143,7 @@ public class Config
 			if(!settings.containsKey("sound")) { settings.put("sound", "on"); }
 			if(!settings.containsKey("nokia")) { settings.put("nokia", "on"); }
 			if(!settings.containsKey("rotate")) { settings.put("rotate", "off"); }
+			if(!settings.containsKey("fps")) { settings.put("fps", "0"); }
 
 			int w = Integer.parseInt(settings.get("width"));
 			int h = Integer.parseInt(settings.get("height"));
@@ -274,13 +278,14 @@ public class Config
 		for(int i=start; (i<(start+max))&(i<t.length); i++)
 		{
 			label = t[i];
-			if(menuid==0 && i>1 && i<5)
+			if(menuid==0 && i>1 && i<7)
 			{
 				switch(i)
 				{
 					case 2: label = label+": "+settings.get("sound"); break;
-					case 3: label = label+": "+settings.get("nokia"); break;
-					case 4: label = label+": "+settings.get("rotate"); break;
+					case 3: label = label+": "+settings.get("fps"); break;
+					case 4: label = label+": "+settings.get("nokia"); break;
+					case 5: label = label+": "+settings.get("rotate"); break;
 				}
 			}
 			if(i==itemid)
@@ -305,12 +310,13 @@ public class Config
 			case 0:  // Main Menu
 				switch(itemid)
 				{
-					case 0: stop(); break;
-					case 1: menuid=1; itemid=0; break;
-					case 2: menuid=3; itemid=0; break;
-					case 3: menuid=4; itemid=0; break;
-					case 4: menuid=5; itemid=0; break;
-					case 5: System.exit(0); break;
+					case 0: stop(); break; // resume
+					case 1: menuid=1; itemid=0; break; // display size
+					case 2: menuid=3; itemid=0; break; // sound
+					case 3: menuid=6; itemid=0; break; // fps
+					case 4: menuid=4; itemid=0; break; // nokia
+					case 5: menuid=5; itemid=0; break; // rotate
+					case 6: System.exit(0); break;
 				}
 			break;
 
@@ -347,6 +353,15 @@ public class Config
 				if(itemid==1) { updateRotate("off"); }
 				menuid=0; itemid=0;
 			break;
+
+			case 6: // FPS
+				if(itemid==0) { updateFPS("0"); }
+				if(itemid==1) { updateFPS("60"); }
+				if(itemid==2) { updateFPS("30"); }
+				if(itemid==3) { updateFPS("15"); }
+				menuid=0; itemid=0;
+			break;
+
 		}
 
 		render();
@@ -385,6 +400,14 @@ public class Config
 	{
 		System.out.println("Config: rotate "+value);
 		settings.put("rotate", value);
+		saveConfig();
+		onChange.run();
+	}
+
+	private void updateFPS(String value)
+	{
+		System.out.println("Config: fps "+value);
+		settings.put("fps", value);
 		saveConfig();
 		onChange.run();
 	}
