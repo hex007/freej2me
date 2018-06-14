@@ -18,7 +18,9 @@ package javax.microedition.lcdui;
 
 import java.util.ArrayList;
 
-
+import org.recompile.mobile.Mobile;
+import org.recompile.mobile.PlatformImage;
+import org.recompile.mobile.PlatformGraphics;
 
 public class Gauge extends Item
 {
@@ -35,7 +37,7 @@ public class Gauge extends Item
 	private int initialValue;
 	private int value;
 
-	private ArrayList<Command> commands;
+	//private ArrayList<Command> commands;
 	private Command defaultCommand;
 
 	private ItemCommandListener listener;
@@ -51,7 +53,7 @@ public class Gauge extends Item
 	}
 
 
-	public void addCommand(Command cmd) { commands.add(cmd); }
+	//public void addCommand(Command cmd) { commands.add(cmd); }
 
 	public int getMaxValue() { return maxValue; }
 
@@ -63,8 +65,8 @@ public class Gauge extends Item
 
 	public void setItemCommandListener(ItemCommandListener l) { listener = l; }
 
-	void setMaxValue(int maxvalue) { maxValue = maxvalue; }
+	public void setMaxValue(int maxvalue) { maxValue = maxvalue; }
 
-	void setValue(int newvalue) { value = newvalue; }
+	public void setValue(int newvalue) { value = newvalue; }
 
 }

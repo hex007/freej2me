@@ -27,18 +27,9 @@ public class List extends Screen implements Choice
 
 	public static Command SELECT_COMMAND = new Command("Select", Command.SCREEN, 0);
 
-	
-	private ArrayList<String> strings = new ArrayList<String>();
-	
-	private ArrayList<Image> images = new ArrayList<Image>();
-
 	private int fitPolicy = Choice.TEXT_WRAP_ON;
 
 	private int type;
-
-	private int selectedItem = -1;
-
-	private Graphics gc;
 
 	public List(String title, int listType)
 	{
@@ -46,7 +37,6 @@ public class List extends Screen implements Choice
 		type = listType;
 
 		platformImage = new PlatformImage(width, height);
-		gc = platformImage.getGraphics();
 
 		render();
 	}
@@ -58,55 +48,72 @@ public class List extends Screen implements Choice
 
 		for(int i=0; i<stringElements.length; i++)
 		{
-			strings.add(stringElements[i]);
-			if(i<images.size())
+			if(imageElements!=null)
 			{
-				images.add(imageElements[i]);
+				items.add(new ImageItem(stringElements[i], imageElements[i], 0, stringElements[i]));
 			}	
+			else
+			{
+				items.add(new StringItem(stringElements[i], stringElements[i]));
+			}
 		}
 
 		platformImage = new PlatformImage(width, height);
-		gc = platformImage.getGraphics();
 		render();
 	}
 
 	public int append(String stringPart, Image imagePart)
 	{ 
-			strings.add(stringPart);
-			images.add(imagePart);
+			if(imagePart!=null)
+			{
+				items.add(new ImageItem(stringPart, imagePart, 0, stringPart));
+			}
+			else
+			{
+				items.add(new StringItem(stringPart, stringPart));
+			}
 			render();
-			return strings.size()-1;
+			return items.size()-1;
 	}
 
 	public void delete(int elementNum)
 	{
-		strings.remove(elementNum);
-		images.remove(elementNum);
+		try
+		{
+			items.remove(elementNum);
+		}
+		catch (Exception e) { }
 		render();
 	}
 
-	public void deleteAll() { strings.clear(); images.clear(); render(); }
+	public void deleteAll() { items.clear(); render(); }
 
 	public int getFitPolicy() { return fitPolicy; }
 
 	public Font getFont(int elementNum) { return Font.getDefaultFont(); }
 
-	public Image getImage(int elementNum) { return images.get(elementNum); }
+	public Image getImage(int elementNum) { return ((ImageItem)(items.get(elementNum))).getImage(); }
 	
 	public int getSelectedFlags(boolean[] selectedArray_return) { return 0; }
 
-	public int getSelectedIndex() { return selectedItem; }
+	public int getSelectedIndex() { return currentItem; }
 
-	public String getString(int elementNum) { return strings.get(elementNum); }
+	public String getString(int elementNum) { return ((StringItem)(items.get(elementNum))).getText(); }
 
 	public void insert(int elementNum, String stringPart, Image imagePart)
 	{
-		if(elementNum<strings.size() && elementNum>0)
+		if(elementNum<items.size() && elementNum>0)
 		{
 			try
 			{
-				strings.add(elementNum, stringPart);
-				images.add(elementNum, imagePart);
+				if(imagePart!=null)
+				{
+					items.add(elementNum, new ImageItem(stringPart, imagePart, 0, stringPart));
+				}
+				else
+				{
+					items.add(elementNum, new StringItem(stringPart, stringPart));
+				}
 			}
 			catch(Exception e)
 			{
@@ -120,14 +127,20 @@ public class List extends Screen implements Choice
 		render();
 	}
 
-	public boolean isSelected(int elementNum) { return elementNum==selectedItem; }
+	public boolean isSelected(int elementNum) { return elementNum==currentItem; }
 
-	public void removeCommand(Command cmd) { super.removeCommand(cmd); }
+	// public void removeCommand(Command cmd) {  }
 
 	public void set(int elementNum, String stringPart, Image imagePart)
 	{
-		strings.set(elementNum, stringPart);
-		images.set(elementNum, imagePart);
+		if(imagePart!=null)
+		{
+			items.set(elementNum, new ImageItem(stringPart, imagePart, 0, stringPart));
+		}
+		else
+		{
+			items.set(elementNum, new StringItem(stringPart, stringPart));
+		}
 	}
 	
 	public void setFitPolicy(int fitpolicy) { fitPolicy = fitpolicy; }
@@ -142,11 +155,11 @@ public class List extends Screen implements Choice
 	{
 		if(selected == true)
 		{
-			selectedItem = elementNum;
+			currentItem = elementNum;
 		}
 		else
 		{
-			selectedItem = 0;
+			currentItem = 0;
 		}
 		render();
 	}
@@ -155,7 +168,7 @@ public class List extends Screen implements Choice
 	
 	//void setTitle(String s)
 
-	public int size() { return strings.size(); }
+	public int size() { return items.size(); }
 
 	/*
 		Draw list, handle input
@@ -163,125 +176,27 @@ public class List extends Screen implements Choice
 
 	public void keyPressed(int key)
 	{
-		if(strings.size()<1) { return; }
+		if(items.size()<1) { return; }
 		switch(key)
 		{
-			case Mobile.KEY_NUM2: selectedItem--; break;
-			case Mobile.KEY_NUM8: selectedItem++; break;
-			case Mobile.NOKIA_UP: selectedItem--; break;
-			case Mobile.NOKIA_DOWN: selectedItem++; break;
+			case Mobile.KEY_NUM2: currentItem--; break;
+			case Mobile.KEY_NUM8: currentItem++; break;
+			case Mobile.NOKIA_UP: currentItem--; break;
+			case Mobile.NOKIA_DOWN: currentItem++; break;
 			case Mobile.NOKIA_SOFT1: doLeftCommand(); break;
 			case Mobile.NOKIA_SOFT2: doRightCommand(); break;
 			case Mobile.KEY_NUM5: doDefaultCommand(); break;
 		}
-		if (selectedItem>=strings.size()) { selectedItem=0; }
-		if (selectedItem<0) { selectedItem = 0; }
+		if (currentItem>=items.size()) { currentItem=0; }
+		if (currentItem<0) { currentItem = items.size()-1; }
 		render();
 	}
 
-	private void doDefaultCommand()
+	protected void doDefaultCommand()
 	{
-		if(SELECT_COMMAND!=null)
+		if(commandlistener!=null)
 		{
-			if(commandlistener!=null)
-			{
-				commandlistener.commandAction(SELECT_COMMAND, this);
-			}
-		}
-	}
-
-	private void doLeftCommand()
-	{
-		if(commands.size()>1)
-		{
-			if(commandlistener!=null)
-			{
-				commandlistener.commandAction(commands.get(1), this);
-			}
-		}
-	}
-
-	private void doRightCommand()
-	{
-		if(commands.size()>2)
-		{
-			if(commandlistener!=null)
-			{
-				commandlistener.commandAction(commands.get(2), this);
-			}
-		}
-	}
-
-	private void render()
-	{
-		// platformImage
-		
-		// Draw Background:
-		gc.setColor(0xFFFFFF);
-		gc.fillRect(0,0,width,height);
-		gc.setColor(0x000000);
-		
-		// Draw Title:
-		gc.drawString(title, width/2, 2, Graphics.HCENTER);
-		gc.drawLine(0, 20, width, 20);
-		gc.drawLine(0, height-20, width, height-20);
-
-		if(strings.size()>0)
-		{
-			if(selectedItem<0) { selectedItem = 0; }
-			// Draw list items //
-			int ah = height - 50; // allowed height
-			int max = (int)Math.floor(ah / 15); // max items per page
-			if (max==0) { max = 1; }
-			int page = 0;
-			
-			if(strings.size()<max) { max = strings.size(); }
-			
-			page = (int)Math.floor(selectedItem/max); // current page
-
-			int first = page * max; // first item to show
-			
-			int y = 25;
-			for(int i=0; i<max; i++)
-			{	
-				if(selectedItem == (first+i))
-				{
-					gc.fillRect(0,y,width,15);
-					gc.setColor(0xFFFFFF);
-				}
-				
-				try
-				{
-					gc.drawString(strings.get(first+i), width/2, y, Graphics.HCENTER);
-					gc.setColor(0x000000);
-					
-					if(images.get(first+i)!=null)
-					{
-						gc.drawImage(images.get(first+i), 0, y, Graphics.LEFT);
-					}	
-				}
-				catch (Exception e) { }
-				
-				y+=15;
-			}
-		}
-		// Draw Commands
-		switch(commands.size())
-		{
-			case 0: break;
-			case 1:
-				gc.drawString(""+(selectedItem+1)+" of "+strings.size(), width/2, height-17, Graphics.HCENTER);
-				break;
-			case 2:
-				gc.drawString(commands.get(1).getLabel(), 3, height-17, Graphics.LEFT);
-				break;
-			default:
-				gc.drawString(commands.get(1).getLabel(), 3, height-17, Graphics.LEFT);
-				gc.drawString(commands.get(2).getLabel(), width-3, height-17, Graphics.RIGHT);
-		}
-		if(this.getDisplay().getCurrent() == this)
-		{
-			Mobile.getPlatform().repaint(platformImage, 0, 0, width, height);
+			commandlistener.commandAction(SELECT_COMMAND, this);
 		}
 	}
 

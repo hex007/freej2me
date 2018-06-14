@@ -26,19 +26,12 @@ import java.util.ArrayList;
 public class Form extends Screen
 {
 
-	private ArrayList<Item> items = new ArrayList<Item>();
-
 	public ItemStateListener listener;
-
-	private int currentItem = -1;
-
-	private Graphics gc;
 
 	public Form(String title)
 	{
 		setTitle(title);
 		platformImage = new PlatformImage(width, height);
-		gc = platformImage.getGraphics();
 		render();
 	}
 
@@ -54,7 +47,6 @@ public class Form extends Screen
 			}
 		}
 		platformImage = new PlatformImage(width, height);
-		gc = platformImage.getGraphics();
 		render();
 	}
 
@@ -89,6 +81,12 @@ public class Form extends Screen
 
 	public void keyPressed(int key)
 	{
+		if(listCommands==true)
+		{
+			keyPressedCommands(key);
+			return;
+		}
+
 		if(items.size()<1) { return; }
 		switch(key)
 		{
@@ -101,112 +99,8 @@ public class Form extends Screen
 			case Mobile.KEY_NUM5: doDefaultCommand(); break;
 		}
 		if (currentItem>=items.size()) { currentItem=0; }
-		if (currentItem<0) { currentItem = 0; }
+		if (currentItem<0) { currentItem = items.size()-1; }
 		render();
-	}
-
-	private void doDefaultCommand()
-	{
-		if(commands.size()>0)
-		{
-			if(commandlistener!=null)
-			{
-				commandlistener.commandAction(commands.get(0), this);
-			}
-		}
-	}
-
-	private void doLeftCommand()
-	{
-		if(commands.size()>1)
-		{
-			if(commandlistener!=null)
-			{
-				commandlistener.commandAction(commands.get(1), this);
-			}
-		}
-	}
-
-	private void doRightCommand()
-	{
-		if(commands.size()>2)
-		{
-			if(commandlistener!=null)
-			{
-				commandlistener.commandAction(commands.get(2), this);
-			}
-		}
-	}
-
-	private void render()
-	{
-		// platformImage
-		
-		// Draw Background:
-		gc.setColor(0xFFFFFF);
-		gc.fillRect(0,0,width,height);
-		gc.setColor(0x000000);
-		
-		// Draw Title:
-		gc.drawString(title, width/2, 2, Graphics.HCENTER);
-		gc.drawLine(0, 20, width, 20);
-		gc.drawLine(0, height-20, width, height-20);
-
-		if(items.size()>0)
-		{
-			if(currentItem<0) { currentItem = 0; }
-			// Draw list items //
-			int ah = height - 50; // allowed height
-			int max = (int)Math.floor(ah / 15); // max items per page
-			if (max==0) { max = 1; }
-			int page = 0;
-			
-			if(items.size()<max) { max = items.size(); }
-			
-			page = (int)Math.floor(currentItem/max); // current page
-
-			int first = page * max; // first item to show
-			
-			int y = 25;
-			for(int i=0; i<max; i++)
-			{	
-				if(currentItem == (first+i))
-				{
-					gc.fillRect(0,y,width,15);
-					gc.setColor(0xFFFFFF);
-				}
-				gc.drawString(items.get(first+i).getLabel(), width/2, y, Graphics.HCENTER);
-				if(items.get(first+i) instanceof StringItem)
-				{
-					gc.drawString(((StringItem)items.get(first+i)).getText(), width/2, y, Graphics.HCENTER);
-				}
-				gc.setColor(0x000000);
-				if(items.get(first+i) instanceof ImageItem)
-				{
-					gc.drawImage(((ImageItem)items.get(first+i)).getImage(), width/2, y, Graphics.HCENTER);
-				}
-				y+=15;
-			}
-		}
-		// Draw Commands
-		switch(commands.size())
-		{
-			case 0: break;
-			case 1:
-				gc.drawString(""+(currentItem+1)+" of "+items.size(), width/2, height-17, Graphics.HCENTER);
-				break;
-			case 2:
-				gc.drawString(commands.get(1).getLabel(), 3, height-17, Graphics.LEFT);
-				break;
-			default:
-				gc.drawString(commands.get(1).getLabel(), 3, height-17, Graphics.LEFT);
-				gc.drawString(commands.get(2).getLabel(), width-3, height-17, Graphics.RIGHT);
-		}
-
-		if(this.getDisplay().getCurrent() == this)
-		{
-			Mobile.getPlatform().repaint(platformImage, 0, 0, width, height);
-		}
 	}
 
 	public void notifySetCurrent()
