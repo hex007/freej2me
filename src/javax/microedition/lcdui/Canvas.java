@@ -134,7 +134,7 @@ public abstract class Canvas extends Displayable
 
 	public boolean hasRepeatEvents() { return false; }
 
-	protected void hideNotify() { }
+	public void hideNotify() { }
 
 	public boolean isDoubleBuffered() { return true; }
 
@@ -188,7 +188,7 @@ public abstract class Canvas extends Displayable
 		}
 	}
 
-	protected void showNotify() { }
+	public void showNotify() { }
 
 	protected void sizeChanged(int w, int h)
 	{
