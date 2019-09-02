@@ -7,6 +7,14 @@ Authors :
 
 ---
 
+## Controls
+
+* `Q` and `W` for `soft1` and `soft2`.
+* Arrow keys for nav, unless you turn nokia off, when arrow keys become 2, 4, 6, and 8.
+* Numbers work as expected, the number pad is inverted (123 swap with 789, like a phone) ESC brings up the menu.
+* `E` and `R` are alternatives to `*` and `#`.
+* Enter functions as `5`
+
 ## Links
 Screenshots:
   https://imgur.com/a/2vAeC
