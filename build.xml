@@ -33,7 +33,7 @@
 		destfile="build/freej2me.jar"
 		basedir="build/classes">
 		<fileset dir="resources" />
-		<metainf dir="META-INF" />
+		<metainf dir="resources/META-INF" />
 		<manifest>
 			<!-- AWT Version -->
 			<attribute name="Main-Class" value="org.recompile.freej2me.FreeJ2ME"/>
@@ -46,10 +46,10 @@
 		destfile="build/freej2me-fx.jar"
 		basedir="build/classes">
 		<fileset dir="resources" />
-		<metainf dir="META-INF" />
+		<metainf dir="resources/META-INF" />
 		<manifest>
 			<!-- JavaFx Version -->
-			<attribute name="Main-Class" value="org.recompile.freej2me.Main"/>
+			<attribute name="Main-Class" value="org.recompile.freej2me.JavaFx"/>
 			<attribute name="Implementation-Title" value="FreeJ2ME"/>
 		</manifest>
 	</jar>
@@ -59,7 +59,7 @@
 		destfile="build/freej2me-lr.jar"
 		basedir="build/classes">
 		<fileset dir="resources" />
-		<metainf dir="META-INF" />
+		<metainf dir="resources/META-INF" />
 		<manifest>
 			<!-- Libretro Version -->
 			<attribute name="Main-Class" value="org.recompile.freej2me.Libretro"/>
@@ -72,7 +72,7 @@
 		destfile="build/freej2me-sdl.jar"
 		basedir="build/classes">
 		<fileset dir="resources" />
-		<metainf dir="META-INF" />
+		<metainf dir="resources/META-INF" />
 		<manifest>
 			<!-- Libretro Version -->
 			<attribute name="Main-Class" value="org.recompile.freej2me.RetroPie"/>

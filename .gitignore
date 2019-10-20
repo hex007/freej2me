@@ -1,4 +1,7 @@
 build/
+*.iml
+.idea
+.gradle
 *.o
 *.so
 src/sdl2/sdl_interface

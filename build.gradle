@@ -1,0 +1,105 @@
+apply plugin: 'java'
+
+sourceCompatibility = '1.8'
+project.version = '1.0.0'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+}
+
+sourceSets {
+    main {
+    }
+}
+
+sourceSets.all {
+    java.srcDirs = ['src']
+    resources.srcDirs = ['resources']
+}
+
+task awtJar(type: Jar, dependsOn: compileJava) {
+    manifest {
+        attributes("Main-Class": "org.recompile.freej2me.FreeJ2ME",
+                "Implementation-Title": "FreeJ2ME")
+    }
+    from sourceSets.main.output
+    destinationDir = file("${buildDir}")
+    archiveName = 'freej2me.jar'
+}
+
+task fxJar(type: Jar, dependsOn: compileJava) {
+    manifest {
+        attributes("Main-Class": "org.recompile.freej2me.JavaFx",
+                "Implementation-Title": "FreeJ2ME")
+    }
+    from sourceSets.main.output
+    destinationDir = file("${buildDir}")
+    archiveName = 'freej2me-fx.jar'
+}
+
+task libretroJar(type: Jar, dependsOn: compileJava) {
+    manifest {
+        attributes("Main-Class": "org.recompile.freej2me.Libretro",
+                "Implementation-Title": "FreeJ2ME")
+    }
+    from sourceSets.main.output
+    destinationDir = file("${buildDir}")
+    archiveName = 'freej2me-lr.jar'
+}
+
+task sdlJar(type: Jar, dependsOn: compileJava) {
+    manifest {
+        attributes("Main-Class": "org.recompile.freej2me.RetroPie",
+                "Implementation-Title": "FreeJ2ME")
+    }
+    from sourceSets.main.output
+    destinationDir = file("${buildDir}")
+    archiveName = 'freej2me-sdl.jar'
+}
+
+task jars(dependsOn: [awtJar, fxJar, libretroJar, sdlJar])
+
+task sdlInterfaceMake(type: Exec) {
+    workingDir 'src/sdl2'
+    commandLine 'make'
+}
+
+task sdlInterfaceInstall(type: Exec, dependsOn: sdlInterfaceMake) {
+    workingDir 'src/sdl2'
+    commandLine 'make', 'install'
+}
+
+task sdlInterface(type: Exec, dependsOn: sdlInterfaceMake) {
+    workingDir 'src/sdl2'
+    environment(DESTDIR: "${buildDir}")
+    commandLine 'make', 'install'
+}
+
+task libretroMake(type: Exec) {
+    workingDir 'src/libretro'
+    commandLine 'make'
+}
+
+task libretroInstall(type: Exec) {
+    workingDir 'src/libretro'
+    commandLine 'make', 'install'
+}
+
+task libretro(type: Exec, dependsOn: [libretroMake, libretroJar]) {
+    workingDir 'src/libretro'
+    environment(DESTDIR: "${buildDir}")
+    commandLine 'make', 'all', 'install'
+}
+
+task sdl(dependsOn: [sdlInterface, sdlJar])
+
+task binaries(dependsOn: [sdlInterface, libretro])
+
+artifacts {
+    archives awtJar, fxJar, libretroJar, sdlJar
+}
+
+build.dependsOn(jars, binaries)
