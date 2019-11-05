@@ -56,6 +56,8 @@ public class Sprite	extends	Layer
 	public int rowCount;
 	public int colCount;
 
+	public Sprite() { }
+
 	public Sprite(Image image)
 	{
 		setImage(image, image.width, image.height);
