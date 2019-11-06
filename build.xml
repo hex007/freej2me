@@ -4,11 +4,11 @@
 
 <!--
 ****************************************************
-*    AWT, JavaFX, RetroPie, SDL
+*    AWT, RetroPie, SDL
 ****************************************************
 -->
 
-	<echo message="FreeJ2ME - AWT | JavaFx | Libretro | SDL" />
+	<echo message="FreeJ2ME - AWT | Libretro | SDL" />
 	<mkdir dir="build/classes"/>
 	<javac
 		srcdir="src"
@@ -37,19 +37,6 @@
 		<manifest>
 			<!-- AWT Version -->
 			<attribute name="Main-Class" value="org.recompile.freej2me.FreeJ2ME"/>
-			<attribute name="Implementation-Title" value="FreeJ2ME"/>
-		</manifest>
-	</jar>
-
-	<echo message="Building JAR - JavaFx" />
-	<jar
-		destfile="build/freej2me-fx.jar"
-		basedir="build/classes">
-		<fileset dir="resources" />
-		<metainf dir="META-INF" />
-		<manifest>
-			<!-- JavaFx Version -->
-			<attribute name="Main-Class" value="org.recompile.freej2me.Main"/>
 			<attribute name="Implementation-Title" value="FreeJ2ME"/>
 		</manifest>
 	</jar>
