@@ -18,10 +18,10 @@
 package com.siemens.mp.color_game;
 
 import javax.microedition.lcdui.Image;
-import javax.microedition.lcdui.Graphics;
 
 public abstract class Layer extends javax.microedition.lcdui.game.Layer
 {
+
 	protected Image image;
 
 	public Layer() { }
