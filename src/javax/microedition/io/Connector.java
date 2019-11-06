@@ -28,6 +28,9 @@ public class Connector
 	public static final int READ_WRITE = 3;
 	public static final int WRITE = 2;
 
+	
+	public static InputStream openInputStream(String name) { return new fakeIS(); }
+
 /*
 
 	public static Connection open(String name) {  }
@@ -36,13 +39,35 @@ public class Connector
 
 	public static Connection open(String name, int mode, boolean timeouts) {  }
 
-	public static DataInputStream openDataInputStream(String name) {  }
+	public static DataInputStream openDataInputStream(String name) { return new DataInputStream(new fakeIS()); }
 
-	public static DataOutputStream openDataOutputStream(String name) {  }
+	public static DataOutputStream openDataOutputStream(String name) { return new DataOutputStream(new OutputStream()); }
 
-	public static InputStream openInputStream(String name) {  }
+	public static OutputStream openOutputStream(String name) { return new OutputStream(); }
 
-	public static OutputStream openOutputStream(String name) {  }
 */
+
+
+	// fake inputstream 
+	private static class fakeIS extends InputStream
+	{
+		public int avaliable() { return 0; }
+
+		public void close() { }
+
+		public void mark() { }
+
+		public boolean markSupported() { return false; }
+
+		public int read() { return 0; }
+
+		public int read(byte[] b) { return 0; }
+		
+		public int read(byte[] b, int off, int len) { return 0; }
+
+		public void reset() { }
+
+		public long skip(long n) { return (long)0; }
+	}
 
 }
