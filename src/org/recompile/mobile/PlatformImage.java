@@ -212,6 +212,19 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 		return canvas.getRGB(x, y);
 	}
 
+	public int getPixel(int x, int y)
+	{
+		int[] rgbData = { 0 };
+		canvas.getRGB(x, y, 1, 1, rgbData, 0, 1);
+		return rgbData[0];
+	}
+
+	public void setPixel(int x, int y, int color)
+	{
+		int[] rgbData = { color };
+		gc.drawRGB(rgbData, 0, 1, x, y, 1, 1, false);
+	}
+
 	public static BufferedImage transformImage(BufferedImage image, int transform)
 	{
 		int width = (int)image.getWidth();
