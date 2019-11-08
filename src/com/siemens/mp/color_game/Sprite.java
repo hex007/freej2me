@@ -62,21 +62,26 @@ public class Sprite	extends	Layer
 	public int rowCount;
 	public int colCount;
 
-	public Sprite() { }
+	public Sprite()
+	{
+		System.out.println("Sprite A");
+	}
 
 	public Sprite(Image image)
 	{
+		//System.out.println("Sprite B");
 		setImage(image, image.width, image.height);
 	}
 
 	public Sprite(Image image, int frameW, int frameH)
 	{
+		System.out.println("Sprite C");
 		setImage(image, frameW, frameH);
 	}
 
 	public Sprite(Sprite s)
 	{
-		System.out.println("Sprite sprite");
+		System.out.println("Sprite D");
 		sprite = s.sprite;
 	}
 

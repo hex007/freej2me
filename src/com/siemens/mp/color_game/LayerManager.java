@@ -18,7 +18,23 @@
 
 package com.siemens.mp.color_game;
 
+import java.util.Vector;
+
 public class LayerManager extends javax.microedition.lcdui.game.LayerManager
 {
+	private Vector<Layer> layers;
 
+	public LayerManager() { super(); }
+
+	public void append(Layer l)
+	{
+		try
+		{
+			layers.add(l);
+		}
+		catch(Exception e)
+		{
+			System.out.println("Can't Append Layer " + e.getMessage());
+		}
+	}
 }
