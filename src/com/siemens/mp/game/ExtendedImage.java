@@ -28,19 +28,50 @@ import com.siemens.mp.misc.NativeMem;
 
 public class ExtendedImage extends com.siemens.mp.misc.NativeMem
 {
+	private int[] palette = { 0xFF000000, 0xFFFFFFFF };
+
 	private PlatformImage image;
+
+	private PlatformGraphics gc;
+
+	private int width;
+
+	private int height; 
 	
-	public ExtendedImage(Image img) { image = new PlatformImage(img); }
+	public ExtendedImage(Image img)
+	{
+		image = new PlatformImage(img);
+		width = image.getWidth();
+		height = image.getHeight();
+		gc = image.getGraphics();
+	}
 
 	public Image getImage() { return image; }
 
-	public int getPixel(int x, int y) { return 1; }
+	public int getPixel(int x, int y)
+	{
+		return image.getPixel(x, y);
+	}
 
-	public void setPixel(int x, int y, byte color) { }
+	public void setPixel(int x, int y, byte color)
+	{
+		image.setPixel(x, y, palette[color & 0x1]);
+		System.out.println("setPixels");
+	}
 
 	public void getPixelBytes(byte[] pixels, int x, int y, int width, int height) { }
 
-	public void setPixels(byte[] pixels, int x, int y, int width, int height) { }
+	public void setPixels(byte[] pixels, int x, int y, int width, int height) { System.out.println("setPixels"); }
 
-	public void clear(byte color) { }
+	public void clear(byte color)
+	{
+		gc.setColor(palette[color & 1]);
+		gc.fillRect(0, 0, width, height);
+		gc.setColor(palette[0]);
+	}
+
+	public void blitToScreen(int x, int y) // from Micro Java Game Development By David Fox, Roman Verhovsek
+	{
+		Mobile.getPlatform().flushGraphics(image, x, y, width, height);
+	} 
 }

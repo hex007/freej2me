@@ -31,21 +31,26 @@ import java.util.ArrayList;
 
 public class GraphicObjectManager extends com.siemens.mp.misc.NativeMem
 {
+	ArrayList<GraphicObject> list = new ArrayList<GraphicObject>();
+
 	public GraphicObjectManager() { }
 	
-	public static byte[] createTextureBits(int width, int height, byte[] texture) { return texture; }
+	public static byte[] createTextureBits(int width, int height, byte[] texture)
+	{
+		return texture;
+	}
 	
 
-	public void addObject(GraphicObject g) { }
+	public void addObject(GraphicObject g) { list.add(g); }
 
-	public void insertObject(GraphicObject g, int pos) { }
+	public void insertObject(GraphicObject g, int pos) { list.add(pos, g); }
 
-	public void deleteObject(GraphicObject g) { }
+	public void deleteObject(GraphicObject g) { list.remove(g); }
 
 
-	public GraphicObject getObjectAt(int index) { return null; }
+	public GraphicObject getObjectAt(int index) { return list.get(index); }
 	
-	public int getObjectPosition(GraphicObject gobject) { return 0; }
+	public int getObjectPosition(GraphicObject g) { return list.indexOf(g); }
 
 	
 	public void paint(ExtendedImage img, int x, int y) { }
