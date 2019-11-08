@@ -21,6 +21,8 @@ import java.io.OutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
+import org.recompile.mobile.Mobile;
+
 public class Connector
 {
 
@@ -29,7 +31,27 @@ public class Connector
 	public static final int WRITE = 2;
 
 	
-	public static InputStream openInputStream(String name) { return new fakeIS(); }
+	public static InputStream openInputStream(String name)
+	{
+		//System.out.println("Connector: " + name);
+		if(name.startsWith("resource:")) // older Siemens phones?
+		{
+			return Mobile.getPlatform().loader.getMIDletResourceAsStream(name.substring(9));
+		}
+		else
+		{
+			//return Mobile.getPlatform().loader.getMIDletResourceAsStream(name); // possible
+			System.out.println("Faked InputStream for "+name); // just in case //
+			return new fakeIS();
+		}
+	}
+
+
+	public static DataInputStream openDataInputStream(String name)
+	{
+		System.out.println("Faked DataInputStream: "+name);
+		return new DataInputStream(new fakeIS());
+	}
 
 /*
 
@@ -38,8 +60,6 @@ public class Connector
 	public static Connection open(String name, int mode) {  }
 
 	public static Connection open(String name, int mode, boolean timeouts) {  }
-
-	public static DataInputStream openDataInputStream(String name) { return new DataInputStream(new fakeIS()); }
 
 	public static DataOutputStream openDataOutputStream(String name) { return new DataOutputStream(new OutputStream()); }
 
