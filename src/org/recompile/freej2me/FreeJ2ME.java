@@ -39,6 +39,7 @@ public class FreeJ2ME
 	private Frame main;
 	private int lcdWidth;
 	private int lcdHeight;
+	private int scaleFactor = 1;
 
 	private LCD lcd;
 
@@ -86,6 +87,10 @@ public class FreeJ2ME
 			lcdWidth = Integer.parseInt(args[1]);
 			lcdHeight = Integer.parseInt(args[2]);
 		}
+		if(args.length>=4)
+		{
+			scaleFactor = Integer.parseInt(args[3]);
+		}
 
 		Mobile.setPlatform(new MobilePlatform(lcdWidth, lcdHeight));
 
@@ -108,6 +113,22 @@ public class FreeJ2ME
 		{
 			public void keyPressed(KeyEvent e)
 			{
+				switch(e.getKeyCode())
+				{
+					case KeyEvent.VK_PLUS:
+					case KeyEvent.VK_ADD:
+						scaleFactor++;
+						main.setSize(lcdWidth * scaleFactor + xborder, lcdHeight * scaleFactor + yborder);
+					break;
+					case KeyEvent.VK_MINUS:
+					case KeyEvent.VK_SUBTRACT:
+						if( scaleFactor > 1 )
+						{
+							scaleFactor--;
+							main.setSize(lcdWidth * scaleFactor + xborder, lcdHeight * scaleFactor + yborder);
+						}
+					break;	
+				}
 				if(config.isRunning)
 				{
 					config.keyPressed(getMobileKey(e.getKeyCode()));
@@ -168,7 +189,7 @@ public class FreeJ2ME
 		main.pack();
 
 		resize();
-		main.setSize(lcdWidth+xborder, lcdHeight+yborder);
+		main.setSize(lcdWidth*scaleFactor+xborder, lcdHeight*scaleFactor+yborder);
 
 		if(args.length<1)
 		{
@@ -220,7 +241,7 @@ public class FreeJ2ME
 			Mobile.getPlatform().resizeLCD(w, h);
 
 			resize();
-			main.setSize(lcdWidth+xborder, lcdHeight+yborder);
+			main.setSize(lcdWidth*scaleFactor+xborder , lcdHeight*scaleFactor+yborder);
 		}
 	}
 
