@@ -30,16 +30,16 @@ import org.recompile.mobile.PlatformGraphics;
 public class LayerManager
 {
 
-	private Vector<Layer> layers;
+	protected Vector<Layer> layers;
 
-	private Image canvas;
-	private PlatformGraphics gc;
-	private Shape clip;
+	protected Image canvas;
+	protected PlatformGraphics gc;
+	protected Shape clip;
 
-	private int x;
-	private int y;
-	private int width;
-	private int height;
+	protected int x;
+	protected int y;
+	protected int width;
+	protected int height;
 
 
 	public LayerManager()

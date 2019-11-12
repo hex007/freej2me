@@ -22,10 +22,12 @@ import javax.microedition.lcdui.Graphics;
 
 public abstract class Layer
 {
-
 	protected int x;
+
 	protected int y;
+	
 	protected int height;
+	
 	protected int width;
 
 	protected boolean visible;
