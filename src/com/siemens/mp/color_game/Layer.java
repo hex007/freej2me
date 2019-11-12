@@ -24,17 +24,24 @@ public abstract class Layer extends javax.microedition.lcdui.game.Layer
 
 	protected Image image;
 
-	public Layer() { }
+	public Layer() { x = 0;  y = 0; }
 
-	public Layer(int w, int h) { width = w; height = h; }
+	public Layer(int w, int h) { x = 0;  y = 0; width = w; height = h; }
 
-	public Layer(Image i) { image = i; }
+	public Layer(Image i) { setLayerImage(i); }
 
 	protected void setWidth(int w) { width = w; }
 
 	protected void setHeight(int h) { height = h; }
 
-	protected void setLayerImage(Image i) { image = i; }
+	protected void setLayerImage(Image i)
+	{
+		image = i;
+		x = 0;
+		y = 0;
+		width = i.getWidth();
+		height = i.getHeight();
+	}
 
 	protected Image getLayerImage() { return image; }
 

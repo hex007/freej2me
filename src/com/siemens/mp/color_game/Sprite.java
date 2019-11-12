@@ -53,39 +53,55 @@ public class Sprite	extends	Layer
 
 	private Vector<Integer> sequence = new Vector<Integer>();
 
-	private int frame;
+	private int frame=0;
 	private int frameWidth;
 	private int frameHeight;
-	private int frameCount;
+	private int frameCount=1;
+	private int imgWidth;
+	private int imgHeight;
 
-	public Image sprite;
-	public int rowCount;
-	public int colCount;
+	public int rowCount=1;
+	public int colCount=1;
 
 	public Sprite()
 	{
 		System.out.println("Sprite A");
 	}
 
-	public Sprite(Image image)
+	public Sprite(Image img)
 	{
-		//System.out.println("Sprite B");
-		setImage(image, image.width, image.height);
+		//System.out.println("Sprite B"); // used in wizardry.jar
+		imgWidth = img.getWidth();
+		imgHeight = img.getHeight();
+		frameWidth = imgWidth; 
+		frameHeight = imgHeight;
+		colCount = 1;
+		rowCount = 1;
+		frameCount = 1;
+		setImage(img, imgWidth, imgHeight);
 	}
 
-	public Sprite(Image image, int frameW, int frameH)
+	public Sprite(Image img, int frameW, int frameH)
 	{
-		System.out.println("Sprite C");
-		setImage(image, frameW, frameH);
+		//System.out.println("Sprite C"); // used in wizardry.jar
+		System.out.println("Sprite C: "+frameW+", "+frameH+" of "+img.getWidth()+", "+img.getHeight());
+		imgWidth = img.getWidth();
+		imgHeight = img.getHeight();
+		frameWidth = frameW;
+		frameHeight = frameH;
+		colCount = (int)(imgWidth/frameWidth);
+		rowCount = (int)(imgHeight/frameHeight);
+		frameCount = rowCount * colCount; 
+		setImage(img, frameWidth, frameHeight);
 	}
 
 	public Sprite(Sprite s)
 	{
 		System.out.println("Sprite D");
-		sprite = s.sprite;
+		image = s.image;
 	}
 
-	public boolean collidesWith(Image image, int x, int y, boolean pixelLevel)
+	public boolean collidesWith(Image img, int x, int y, boolean pixelLevel)
 	{
 		return false;
 	}
@@ -156,9 +172,9 @@ public class Sprite	extends	Layer
 		try
 		{
 			int f = sequence.get(frame);
-			int r = frameHeight * (f/colCount);
-			int c = frameWidth * (f % colCount);
-			g.drawRegion(sprite, c, r, frameWidth, frameHeight, transform, x, y, 0);
+			int r = frameHeight * ((int)(f/colCount));
+			int c = frameWidth * ((int)(f % colCount));
+			g.drawRegion(image, c, r, frameWidth, frameHeight, transform, x, y, 0);
 		}
 		catch (Exception e)
 		{
@@ -200,7 +216,7 @@ public class Sprite	extends	Layer
 
 	public void setImage(Image img, int frameW, int frameH)
 	{
-		sprite = img;
+		image = img;
 		frameWidth = frameW;
 		frameHeight = frameH;
 
@@ -209,8 +225,8 @@ public class Sprite	extends	Layer
 		hitWidth = frameWidth;
 		hitHeight = frameHeight;
 
-		double spriteW = sprite.platformImage.width;
-		double spriteH = sprite.platformImage.height;
+		double spriteW = image.platformImage.width;
+		double spriteH = image.platformImage.height;
 
 		colCount = (int)Math.floor(spriteW/(double)frameW);
 		rowCount = (int)Math.floor(spriteH/(double)frameH);
