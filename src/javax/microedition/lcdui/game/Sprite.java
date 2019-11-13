@@ -47,31 +47,60 @@ public class Sprite	extends	Layer
 
 	private Vector<Integer> sequence = new Vector<Integer>();
 
-	private int frame;
+	public Image sprite;
+
+	private int frame=0;
 	private int frameWidth;
 	private int frameHeight;
-	private int frameCount;
+	private int frameCount=1;
+	private int imgWidth;
+	private int imgHeight;
 
-	public Image sprite;
-	public int rowCount;
-	public int colCount;
+	public int rowCount=1;
+	public int colCount=1;
 
-	public Sprite() { }
-
-	public Sprite(Image image)
+	public Sprite()
 	{
-		setImage(image, image.width, image.height);
+		System.out.println("Sprite A");
 	}
 
-	public Sprite(Image image, int frameW, int frameH)
+	public Sprite(Image img)
 	{
-		setImage(image, frameW, frameH);
+		System.out.println("Sprite B");
+		imgWidth = img.getWidth();
+		imgHeight = img.getHeight();
+		frameWidth = imgWidth; 
+		frameHeight = imgHeight;
+		colCount = 1;
+		rowCount = 1;
+		frameCount = 1;
+		setImage(img, imgWidth, imgHeight);
+	}
+
+	public Sprite(Image img, int frameW, int frameH)
+	{
+		System.out.println("Sprite C");
+		imgWidth = img.getWidth();
+		imgHeight = img.getHeight();
+		frameWidth = frameW;
+		frameHeight = frameH;
+		colCount = (int)(imgWidth/frameWidth);
+		rowCount = (int)(imgHeight/frameHeight);
+		frameCount = rowCount * colCount; 
+		setImage(img, frameWidth, frameHeight);
 	}
 
 	public Sprite(Sprite s)
 	{
-		System.out.println("Sprite sprite");
-		sprite = s.sprite;
+		System.out.println("Sprite D");
+		imgWidth = s.sprite.getWidth();
+		imgHeight = s.sprite.getHeight();
+		frameWidth = imgWidth; 
+		frameHeight = imgHeight;
+		colCount = 1;
+		rowCount = 1;
+		frameCount = 1;
+		setImage(s.sprite, imgWidth, imgHeight);
 	}
 
 	public boolean collidesWith(Image image, int x, int y, boolean pixelLevel)
