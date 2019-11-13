@@ -79,6 +79,15 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 
 		if(stream==null)
 		{
+			stream = Mobile.getPlatform().loader.getMIDletResourceAsStream(name+".png");
+		}
+		if(stream==null)
+		{
+			stream = Mobile.getPlatform().loader.getMIDletResourceAsStream(name+".jpg");
+		}
+
+		if(stream==null)
+		{
 			System.out.println("Couldn't Load Image Stream (can't find "+name+")");
 		}
 		else
@@ -163,9 +172,11 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 		catch(Exception e)
 		{
 			System.out.println("Couldn't Load Image Data From Byte Array");
-
+			canvas = new BufferedImage(Mobile.getPlatform().lcdWidth, Mobile.getPlatform().lcdHeight, BufferedImage.TYPE_INT_ARGB);
+			createGraphics();
 			//System.out.println(e.getMessage());
 			//e.printStackTrace();
+
 		}
 
 		platformImage = this;
