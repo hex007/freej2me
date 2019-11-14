@@ -137,7 +137,10 @@ public class FreeJ2ME
 						}
 					break;
 					case KeyEvent.VK_C:
-						ScreenShot.takeScreenshot(false);
+						if(e.isControlDown())
+						{
+							ScreenShot.takeScreenshot(false);
+						}
 					break;
 				}
 			}
