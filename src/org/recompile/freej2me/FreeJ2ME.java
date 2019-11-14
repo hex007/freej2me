@@ -113,6 +113,14 @@ public class FreeJ2ME
 		{
 			public void keyPressed(KeyEvent e)
 			{
+				if(config.isRunning)
+				{
+					config.keyPressed(getMobileKey(e.getKeyCode()));
+				}
+				else
+				{
+					Mobile.getPlatform().keyPressed(getMobileKey(e.getKeyCode()));
+				}
 				switch(e.getKeyCode())
 				{
 					case KeyEvent.VK_PLUS:
@@ -127,15 +135,10 @@ public class FreeJ2ME
 							scaleFactor--;
 							main.setSize(lcdWidth * scaleFactor + xborder, lcdHeight * scaleFactor + yborder);
 						}
-					break;	
-				}
-				if(config.isRunning)
-				{
-					config.keyPressed(getMobileKey(e.getKeyCode()));
-				}
-				else
-				{
-					Mobile.getPlatform().keyPressed(getMobileKey(e.getKeyCode()));
+					break;
+					case KeyEvent.VK_C:
+						ScreenShot.takeScreenshot(false);
+					break;
 				}
 			}
 
