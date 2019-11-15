@@ -37,6 +37,8 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 	protected BufferedImage canvas;
 	protected PlatformGraphics gc;
 
+	public boolean isNull = false;
+
 	public BufferedImage getCanvas()
 	{
 		return canvas;
@@ -79,16 +81,8 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 
 		if(stream==null)
 		{
-			stream = Mobile.getPlatform().loader.getMIDletResourceAsStream(name+".png");
-		}
-		if(stream==null)
-		{
-			stream = Mobile.getPlatform().loader.getMIDletResourceAsStream(name+".jpg");
-		}
-
-		if(stream==null)
-		{
 			System.out.println("Couldn't Load Image Stream (can't find "+name+")");
+			isNull = true;
 		}
 		else
 		{
@@ -107,6 +101,7 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 			{
 				System.out.println("Couldn't Load Image Stream " + name);
 				e.printStackTrace();
+				isNull = true;
 			}
 		}
 		platformImage = this;
@@ -131,6 +126,7 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 		catch(Exception e)
 		{
 			System.out.println("Couldn't Load Image Stream");
+			isNull = true;
 		}
 
 		platformImage = this;
@@ -176,7 +172,7 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 			createGraphics();
 			//System.out.println(e.getMessage());
 			//e.printStackTrace();
-
+			isNull = true;
 		}
 
 		platformImage = this;
