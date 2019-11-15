@@ -34,25 +34,33 @@ public class Image
 	public static Image createImage(byte[] imageData, int imageOffset, int imageLength)
 	{
 		//System.out.println("Create Image from image data ");
-		return new PlatformImage(imageData, imageOffset, imageLength);
+		PlatformImage t = new PlatformImage(imageData, imageOffset, imageLength);
+		if(t.isNull) { return (Image)null; }
+		return t;
 	}
 
 	public static Image createImage(Image source)
 	{
 		//System.out.println("Create Image from Image ");
-		return new PlatformImage(source);
+		PlatformImage t = new PlatformImage(source);
+		if(t.isNull) { return (Image)null; }
+		return t;
 	}
 
 	public static Image createImage(Image img, int x, int y, int width, int height, int transform)
 	{
 		//System.out.println("Create Image from sub-image ");
-		return new PlatformImage(width-x, height-y);
+		PlatformImage t = new PlatformImage(width-x, height-y);
+		if(t.isNull) { return (Image)null; }
+		return t;
 	}
 
 	public static Image createImage(InputStream stream)
 	{
 		//System.out.println("Create Image stream");
-		return new PlatformImage(stream);
+		PlatformImage t = new PlatformImage(stream);
+		if(t.isNull) { return (Image)null; }
+		return t;
 	}
 
 	public static Image createImage(int width, int height)
@@ -64,7 +72,9 @@ public class Image
 	public static Image createImage(String name)
 	{
 		//System.out.println("Create Image " + name);
-		return new PlatformImage(name);
+		PlatformImage t = new PlatformImage(name);
+		if(t.isNull) { return (Image)null; }
+		return t;
 	}
 
 	public static Image createRGBImage(int[] rgb, int width, int height, boolean processAlpha)
