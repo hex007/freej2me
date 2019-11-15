@@ -198,7 +198,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		// Copy from new image.  This avoids some problems with games that don't
 		// properly adapt to different display sizes.
 		BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		temp.setRGB(0, 0, width, height, rgbData, offset, scanlength);
+		temp.setRGB(0, 0, width, height, rgbData, offset, scanlength);	
 		gc.drawImage(temp, x, y, null);
 	}
 
@@ -250,6 +250,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 	public void fillRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight)
 	{
 		gc.fillRoundRect(x, y, width, height, arcWidth, arcHeight);
+		gc.fillRect(x, y, width, height);
 	}
 
 	//public int getBlueComponent() { }
@@ -416,7 +417,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
 	public void drawPixels(int[] pixels, boolean transparency, int offset, int scanlength, int x, int y, int width, int height, int manipulation, int format)
 	{
-		//System.out.println("drawPixels B"); // Found In Use
+		//System.out.println("drawPixels B"+format); // Found In Use
 		BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		temp.setRGB(0, 0, width, height, pixels, offset, scanlength);
 		BufferedImage temp2 = manipulateImage(temp, manipulation);
@@ -441,13 +442,17 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 	public void drawPolygon(int[] xPoints, int xOffset, int[] yPoints, int yOffset, int nPoints, int argbColor)
 	{
 		int temp = color;
+		int[] x = new int[nPoints];
+		int[] y = new int[nPoints];
+
 		setColor(argbColor);
-		for (int i=0; i<nPoints; i++)
+
+		for(int i=0; i<nPoints; i++)
 		{
-			xPoints[i] += xOffset;
-			yPoints[i] += yOffset;
+			x[i] = xPoints[xOffset+i];
+			y[i] = yPoints[yOffset+i];
 		}
-		gc.drawPolygon(xPoints, yPoints, nPoints);
+		gc.drawPolygon(x, y, nPoints);
 		setColor(temp);
 	}
 
@@ -463,13 +468,17 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 	public void fillPolygon(int[] xPoints, int xOffset, int[] yPoints, int yOffset, int nPoints, int argbColor)
 	{
 		int temp = color;
+		int[] x = new int[nPoints];
+		int[] y = new int[nPoints];
+
 		setColor(argbColor);
-		for (int i=0; i<nPoints; i++)
+
+		for(int i=0; i<nPoints; i++)
 		{
-			xPoints[i] += xOffset;
-			yPoints[i] += yOffset;
+			x[i] = xPoints[xOffset+i];
+			y[i] = yPoints[yOffset+i];
 		}
-		gc.fillPolygon(xPoints, yPoints, nPoints);
+		gc.fillPolygon(x, y, nPoints);
 		setColor(temp);
 	}
 
@@ -484,7 +493,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
 	public void getPixels(byte[] pixels, byte[] transparencyMask, int offset, int scanlength, int x, int y, int width, int height, int format)
 	{
-		System.out.println("getPixels A");
+		//System.out.println("getPixels A");
 	}
 
 	public void getPixels(int[] pixels, int offset, int scanlength, int x, int y, int width, int height, int format)
