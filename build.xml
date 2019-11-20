@@ -4,7 +4,7 @@
 
 <!--
 ****************************************************
-*    AWT, RetroPie, SDL
+*    AWT, Libretro, SDL
 ****************************************************
 -->
 
@@ -62,7 +62,7 @@
 		<metainf dir="META-INF" />
 		<manifest>
 			<!-- Libretro Version -->
-			<attribute name="Main-Class" value="org.recompile.freej2me.RetroPie"/>
+			<attribute name="Main-Class" value="org.recompile.freej2me.Anbu"/>
 			<attribute name="Implementation-Title" value="FreeJ2ME"/>
 		</manifest>
 	</jar>
