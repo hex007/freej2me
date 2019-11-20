@@ -317,6 +317,63 @@ public class MIDletLoader extends URLClassLoader
 
 	}
 
+
+/* **************************************************************
+ * Special Siemens Stuff
+ * ************************************************************** */
+
+	public InputStream getMIDletResourceAsSiemensStream(String resource)
+	{
+		URL url = getResource(resource);
+
+		try
+		{
+			InputStream stream = url.openStream();
+
+			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+			int count=0;
+			byte[] data = new byte[4096];
+			while (count!=-1)
+			{
+				count = stream.read(data);
+				if(count!=-1) { buffer.write(data, 0, count); }
+			}
+			return new SiemensInputStream(buffer.toByteArray());
+		}
+		catch (Exception e)
+		{
+			return super.getResourceAsStream(resource);
+		}
+	}
+
+	private class SiemensInputStream extends InputStream
+	{
+		private ByteArrayInputStream iostream;
+
+		public SiemensInputStream(byte[] data)
+		{
+			iostream = new ByteArrayInputStream(data);
+		}
+
+		public int read()
+		{
+			int t = iostream.read();
+			if (t == -1) { return 0; }
+			return t;
+		}
+		public int read(byte[] b, int off, int len)
+		{
+			int t = iostream.read(b, off, len);
+			if (t == -1) { return 0; }
+			return t;
+		}
+	}
+
+
+/* ************************************************************** 
+ * Instrumentation
+ * ************************************************************** */
+
 	private byte[] instrument(InputStream stream) throws Exception
 	{
 		ClassReader reader = new ClassReader(stream);
