@@ -49,7 +49,8 @@ public class FreeJ2ME
 	private PlatformImage img;
 
 	private Config config;
-	private boolean useNokiaControls = true;
+	private boolean useNokiaControls = false;
+	private boolean useSiemensControls = false;
 	private boolean rotateDisplay = false;
 	private int limitFPS = 0;
 
@@ -232,12 +233,14 @@ public class FreeJ2ME
 		if(limitFPS>0) { limitFPS = 1000 / limitFPS; }
 
 		String sound = config.settings.get("sound");
+		Mobile.getPlatform().sound = false;
 		if(sound.equals("on")) { Mobile.getPlatform().sound = true; }
-		if(sound.equals("off")) { Mobile.getPlatform().sound = false; }
 
-		String nokia = config.settings.get("nokia");
-		if(nokia.equals("on")) { useNokiaControls = true; }
-		if(nokia.equals("off")) { useNokiaControls = false; }
+		String phone = config.settings.get("phone");
+		useNokiaControls = false;
+		useSiemensControls = false;
+		if(phone.equals("Nokia")) { useNokiaControls = true; }
+		if(phone.equals("Siemens")) { useSiemensControls = true; }
 
 		if(lcdWidth != w || lcdHeight != h)
 		{
@@ -262,6 +265,19 @@ public class FreeJ2ME
 				case KeyEvent.VK_LEFT: return Mobile.NOKIA_LEFT;
 				case KeyEvent.VK_RIGHT: return Mobile.NOKIA_RIGHT;
 
+			}
+		}
+
+		if(useSiemensControls)
+		{
+			switch(keycode)
+			{
+				case KeyEvent.VK_UP: return Mobile.SIEMENS_UP;
+				case KeyEvent.VK_DOWN: return Mobile.SIEMENS_DOWN;
+				case KeyEvent.VK_LEFT: return Mobile.SIEMENS_LEFT;
+				case KeyEvent.VK_RIGHT: return Mobile.SIEMENS_RIGHT;
+				case KeyEvent.VK_Q: return Mobile.SIEMENS_SOFT1;
+				case KeyEvent.VK_W: return Mobile.SIEMENS_SOFT2;
 			}
 		}
 

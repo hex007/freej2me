@@ -44,7 +44,8 @@ public class Libretro
 	private Graphics2D gc;
 
 	private Config config;
-	private boolean useNokiaControls = true;
+	private boolean useNokiaControls = false;
+	private boolean useSiemensControls = false;
 	private boolean rotateDisplay = false;
 	private int limitFPS = 0;
 
@@ -283,12 +284,14 @@ public class Libretro
 		if(limitFPS>0) { limitFPS = 1000 / limitFPS; }
 
 		String sound = config.settings.get("sound");
+		Mobile.getPlatform().sound = false;
 		if(sound.equals("on")) { Mobile.getPlatform().sound = true; }
-		if(sound.equals("off")) { Mobile.getPlatform().sound = false; }
 
-		String nokia = config.settings.get("nokia");
-		if(nokia.equals("on")) { useNokiaControls = true; }
-		if(nokia.equals("off")) { useNokiaControls = false; }
+		String nokia = config.settings.get("phone");
+		useNokiaControls = false;
+		useSiemensControls = false;
+		if(nokia.equals("Nokia")) { useNokiaControls = true; }
+		if(nokia.equals("Siemens")) { useSiemensControls = true; }
 
 		String rotate = config.settings.get("rotate");
 		if(rotate.equals("on")) { rotateDisplay = true; frameHeader[5] = (byte)1; }
@@ -337,6 +340,21 @@ public class Libretro
 				case 275: return Mobile.NOKIA_RIGHT; // Right
 			}
 		}
+		if(useSiemensControls)
+		{
+			switch(keycode)
+			{
+				case 273: return Mobile.SIEMENS_UP;
+				case 274: return Mobile.SIEMENS_DOWN;
+				case 276: return Mobile.SIEMENS_LEFT;
+				case 275: return Mobile.SIEMENS_RIGHT;
+				case 113: return Mobile.SIEMENS_SOFT1;
+				case 119: return Mobile.SIEMENS_SOFT2;
+				case 91: return Mobile.SIEMENS_SOFT1;
+				case 93: return Mobile.SIEMENS_SOFT2;
+			}
+		}
+
 		switch(keycode)
 		{
 			case 48: return Mobile.KEY_NUM0;

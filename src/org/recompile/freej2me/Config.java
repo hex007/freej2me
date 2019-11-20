@@ -65,11 +65,11 @@ public class Config
 		gc = lcd.getGraphics();
 
 		menu = new ArrayList<String[]>();
-		menu.add(new String[]{"Resume Game", "Display Size", "Sound", "Limit FPS", "Nokia", "Rotate", "Exit"}); // 0 - Main Menu
+		menu.add(new String[]{"Resume Game", "Display Size", "Sound", "Limit FPS", "Phone", "Rotate", "Exit"}); // 0 - Main Menu
 		menu.add(new String[]{"96x65","128x128","128x160","176x208", "208x208", "240x320", "320x240", "240x400", "360x640", "480x800"}); // 1 - Size
 		menu.add(new String[]{"Quit", "Main Menu"}); // 2 - Restart Notice
 		menu.add(new String[]{"On", "Off"}); // 3 - sound
-		menu.add(new String[]{"On", "Off"}); // 4 - nokia
+		menu.add(new String[]{"Standard", "Nokia", "Siemens"}); // 4 - Phone 
 		menu.add(new String[]{"On", "Off"}); // 5 - rotate 
 		menu.add(new String[]{"Auto", "60 - Fast", "30 - Slow", "15 - Turtle"}); // 6 - FPS
 
@@ -108,7 +108,7 @@ public class Config
 				settings.put("width", ""+width);
 				settings.put("height", ""+height);
 				settings.put("sound", "on");
-				settings.put("nokia", "on");
+				settings.put("phone", "Standard");
 				settings.put("rotate", "off");
 				settings.put("fps", "0");
 				saveConfig();
@@ -134,6 +134,11 @@ public class Config
 					parts[1] = parts[1].trim();
 					if(parts[0]!="" && parts[1]!="")
 					{
+						if(parts[0].equals("nokia"))
+						{
+							parts[0] = "phone";
+							if(parts[1].equals("on")) { parts[1] = "Nokia"; } else { parts[0] = "Standard"; }
+						}
 						settings.put(parts[0], parts[1]);
 					}
 				}
@@ -141,7 +146,7 @@ public class Config
 			if(!settings.containsKey("width")) { settings.put("width", ""+width); }
 			if(!settings.containsKey("height")) { settings.put("height", ""+height); }
 			if(!settings.containsKey("sound")) { settings.put("sound", "on"); }
-			if(!settings.containsKey("nokia")) { settings.put("nokia", "on"); }
+			if(!settings.containsKey("phone")) { settings.put("phone", "Standard"); }
 			if(!settings.containsKey("rotate")) { settings.put("rotate", "off"); }
 			if(!settings.containsKey("fps")) { settings.put("fps", "0"); }
 
@@ -203,10 +208,26 @@ public class Config
 		{
 			case Mobile.KEY_NUM2: itemid--; break;
 			case Mobile.KEY_NUM8: itemid++; break;
-			case Mobile.NOKIA_UP: itemid--; break;
-			case Mobile.NOKIA_DOWN: itemid++; break;
-			case Mobile.NOKIA_SOFT1: menuid--; break;
 			case Mobile.KEY_NUM5: doMenuAction(); break;
+			default:
+				if(settings.get("phone").equals("Nokia"))
+				{
+					switch(key)
+					{
+						case Mobile.NOKIA_UP: itemid--; break;
+						case Mobile.NOKIA_DOWN: itemid++; break;
+						case Mobile.NOKIA_SOFT1: menuid--; break;
+					}
+				}
+				if(settings.get("phone").equals("Siemens"))
+				{
+					switch(key)
+					{
+						case Mobile.SIEMENS_UP: itemid--; break;
+						case Mobile.SIEMENS_DOWN: itemid++; break;
+						case Mobile.SIEMENS_SOFT1: menuid--; break;
+					}
+				}
 		}
 		if (menuid<0) { menuid=0; itemid=0; }
 		if (itemid>=menu.get(menuid).length) { itemid = menu.get(menuid).length-1; }
@@ -284,7 +305,7 @@ public class Config
 				{
 					case 2: label = label+": "+settings.get("sound"); break;
 					case 3: label = label+": "+settings.get("fps"); break;
-					case 4: label = label+": "+settings.get("nokia"); break;
+					case 4: label = label+": "+settings.get("phone"); break;
 					case 5: label = label+": "+settings.get("rotate"); break;
 				}
 			}
@@ -314,7 +335,7 @@ public class Config
 					case 1: menuid=1; itemid=0; break; // display size
 					case 2: menuid=3; itemid=0; break; // sound
 					case 3: menuid=6; itemid=0; break; // fps
-					case 4: menuid=4; itemid=0; break; // nokia
+					case 4: menuid=4; itemid=0; break; // phone
 					case 5: menuid=5; itemid=0; break; // rotate
 					case 6: System.exit(0); break;
 				}
@@ -342,9 +363,10 @@ public class Config
 				menuid=0; itemid=0;
 			break;
 
-			case 4: // Turn Nokia Controls On/Off
-				if(itemid==0) { updateNokia("on"); }
-				if(itemid==1) { updateNokia("off"); }
+			case 4: // Switch Phone Mode
+				if(itemid==0) { updatePhone("Standard"); }
+				if(itemid==1) { updatePhone("Nokia"); }
+				if(itemid==2) { updatePhone("Siemens"); }
 				menuid=0; itemid=0;
 			break;
 
@@ -388,10 +410,10 @@ public class Config
 		onChange.run();
 	}
 
-	private void updateNokia(String value)
+	private void updatePhone(String value)
 	{
-		System.out.println("Config: nokia "+value);
-		settings.put("nokia", value);
+		System.out.println("Config: phone "+value);
+		settings.put("phone", value);
 		saveConfig();
 		onChange.run();
 	}
