@@ -41,6 +41,14 @@ public class LayerManager extends javax.microedition.lcdui.game.LayerManager
 		gc = canvas.platformImage.getGraphics();
 	}
 
+	public void paint(Graphics g, int xdest, int ydest)
+	{
+		for(int i=0; i<layers.size(); i++)
+		{
+			g.drawImage(layers.get(i).getLayerImage(), xdest, ydest, Graphics.TOP|Graphics.LEFT);
+		}
+	}
+
 	public void append(Layer l)
 	{
 		try
