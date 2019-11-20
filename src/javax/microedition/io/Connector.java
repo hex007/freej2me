@@ -36,7 +36,7 @@ public class Connector
 		//System.out.println("Connector: " + name);
 		if(name.startsWith("resource:")) // older Siemens phones?
 		{
-			return Mobile.getPlatform().loader.getMIDletResourceAsStream(name.substring(9));
+			return Mobile.getPlatform().loader.getMIDletResourceAsSiemensStream(name.substring(9));
 		}
 		else
 		{
