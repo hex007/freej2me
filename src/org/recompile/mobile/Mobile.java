@@ -40,27 +40,28 @@ public class Mobile
 
 	public static boolean quiet = false;
 
-	public static final int KEY_NUM0  = Canvas.KEY_NUM0;
-	public static final int KEY_NUM1  = Canvas.KEY_NUM1;
-	public static final int KEY_NUM2  = Canvas.KEY_NUM2;
-	public static final int KEY_NUM3  = Canvas.KEY_NUM3;
-	public static final int KEY_NUM4  = Canvas.KEY_NUM4;
-	public static final int KEY_NUM5  = Canvas.KEY_NUM5;
-	public static final int KEY_NUM6  = Canvas.KEY_NUM6;
-	public static final int KEY_NUM7  = Canvas.KEY_NUM7;
-	public static final int KEY_NUM8  = Canvas.KEY_NUM8;
-	public static final int KEY_NUM9  = Canvas.KEY_NUM9;
-	public static final int KEY_STAR  = Canvas.KEY_STAR;
-	public static final int KEY_POUND = Canvas.KEY_POUND;
-	public static final int GAME_UP   = Canvas.UP;
-	public static final int GAME_DOWN = Canvas.DOWN;
-	public static final int GAME_LEFT = Canvas.LEFT;
-	public static final int GAME_RIGHT= Canvas.RIGHT;
-	public static final int GAME_FIRE = Canvas.FIRE;
-	public static final int GAME_A    = Canvas.GAME_A;
-	public static final int GAME_B    = Canvas.GAME_B;
-	public static final int GAME_C    = Canvas.GAME_C;
-	public static final int GAME_D    = Canvas.GAME_D;
+	public static final int KEY_NUM0  = Canvas.KEY_NUM0;  // 48
+	public static final int KEY_NUM1  = Canvas.KEY_NUM1;  // 49
+	public static final int KEY_NUM2  = Canvas.KEY_NUM2;  // 50
+	public static final int KEY_NUM3  = Canvas.KEY_NUM3;  // 51
+	public static final int KEY_NUM4  = Canvas.KEY_NUM4;  // 52
+	public static final int KEY_NUM5  = Canvas.KEY_NUM5;  // 53
+	public static final int KEY_NUM6  = Canvas.KEY_NUM6;  // 54
+	public static final int KEY_NUM7  = Canvas.KEY_NUM7;  // 55
+	public static final int KEY_NUM8  = Canvas.KEY_NUM8;  // 56
+	public static final int KEY_NUM9  = Canvas.KEY_NUM9;  // 57
+	public static final int KEY_STAR  = Canvas.KEY_STAR;  // 42
+	public static final int KEY_POUND = Canvas.KEY_POUND; // 35
+	public static final int GAME_UP   = Canvas.UP;     // 1
+	public static final int GAME_DOWN = Canvas.DOWN;   // 6
+	public static final int GAME_LEFT = Canvas.LEFT;   // 2 
+	public static final int GAME_RIGHT= Canvas.RIGHT;  // 5 
+	public static final int GAME_FIRE = Canvas.FIRE;   // 8
+	public static final int GAME_A    = Canvas.GAME_A; // 9
+	public static final int GAME_B    = Canvas.GAME_B; // 10
+	public static final int GAME_C    = Canvas.GAME_C; // 11
+	public static final int GAME_D    = Canvas.GAME_D; // 12
+
 	public static final int NOKIA_UP    = -1; // KEY_UP_ARROW = -1;
 	public static final int NOKIA_DOWN  = -2; // KEY_DOWN_ARROW = -2;
 	public static final int NOKIA_LEFT  = -3; // KEY_LEFT_ARROW = -3;
@@ -70,6 +71,16 @@ public class Mobile
 	public static final int NOKIA_SOFT3 = -5; // KEY_SOFTKEY3 = -5;
 	public static final int NOKIA_END   = -11; // KEY_END = -11;
 	public static final int NOKIA_SEND  = -10; // KEY_SEND = -10;
+
+	// Siemens Up, Down, Soft1 and Soft2 from class f in Wizardry
+	// -9 and -10 from Wizardry class n, but might not be keys
+	// -61 and -62 from Wizardry class p, also verifies the numbers are standard
+	public static final int SIEMENS_UP    = -59; // Works 
+	public static final int SIEMENS_DOWN  = -60; // Works
+	public static final int SIEMENS_LEFT  = -61; // unknown
+	public static final int SIEMENS_RIGHT = -62; // unknown
+	public static final int SIEMENS_SOFT1 = -1; // Works
+	public static final int SIEMENS_SOFT2 = -4; // Works
 
 	public static MobilePlatform getPlatform()
 	{
