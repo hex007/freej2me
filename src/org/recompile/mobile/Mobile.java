@@ -72,15 +72,13 @@ public class Mobile
 	public static final int NOKIA_END   = -11; // KEY_END = -11;
 	public static final int NOKIA_SEND  = -10; // KEY_SEND = -10;
 
-	// Siemens Up, Down, Soft1 and Soft2 from class f in Wizardry
-	// -9 and -10 from Wizardry class n, but might not be keys
-	// -61 and -62 from Wizardry class p, also verifies the numbers are standard
-	public static final int SIEMENS_UP    = -59; // Works 
-	public static final int SIEMENS_DOWN  = -60; // Works
-	public static final int SIEMENS_LEFT  = -61; // unknown
-	public static final int SIEMENS_RIGHT = -62; // unknown
-	public static final int SIEMENS_SOFT1 = -1; // Works
-	public static final int SIEMENS_SOFT2 = -4; // Works
+	public static final int SIEMENS_UP    = -59;
+	public static final int SIEMENS_DOWN  = -60;
+	public static final int SIEMENS_LEFT  = -61;
+	public static final int SIEMENS_RIGHT = -62;
+	public static final int SIEMENS_SOFT1 = -1; 
+	public static final int SIEMENS_SOFT2 = -4; 
+	public static final int SIEMENS_FIRE = -26; 
 
 	public static MobilePlatform getPlatform()
 	{
