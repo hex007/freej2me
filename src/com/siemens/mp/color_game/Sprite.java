@@ -71,6 +71,7 @@ public class Sprite	extends	Layer
 	public Sprite(Image img)
 	{
 		//System.out.println("Sprite B"); // used in wizardry.jar
+		setImage(img, img.getWidth(), img.getHeight());
 		imgWidth = img.getWidth();
 		imgHeight = img.getHeight();
 		frameWidth = imgWidth; 
@@ -78,13 +79,13 @@ public class Sprite	extends	Layer
 		colCount = 1;
 		rowCount = 1;
 		frameCount = 1;
-		setImage(img, imgWidth, imgHeight);
 	}
 
 	public Sprite(Image img, int frameW, int frameH)
 	{
 		//System.out.println("Sprite C"); // used in wizardry.jar
-		System.out.println("Sprite C: "+frameW+", "+frameH+" of "+img.getWidth()+", "+img.getHeight());
+		//System.out.println("Sprite C: "+frameW+", "+frameH+" of "+img.getWidth()+", "+img.getHeight());
+		setImage(img, frameW, frameH);
 		imgWidth = img.getWidth();
 		imgHeight = img.getHeight();
 		frameWidth = frameW;
@@ -92,7 +93,6 @@ public class Sprite	extends	Layer
 		colCount = (int)(imgWidth/frameWidth);
 		rowCount = (int)(imgHeight/frameHeight);
 		frameCount = rowCount * colCount; 
-		setImage(img, frameWidth, frameHeight);
 	}
 
 	public Sprite(Sprite s)

@@ -45,7 +45,15 @@ public class LayerManager extends javax.microedition.lcdui.game.LayerManager
 	{
 		for(int i=0; i<layers.size(); i++)
 		{
-			g.drawImage(layers.get(i).getLayerImage(), xdest, ydest, Graphics.TOP|Graphics.LEFT);
+			drawLayer(g, xdest, ydest, layers.get(i));
+		}
+	}
+
+	private void drawLayer(Graphics g, int dx, int dy, Layer l)
+	{
+		if(l.isVisible())
+		{
+			g.drawRegion(l.getLayerImage(), 0, 0, l.getLayerImage().getWidth(), l.getLayerImage().getHeight(), 0, dx+x+l.getX(), dy+y+l.getY(), Graphics.TOP|Graphics.LEFT);
 		}
 	}
 
@@ -59,5 +67,10 @@ public class LayerManager extends javax.microedition.lcdui.game.LayerManager
 		{
 			System.out.println("Can't Append Layer " + e.getMessage());
 		}
+	}
+
+	public void remove(Layer l)
+	{
+		layers.remove(l);
 	}
 }
