@@ -40,6 +40,8 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
 	protected Font font = Font.getFont(Font.FACE_SYSTEM, Font.STYLE_PLAIN, Font.SIZE_MEDIUM);
 
+	protected AffineTransform transform = new AffineTransform();
+
 	public PlatformGraphics platformGraphics;
 	public PlatformImage platformImage;
 
@@ -304,11 +306,11 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
 	public void translate(int x, int y)
 	{
-		translateX += x;
-		translateY += y;
-		gc.translate((double)x, (double)y);
-		//translateX = (int)gc.getTransform().getTranslateX();
-		//translateY = (int)gc.getTransform().getTranslateY();
+		translateX = x;
+		translateY = y;
+		this.transform.setToIdentity();
+		this.transform.translate((double)translateX, (double)translateY);
+		gc.setTransform(transform);
 	}
 
 	private int AnchorX(int x, int width, int anchor)
