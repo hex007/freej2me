@@ -323,9 +323,9 @@ public class M3D
 
 	private void addFace(double x1, double y1, double z1, double x2, double y2, double z2, double x3, double y3, double z3, double u1, double v1, double u2, double v2, double u3, double v3)
 	{
-		debugColors[faceCount] = debugColor;
-		debugColors[faceCount+1] = debugColor;
-		debugColors[faceCount+2] = debugColor;
+		//debugColors[faceCount] = debugColor;
+		//debugColors[faceCount+1] = debugColor;
+		//debugColors[faceCount+2] = debugColor;
 		faces[faceCount*3  ] = x1;
 		faces[faceCount*3+1] = y1;
 		faces[faceCount*3+2] = z1;
@@ -447,7 +447,7 @@ public class M3D
 			y2 = (y2*oy)+oy;
 			y3 = (y3*oy)+oy;
 
-			gc.setColor(debugColors[i]);
+			//gc.setColor(debugColors[i]);
 
 			// draw
 			if(boundTexture)
