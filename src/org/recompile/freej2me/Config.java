@@ -69,7 +69,7 @@ public class Config
 		menu.add(new String[]{"96x65","128x128","128x160","176x208", "208x208", "240x320", "320x240", "240x400", "360x640", "480x800"}); // 1 - Size
 		menu.add(new String[]{"Quit", "Main Menu"}); // 2 - Restart Notice
 		menu.add(new String[]{"On", "Off"}); // 3 - sound
-		menu.add(new String[]{"Standard", "Nokia", "Siemens"}); // 4 - Phone 
+		menu.add(new String[]{"Standard", "Nokia", "Nokia (Old)", "Siemens"}); // 4 - Phone 
 		menu.add(new String[]{"On", "Off"}); // 5 - rotate 
 		menu.add(new String[]{"Auto", "60 - Fast", "30 - Slow", "15 - Turtle"}); // 6 - FPS
 
@@ -216,7 +216,7 @@ public class Config
 					{
 						case Mobile.NOKIA_UP: itemid--; break;
 						case Mobile.NOKIA_DOWN: itemid++; break;
-						case Mobile.NOKIA_SOFT1: menuid--; break;
+						case Mobile.NOKIA_SOFT1: menuid=0; break;
 					}
 				}
 				if(settings.get("phone").equals("Siemens"))
@@ -225,7 +225,7 @@ public class Config
 					{
 						case Mobile.SIEMENS_UP: itemid--; break;
 						case Mobile.SIEMENS_DOWN: itemid++; break;
-						case Mobile.SIEMENS_SOFT1: menuid--; break;
+						case Mobile.SIEMENS_SOFT1: menuid=0; break;
 					}
 				}
 		}
@@ -366,8 +366,8 @@ public class Config
 			case 4: // Switch Phone Mode
 				if(itemid==0) { updatePhone("Standard"); }
 				if(itemid==1) { updatePhone("Nokia"); }
-				if(itemid==1) { updatePhone("Nokia (Old)"); }
-				if(itemid==2) { updatePhone("Siemens"); }
+				if(itemid==2) { updatePhone("Nokia (Old)"); }
+				if(itemid==3) { updatePhone("Siemens"); }
 				menuid=0; itemid=0;
 			break;
 
