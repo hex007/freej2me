@@ -240,7 +240,7 @@ public class FreeJ2ME
 		useNokiaControls = false;
 		useSiemensControls = false;
 		if(phone.equals("Nokia")) { useNokiaControls = true; }
-		if(nokia.equals("Nokia (Old)")) { useNokiaControls = true; Mobile.newer = false; }
+		if(phone.equals("Nokia (Old)")) { useNokiaControls = true; Mobile.newer = false; }
 		if(phone.equals("Siemens")) { useSiemensControls = true; }
 
 		if(lcdWidth != w || lcdHeight != h)
