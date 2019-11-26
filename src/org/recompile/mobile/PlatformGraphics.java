@@ -314,11 +314,20 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
 	public void translate(int x, int y)
 	{
-		translateX = x;
-		translateY = y;
-		this.transform.setToIdentity();
-		this.transform.translate((double)translateX, (double)translateY);
-		gc.setTransform(transform);
+		if(Mobile.newer)
+		{
+			translateX += x;
+			translateY += y;
+			gc.translate(x, y);
+		}
+		else
+		{
+			translateX = x;
+			translateY = y;
+			this.transform.setToIdentity();
+			this.transform.translate((double)translateX, (double)translateY);
+			gc.setTransform(transform);
+		}
 	}
 
 	private int AnchorX(int x, int width, int anchor)
