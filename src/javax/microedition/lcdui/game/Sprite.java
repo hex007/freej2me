@@ -66,7 +66,7 @@ public class Sprite	extends	Layer
 
 	public Sprite(Image img)
 	{
-		System.out.println("Sprite B");
+		//System.out.println("Sprite B"); // Found in use, Pacman Championship Edition
 		imgWidth = img.getWidth();
 		imgHeight = img.getHeight();
 		frameWidth = imgWidth; 
@@ -79,7 +79,7 @@ public class Sprite	extends	Layer
 
 	public Sprite(Image img, int frameW, int frameH)
 	{
-		System.out.println("Sprite C");
+		// System.out.println("Sprite C"); // Found in use, Pacman Championship Edition
 		imgWidth = img.getWidth();
 		imgHeight = img.getHeight();
 		frameWidth = frameW;
