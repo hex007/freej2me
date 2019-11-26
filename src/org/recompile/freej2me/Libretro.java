@@ -291,6 +291,7 @@ public class Libretro
 		useNokiaControls = false;
 		useSiemensControls = false;
 		if(nokia.equals("Nokia")) { useNokiaControls = true; }
+		if(nokia.equals("Nokia (Old)")) { useNokiaControls = true; Mobile.newer = false; }
 		if(nokia.equals("Siemens")) { useSiemensControls = true; }
 
 		String rotate = config.settings.get("rotate");

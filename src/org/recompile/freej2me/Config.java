@@ -210,7 +210,7 @@ public class Config
 			case Mobile.KEY_NUM8: itemid++; break;
 			case Mobile.KEY_NUM5: doMenuAction(); break;
 			default:
-				if(settings.get("phone").equals("Nokia"))
+				if(settings.get("phone").equals("Nokia") || settings.get("phone").equals("Nokia (Old)") )
 				{
 					switch(key)
 					{
@@ -366,6 +366,7 @@ public class Config
 			case 4: // Switch Phone Mode
 				if(itemid==0) { updatePhone("Standard"); }
 				if(itemid==1) { updatePhone("Nokia"); }
+				if(itemid==1) { updatePhone("Nokia (Old)"); }
 				if(itemid==2) { updatePhone("Siemens"); }
 				menuid=0; itemid=0;
 			break;
