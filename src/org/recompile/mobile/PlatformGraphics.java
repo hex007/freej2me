@@ -103,7 +103,10 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		char[] str = new char[length];
 		for(int i=offset; i<offset+length; i++)
 		{
-			str[i-offset] = data[i];
+			if(i>=0 && i<data.length)
+			{
+				str[i-offset] = data[i];
+			}
 		}	
 		drawString(new String(str), x, y, anchor);
 	}
