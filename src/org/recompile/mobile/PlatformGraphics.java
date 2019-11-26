@@ -100,7 +100,12 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
 	public void drawChars(char[] data, int offset, int length, int x, int y, int anchor)
 	{
-		drawString(data.toString(), x, y, anchor);
+		char[] str = new char[length];
+		for(int i=offset; i<offset+length; i++)
+		{
+			str[i-offset] = data[i];
+		}	
+		drawString(new String(str), x, y, anchor);
 	}
 
 	public void drawImage(Image image, int x, int y, int anchor)
