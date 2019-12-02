@@ -156,7 +156,7 @@ public abstract class Canvas extends Displayable
 	{
 		try
 		{
-			paint(platformImage.getGraphics());
+			paint(platformImage.getNewGraphics());
 			if(Mobile.getDisplay().getCurrent() == this)
 			{
 				Mobile.getPlatform().repaint(platformImage, 0, 0, width, height);
@@ -171,7 +171,7 @@ public abstract class Canvas extends Displayable
 
 	public void repaint(int x, int y, int width, int height)
 	{
-		paint(platformImage.getGraphics());
+		paint(platformImage.getNewGraphics());
 		if(Mobile.getDisplay().getCurrent() == this)
 		{
 			Mobile.getPlatform().repaint(platformImage, x, y, width, height);
