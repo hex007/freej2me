@@ -42,7 +42,7 @@ public class Mobile
 
 	public static boolean nokia = false;
 
-	public static boolean newer = true;
+	public static boolean siemens = false;
 
 	public static final int KEY_NUM0  = Canvas.KEY_NUM0;  // 48
 	public static final int KEY_NUM1  = Canvas.KEY_NUM1;  // 49
