@@ -21,19 +21,36 @@ import java.io.IOException;
 public class ActionTable
 {
 
-	public ActionTable(byte[] b) {  }
+	protected int frame;
+	protected int numFrames;
+	protected int numActions;
+	protected int action;
 
-	public ActionTable(String name) throws IOException {  }
+	public ActionTable(byte[] b) 
+	{
+		frame = 0;
+		numFrames = 1;
+		action = 0;
+		numActions = 0;
+	}
+
+	public ActionTable(String name) throws IOException
+	{
+		frame = 0;
+		numFrames = 1;
+		action = 0;
+		numActions = 0;
+	}
 
 
 	public final void dispose() {  }
 
-	public final int getNumAction() { return 0; }
+	public final int getNumAction() { return action; }
 
-	public final int getNumActions() { return 0; }
+	public final int getNumActions() { return numActions; }
 
-	public final int getNumFrame(int idx) { return 0; }
+	public final int getNumFrame(int idx) { return frame; }
 
-	public final int getNumFrames(int idx) { return 0; }
+	public final int getNumFrames(int idx) { return numFrames; }
 
 }
