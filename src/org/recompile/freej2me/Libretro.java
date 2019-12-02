@@ -287,12 +287,13 @@ public class Libretro
 		Mobile.getPlatform().sound = false;
 		if(sound.equals("on")) { Mobile.getPlatform().sound = true; }
 
-		String nokia = config.settings.get("phone");
+		String phone = config.settings.get("phone");
 		useNokiaControls = false;
 		useSiemensControls = false;
-		if(nokia.equals("Nokia")) { useNokiaControls = true; }
-		if(nokia.equals("Nokia (Old)")) { useNokiaControls = true; Mobile.newer = false; }
-		if(nokia.equals("Siemens")) { useSiemensControls = true; }
+		Mobile.nokia = false;
+		Mobile.siemens = false;
+		if(phone.equals("Nokia")) { Mobile.nokia = true; useNokiaControls = true; }
+		if(phone.equals("Siemens")) { Mobile.siemens = true; useSiemensControls = true; }
 
 		String rotate = config.settings.get("rotate");
 		if(rotate.equals("on")) { rotateDisplay = true; frameHeader[5] = (byte)1; }

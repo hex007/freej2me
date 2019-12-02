@@ -239,9 +239,10 @@ public class FreeJ2ME
 		String phone = config.settings.get("phone");
 		useNokiaControls = false;
 		useSiemensControls = false;
-		if(phone.equals("Nokia")) { useNokiaControls = true; }
-		if(phone.equals("Nokia (Old)")) { useNokiaControls = true; Mobile.newer = false; }
-		if(phone.equals("Siemens")) { useSiemensControls = true; }
+		Mobile.nokia = false;
+		Mobile.siemens = false;
+		if(phone.equals("Nokia")) { Mobile.nokia = true; useNokiaControls = true; }
+		if(phone.equals("Siemens")) { Mobile.siemens = true; useSiemensControls = true; }
 
 		if(lcdWidth != w || lcdHeight != h)
 		{
