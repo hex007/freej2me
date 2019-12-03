@@ -67,6 +67,7 @@ public abstract class GameCanvas extends Canvas
 	public int getKeyStates() // found in use
 	{
 		int t = Mobile.getPlatform().keyState;
-		return 0;
+		Mobile.getPlatform().keyState = 0;
+		return t;
 	}
 }
