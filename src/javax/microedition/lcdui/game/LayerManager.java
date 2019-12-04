@@ -16,7 +16,7 @@
 */
 package javax.microedition.lcdui.game;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.awt.Shape;
 
@@ -30,7 +30,7 @@ import org.recompile.mobile.PlatformGraphics;
 public class LayerManager
 {
 
-	protected Vector<Layer> layers;
+	protected ArrayList<Layer> layers;
 
 	protected Image canvas;
 	protected PlatformGraphics gc;
@@ -44,7 +44,7 @@ public class LayerManager
 
 	public LayerManager()
 	{
-		layers = new Vector<Layer>();
+		layers = new ArrayList<Layer>();
 
 		width = Mobile.getPlatform().lcdWidth;
 		height = Mobile.getPlatform().lcdHeight;
@@ -57,18 +57,25 @@ public class LayerManager
 
 	public Layer getLayerAt(int index) { return layers.get(index); }
 
-	public int  getSize() { return layers.size(); }
+	public int getSize() { return layers.size(); }
 
 	public void insert(Layer l, int index) { layers.add(index, l); }
 
 	public void paint(Graphics g, int xdest, int ydest)
 	{
-		g.translate(xdest+x, ydest+y);
 		for(int i=0; i<layers.size(); i++)
 		{
-			layers.get(layers.size()-(i+1)).paint(g);
+			drawLayer(g, xdest, ydest, layers.get(i));
 		}
-		g.translate(0-(xdest+x), 0-(ydest+y));
+	}
+
+	private void drawLayer(Graphics g, int dx, int dy, Layer l)
+	{
+		if(l.isVisible())
+		{
+			l.render();
+			g.drawRegion(l.getLayerImage(), 0, 0, l.getLayerImage().getWidth(), l.getLayerImage().getHeight(), 0, dx+x+l.getX(), dy+y+l.getY(), Graphics.TOP|Graphics.LEFT);
+		}
 	}
 
 	public void remove(Layer l) { layers.remove(l); }

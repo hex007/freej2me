@@ -16,7 +16,7 @@
 */
 package	javax.microedition.lcdui.game;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
@@ -45,7 +45,7 @@ public class Sprite	extends	Layer
 
 	private int transform;
 
-	private Vector<Integer> sequence = new Vector<Integer>();
+	private ArrayList<Integer> sequence = new ArrayList<Integer>();
 
 	public Image sprite;
 
@@ -79,14 +79,14 @@ public class Sprite	extends	Layer
 
 	public Sprite(Image img, int frameW, int frameH)
 	{
-		// System.out.println("Sprite C"); // Found in use, Pacman Championship Edition
+		//System.out.println("Sprite C"); // Found in use, Pacman Championship Edition
 		imgWidth = img.getWidth();
 		imgHeight = img.getHeight();
 		frameWidth = frameW;
 		frameHeight = frameH;
 		colCount = (int)(imgWidth/frameWidth);
 		rowCount = (int)(imgHeight/frameHeight);
-		frameCount = rowCount * colCount; 
+		frameCount = rowCount * colCount;
 		setImage(img, frameWidth, frameHeight);
 	}
 
@@ -174,8 +174,8 @@ public class Sprite	extends	Layer
 		try
 		{
 			int f = sequence.get(frame);
-			int r = frameHeight * (f/colCount);
-			int c = frameWidth * (f % colCount);
+			int r = frameHeight * (int)(f / colCount);
+			int c = frameWidth * (int)(f % colCount);
 			g.drawRegion(sprite, c, r, frameWidth, frameHeight, transform, x, y, 0);
 		}
 		catch (Exception e)
@@ -196,7 +196,14 @@ public class Sprite	extends	Layer
 		}
 	}
 
-	public void setFrame(int sequenceIndex) { frame = sequenceIndex; }
+	public void setFrame(int sequenceIndex)
+	{
+		if(sequenceIndex<0 || sequenceIndex >= sequence.size())
+		{
+			throw new IndexOutOfBoundsException();
+		}
+		frame = sequenceIndex;
+	}
 
 	public void setFrameSequence(int[] fsequence)
 	{
@@ -207,12 +214,12 @@ public class Sprite	extends	Layer
 			sequence.clear();
 			for(int i=0; i<fsequence.length; i++)
 			{
-				sequence.add(fsequence[i]);
+				sequence.add(i, fsequence[i]);
 			}
 		}
 		catch (Exception e)
 		{
-			System.out.println("Problem with Sequence");
+			System.out.println("Problem with Sprite.setFrameSequence");
 		}
 	}
 
@@ -236,10 +243,9 @@ public class Sprite	extends	Layer
 		frameCount = colCount * rowCount;
 
 		sequence.clear();
-
 		for(int i=0; i<frameCount; i++)
 		{
-			sequence.add(i);
+			sequence.add(i, i);
 		}
 	}
 
