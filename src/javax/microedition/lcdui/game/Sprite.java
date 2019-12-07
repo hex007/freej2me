@@ -110,13 +110,13 @@ public class Sprite	extends	Layer
 
 	public boolean collidesWith(Sprite s, boolean pixelLevel)
 	{
-		int Ax = (x+refX) + hitX;
-		int Ay = (y+refY) + hitY;
+		int Ax = (x-refX) + hitX;
+		int Ay = (y-refY) + hitY;
 		int Aw = hitWidth;
 		int Ah = hitHeight;
 
-		int Bx = (s.getX()+s.getRefPixelX()) + s.getHitX();
-		int By = (s.getY()+s.getRefPixelY()) + s.getHitY();
+		int Bx = (s.getX()-s.getRefPixelX()) + s.getHitX();
+		int By = (s.getY()-s.getRefPixelY()) + s.getHitY();
 		int Bw = s.getHitWidth();
 		int Bh = s.getHitHeight();
 
@@ -176,7 +176,7 @@ public class Sprite	extends	Layer
 			int f = sequence.get(frame);
 			int r = frameHeight * (int)(f / colCount);
 			int c = frameWidth * (int)(f % colCount);
-			g.drawRegion(sprite, c, r, frameWidth, frameHeight, transform, x, y, 0);
+			g.drawRegion(sprite, c, r, frameWidth, frameHeight, transform, x-refX, y-refY, 0);
 		}
 		catch (Exception e)
 		{

@@ -51,6 +51,8 @@ public class TiledLayer extends Layer
 
 		rows = rowsh;
 		cols = colsw;
+		tileWidth = tilewidth;
+		tileHeight = tileheight;
 
 		x = 0;
 		y = 0;
@@ -81,20 +83,21 @@ public class TiledLayer extends Layer
 			for (int r=0; r<numRows; r++)
 			{
 				tiles[col+c][row+r]=tileIndex;
+				drawTile(tileIndex, (col+c)*tileWidth, (row+r)*tileHeight);
 			}
 		}
 	}
 
 	public int getAnimatedTile(int animatedTileIndex)
 	{
-		return animatedTiles[0-animatedTileIndex];
+		return animatedTiles[0-animatedTileIndex];	
 	}
 
 	public int getCell(int col, int row) { return tiles[col][row]; }
 
 	public int getCellHeight() { return tileHeight; }
 
-	public int getCellWidth() { return tileHeight; }
+	public int getCellWidth() { return tileWidth; }
 
 	public int getColumns() { return cols; }
 
@@ -121,7 +124,7 @@ public class TiledLayer extends Layer
 
 	private void drawTile(int tile, int xdest, int ydest)
 	{
-		tile--;
+		//tile--;
 		int r = tileHeight * (tile / tilesWidth);
 		int c = tileWidth * (tile % tilesWidth);
 		gc.drawRegion(image, c, r, tileWidth, tileHeight, 0, xdest, ydest, 0);
