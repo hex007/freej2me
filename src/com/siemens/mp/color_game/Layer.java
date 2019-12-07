@@ -22,8 +22,6 @@ import javax.microedition.lcdui.Image;
 public abstract class Layer extends javax.microedition.lcdui.game.Layer
 {
 
-	protected Image image;
-
 	public Layer() { x = 0;  y = 0; }
 
 	public Layer(int w, int h) { x = 0;  y = 0; width = w; height = h; }
@@ -42,8 +40,6 @@ public abstract class Layer extends javax.microedition.lcdui.game.Layer
 		width = i.getWidth();
 		height = i.getHeight();
 	}
-
-	protected Image getLayerImage() { return image; }
 
 	protected void copyAllLayerVariables(Layer target)
 	{
