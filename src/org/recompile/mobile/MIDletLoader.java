@@ -35,6 +35,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import java.util.HashMap;
+import java.util.ArrayList;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -157,10 +158,16 @@ public class MIDletLoader extends URLClassLoader
 	private void loadManifest()
 	{
 		String resource = "META-INF/MANIFEST.MF";
-
 		URL url = findResource(resource);
-
-		if(url==null) { return; }
+		if(url==null)
+		{
+			resource = "meta-inf/MANIFEST.MF";
+			url = findResource(resource);
+			if(url==null)
+			{
+				return;
+			}
+		}
 
 		String line;
 		String[] parts;
@@ -171,8 +178,21 @@ public class MIDletLoader extends URLClassLoader
 		{
 			InputStream is = url.openStream();
 			BufferedReader br = new BufferedReader(new InputStreamReader(is));
-			while ((line = br.readLine()) != null)
+			
+			ArrayList<String> lines = new ArrayList();
+			while ((line = br.readLine()) != null) 
 			{
+				if(line.startsWith(" "))
+				{
+					line = lines.get(lines.size()-1) + line.trim();
+					lines.remove(lines.size()-1);
+				}
+				lines.add(line);
+			}
+
+			for (int i=0; i<lines.size(); i++)
+			{
+				line = lines.get(i);
 				if(line.startsWith("MIDlet-1:"))
 				{
 					System.out.println(line);
@@ -195,7 +215,6 @@ public class MIDletLoader extends URLClassLoader
 					value = line.substring(split+1).trim();
 					properties.put(key, value);
 				}
-
 			}
 			// for RecordStore, remove illegal chars from name
 			suitename = suitename.replace(":","");
@@ -205,7 +224,6 @@ public class MIDletLoader extends URLClassLoader
 			System.out.println("Can't Read Jar Manifest!");
 			e.printStackTrace();
 		}
-
 	}
 
 

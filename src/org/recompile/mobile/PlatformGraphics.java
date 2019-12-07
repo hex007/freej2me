@@ -40,8 +40,6 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
 	protected Font font = Font.getFont(Font.FACE_SYSTEM, Font.STYLE_PLAIN, Font.SIZE_MEDIUM);
 
-	protected AffineTransform transform = new AffineTransform();
-
 	public PlatformGraphics platformGraphics;
 	public PlatformImage platformImage;
 
@@ -368,7 +366,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		BufferedImage image = manipulateImage(img.platformImage.getCanvas(), manipulation);
 		x = AnchorX(x, image.getWidth(), anchor);
 		y = AnchorY(y, image.getHeight(), anchor);
-		drawImage(image, x, y);
+		gc.drawImage(image, x, y, null);
 	}
 
 	public void drawPixels(byte[] pixels, byte[] transparencyMask, int offset, int scanlength, int x, int y, int width, int height, int manipulation, int format)
@@ -606,10 +604,12 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 				return PlatformImage.transformImage(image, Sprite.TRANS_ROT180);
 			case DirectGraphics.ROTATE_270:
 				return PlatformImage.transformImage(image, Sprite.TRANS_ROT270);
-			case HV: 
+			case HV:
 				return PlatformImage.transformImage(image, Sprite.TRANS_ROT180);
 			case H90: 
 				return PlatformImage.transformImage(PlatformImage.transformImage(image, Sprite.TRANS_MIRROR), Sprite.TRANS_ROT270);
+			default:
+				System.out.println("manipulateImage "+manipulation+" not defined");
 		}
 		return image;
 	}
