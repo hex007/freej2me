@@ -63,6 +63,7 @@ public class MIDletLoader extends URLClassLoader
 
 	private HashMap<String, String> properties = new HashMap<String, String>(32);
 
+
 	public MIDletLoader(URL urls[])
 	{
 		super(urls);
@@ -165,7 +166,17 @@ public class MIDletLoader extends URLClassLoader
 			url = findResource(resource);
 			if(url==null)
 			{
-				return;
+				resource = "META-INF/manifest.fm";
+				url = findResource(resource);
+				if(url==null)
+				{
+					resource = "meta-inf/manifest.fm";
+					url = findResource(resource);
+					if(url==null)
+					{
+						return;
+					}	
+				}	
 			}
 		}
 

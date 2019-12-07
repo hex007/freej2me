@@ -608,6 +608,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 				return PlatformImage.transformImage(image, Sprite.TRANS_ROT180);
 			case H90: 
 				return PlatformImage.transformImage(PlatformImage.transformImage(image, Sprite.TRANS_MIRROR), Sprite.TRANS_ROT270);
+			case 0: /* No Manipulation */ break;
 			default:
 				System.out.println("manipulateImage "+manipulation+" not defined");
 		}
