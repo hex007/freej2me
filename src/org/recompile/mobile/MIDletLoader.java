@@ -179,7 +179,7 @@ public class MIDletLoader extends URLClassLoader
 			InputStream is = url.openStream();
 			BufferedReader br = new BufferedReader(new InputStreamReader(is));
 			
-			ArrayList<String> lines = new ArrayList();
+			ArrayList<String> lines = new ArrayList<String>();
 			while ((line = br.readLine()) != null) 
 			{
 				if(line.startsWith(" "))
