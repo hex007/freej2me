@@ -84,6 +84,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		BufferedImage sub = canvas.getSubimage(subx, suby, subw, subh);
 
 		gc.drawImage(sub, x, y, null);
+		//drawImage2(sub, x, y);
 	}
 
 	public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle)
@@ -131,7 +132,8 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 	{
 		try
 		{
-			gc.drawImage(image.platformImage.getCanvas(), x, y, null);	
+			gc.drawImage(image.platformImage.getCanvas(), x, y, null);
+			//drawImage2(image, x, y);
 		}
 		catch (Exception e)
 		{
@@ -139,16 +141,41 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		}
 	}
 
-	public void drawImage(BufferedImage image, int x, int y)
+	public void drawImage2(Image image, int x, int y)
 	{
-		// called by Platform Image
+		drawImage2(image.platformImage.getCanvas(), x, y);
+	}
+	public void drawImage2(BufferedImage image, int x, int y)
+	{
+		// Internal use method called by PlatformImage, Nokia Methods, etc.
 		try
 		{
-			gc.drawImage(image, x, y, null);
+			// gc.drawImage(image, x, y, null);
+			
+			int width = image.getWidth();
+			int height = image.getHeight();
+		
+			// Fixes some transparency issues
+			int[] datargb = image.getRGB(0,0, width,height, null,0,width);
+			try
+			{ canvas.setRGB(x, y, width, height, datargb, 0, width); } catch(Exception e) { }
+
+			/*
+			// also works okay, but very slow
+			int i=offset;
+			for(int row=0; row<height; row++)
+			{
+				for(int col=0; col<width; col++)
+				{
+					canvas.setRGB(col+x, row+y, temp.getRGB(col, row));
+					i++;
+				}
+			}
+			*/
 		}
 		catch (Exception e)
 		{
-			System.out.println("drawImage C:"+e.getMessage());
+			//System.out.println("drawImage C:"+e.getMessage());
 		}
 	}
 
@@ -159,7 +186,6 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		{
 			BufferedImage sub = image.platformImage.getCanvas().getSubimage(x, y, width, height);
 			gc.drawImage(sub, x, y, null);
-			//gc.drawImage(image.platformImage.getCanvas(), 0, 0, null);
 		}
 		catch (Exception e)
 		{
@@ -177,6 +203,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 				x = AnchorX(x, subw, anchor);
 				y = AnchorY(y, subh, anchor);
 				gc.drawImage(sub, x, y, null);
+				//drawImage2(sub, x, y);
 			}
 			else
 			{
@@ -184,6 +211,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 				x = AnchorX(x, sub.width, anchor);
 				y = AnchorY(y, sub.height, anchor);
 				gc.drawImage(sub.getCanvas(), x, y, null);
+				//drawImage2(sub, x, y);
 			}
 		}
 		catch (Exception e)
@@ -366,13 +394,12 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		BufferedImage image = manipulateImage(img.platformImage.getCanvas(), manipulation);
 		x = AnchorX(x, image.getWidth(), anchor);
 		y = AnchorY(y, image.getHeight(), anchor);
-		gc.drawImage(image, x, y, null);
+		drawImage2(image, x, y);
 	}
 
 	public void drawPixels(byte[] pixels, byte[] transparencyMask, int offset, int scanlength, int x, int y, int width, int height, int manipulation, int format)
 	{
-		//System.out.println("drawPixels A"); // Found In Use
-		
+		//System.out.println("drawPixels A "+format); // Found In Use
 		int[] Type1 = {0xFFFFFFFF, 0xFF000000, 0x00FFFFFF, 0x00000000};
 		int c = 0;
 		int[] data;
@@ -397,7 +424,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
 				temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 				temp.setRGB(0, 0, width, height, data, 0, scanlength);
-				drawImage(manipulateImage(temp, manipulation), x, y);
+				drawImage2(manipulateImage(temp, manipulation), x, y);
 			break;
 
 			case 1: // TYPE_BYTE_1_GRAY // used by Monkiki's Castles
@@ -414,7 +441,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 				}
 				temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 				temp.setRGB(0, 0, width, height, data, 0, scanlength);
-				drawImage(manipulateImage(temp, manipulation), x, y);
+				drawImage2(manipulateImage(temp, manipulation), x, y);
 			break;
 
 			default: System.out.println("drawPixels A : Format " + format + " Not Implemented");
@@ -423,26 +450,26 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
 	public void drawPixels(int[] pixels, boolean transparency, int offset, int scanlength, int x, int y, int width, int height, int manipulation, int format)
 	{
-		//System.out.println("drawPixels B"+format); // Found In Use
+		//System.out.println("drawPixels B "+format+" "+transparency); // Found In Use
 		BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		temp.setRGB(0, 0, width, height, pixels, offset, scanlength);
 		BufferedImage temp2 = manipulateImage(temp, manipulation);
-		drawImage(temp2, x, y);
+		drawImage2(temp2, x, y);
 	}
 
 	public void drawPixels(short[] pixels, boolean transparency, int offset, int scanlength, int x, int y, int width, int height, int manipulation, int format)
 	{
-		//System.out.println("drawPixels C"+format); // Found In Use
+		//System.out.println("drawPixels C "+format+" "+transparency); // Found In Use
 		int[] data = new int[pixels.length];
-
 		for(int i=0; i<pixels.length; i++)
 		{
 			data[i] = pixelToColor(pixels[i], format);
+			if(!transparency) { data[i] &=0x00FFFFFF; }
 		}
 
 		BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		temp.setRGB(0, 0, width, height, data, offset, scanlength);
-		drawImage(manipulateImage(temp, manipulation), x, y);
+		drawImage2(manipulateImage(temp, manipulation), x, y);
 	}
 
 	public void drawPolygon(int[] xPoints, int xOffset, int[] yPoints, int yOffset, int nPoints, int argbColor)
@@ -499,7 +526,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
 	public void getPixels(byte[] pixels, byte[] transparencyMask, int offset, int scanlength, int x, int y, int width, int height, int format)
 	{
-		//System.out.println("getPixels A");
+		System.out.println("getPixels A");
 	}
 
 	public void getPixels(int[] pixels, int offset, int scanlength, int x, int y, int width, int height, int format)

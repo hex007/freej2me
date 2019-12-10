@@ -101,7 +101,7 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 				canvas = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 				createGraphics();
 
-				gc.drawImage(temp, 0, 0);
+				gc.drawImage2(temp, 0, 0);
 			}
 			catch (Exception e)
 			{
@@ -127,7 +127,7 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 			canvas = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 			createGraphics();
 
-			gc.drawImage(temp, 0, 0);
+			gc.drawImage2(temp, 0, 0);
 		}
 		catch(Exception e)
 		{
@@ -147,7 +147,7 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 		canvas = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		createGraphics();
 
-		gc.drawImage(source.platformImage, 0, 0);
+		gc.drawImage2(source.platformImage.getCanvas(), 0, 0);
 
 		platformImage = this;
 	}
@@ -169,7 +169,7 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 			canvas = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 			createGraphics();
 
-			gc.drawImage(temp, 0, 0);
+			gc.drawImage2(temp, 0, 0);
 		}
 		catch(Exception e)
 		{
