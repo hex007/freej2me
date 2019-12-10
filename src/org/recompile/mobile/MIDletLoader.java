@@ -313,6 +313,32 @@ public class MIDletLoader extends URLClassLoader
 		}
 	}
 
+	public byte[] getMIDletResourceAsByteArray(String resource)
+	{
+		URL url = getResource(resource);
+
+		try
+		{
+			InputStream stream = url.openStream();
+
+			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+			int count=0;
+			byte[] data = new byte[4096];
+			while (count!=-1)
+			{
+				count = stream.read(data);
+				if(count!=-1) { buffer.write(data, 0, count); }
+			}
+			return buffer.toByteArray();
+		}
+		catch (Exception e)
+		{
+			System.out.println(resource + " Not Found");
+			return new byte[0];
+		}
+	}
+
+
 	public Class loadClass(String name) throws ClassNotFoundException
 	{
 		InputStream stream;
