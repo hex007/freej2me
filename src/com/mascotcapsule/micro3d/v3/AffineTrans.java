@@ -31,11 +31,22 @@ public class AffineTrans
 	public int m22;
 	public int m23;
 
+	public int m30;
+	public int m31;
+	public int m32;
+	public int m33;
+
 	private int rotx;
 	private int roty;
 	private int rotz;
 
-	public AffineTrans() {  }
+	public AffineTrans()
+	{
+		m00 = m01 = m02 = m03 = 0; // row 1, columns 1-4
+		m10 = m11 = m12 = m13 = 0; // row 2, columns 1-4
+		m20 = m21 = m22 = m23 = 0; // etc...
+		m30 = m31 = m32 = m33 = 0;
+	}
 
 	public AffineTrans(int m00, int m01, int m02, int m03, int m10, int m11, int m12, int m13, int m20, int m21, int m22, int m23)
 	{
@@ -51,6 +62,7 @@ public class AffineTrans
 		this.m21 = m21;
 		this.m22 = m22;
 		this.m23 = m23;
+		m30 = m31 = m32 = m33 = 0;
 	}
 
 	public AffineTrans(AffineTrans a)
@@ -67,6 +79,10 @@ public class AffineTrans
 		m21 = a.m21;
 		m22 = a.m22;
 		m23 = a.m23;
+		m30 = a.m30;
+		m31 = a.m31;
+		m32 = a.m32;
+		m33 = a.m33;
 	}
 
 	public AffineTrans(int[][] a)
@@ -83,6 +99,7 @@ public class AffineTrans
 		m21 = a[2][1];
 		m22 = a[2][2];
 		m23 = a[2][3];
+		m30 = m31 = m32 = m33 = 0;
 	}
 
 	public AffineTrans(int[] a)
@@ -99,6 +116,7 @@ public class AffineTrans
 		m21 = a[9];
 		m22 = a[10];
 		m23 = a[11];
+		m30 = m31 = m32 = m33 = 0;
 	}
 
 	public AffineTrans(int[] a, int offset)
@@ -115,7 +133,7 @@ public class AffineTrans
 		m21 = a[offset+9];
 		m22 = a[offset+10];
 		m23 = a[offset+11];
-
+		m30 = m31 = m32 = m33 = 0;
 	}
 
 	public final void get(int[] a)
@@ -164,6 +182,7 @@ public class AffineTrans
 		m21 = a[offset+9];
 		m22 = a[offset+10];
 		m23 = a[offset+11];
+		m30 = m31 = m32 = m33 = 0;
 	}
 
 	public final void set(int m00, int m01, int m02, int m03, int m10, int m11, int m12, int m13, int m20, int m21, int m22, int m23)
@@ -180,6 +199,7 @@ public class AffineTrans
 		this.m21 = m21;
 		this.m22 = m22;
 		this.m23 = m23;
+		m30 = m31 = m32 = m33 = 0;
 	}
 
 	public final void set(AffineTrans a)
@@ -196,6 +216,7 @@ public class AffineTrans
 		m21 = a.m21;
 		m22 = a.m22;
 		m23 = a.m23;
+		m30 = m31 = m32 = m33 = 0;
 	}
 
 	public final void set(int[][] a)
@@ -212,6 +233,7 @@ public class AffineTrans
 		m21 = a[2][1];
 		m22 = a[2][2];
 		m23 = a[2][3];
+		m30 = m31 = m32 = m33 = 0;
 	}
 
 	public final void set(int[] a)
@@ -228,6 +250,7 @@ public class AffineTrans
 		m21 = a[9];
 		m22 = a[10];
 		m23 = a[11];
+		m30 = m31 = m32 = m33 = 0;
 	}
 
 	public final Vector3D transPoint(Vector3D v)
@@ -242,17 +265,58 @@ public class AffineTrans
 
 	public final void multiply(AffineTrans a)
 	{
-		mul(a);
+		mul(this, a);
 	}
 
 	public final void mul(AffineTrans a)
 	{
-		// big multiply function goes here
+		mul(this, a);
 	}
 
-	public final void multiply(AffineTrans a1, AffineTrans a2) { mul(a1, a2); }
+	public final void multiply(AffineTrans a1, AffineTrans a2)
+	{
+		mul(a1, a2);
+	}
 
-	public final void mul(AffineTrans a1, AffineTrans a2) {  }
+	public final void mul(AffineTrans a1, AffineTrans a2)
+	{
+		int t00  = a1.m00*a2.m00  + a1.m01*a2.m10  + a1.m02*a2.m20  + a1.m03*a2.m30;
+		int t01  = a1.m00*a2.m01  + a1.m01*a2.m11  + a1.m02*a2.m21  + a1.m03*a2.m31;
+		int t02  = a1.m00*a2.m02  + a1.m01*a2.m12  + a1.m02*a2.m22  + a1.m03*a2.m32;
+		int t03  = a1.m00*a2.m03  + a1.m01*a2.m13  + a1.m02*a2.m23  + a1.m03*a2.m33;
+
+		int t10  = a1.m10*a2.m00  + a1.m11*a2.m10  + a1.m12*a2.m20  + a1.m13*a2.m30;
+		int t11  = a1.m10*a2.m01  + a1.m11*a2.m11  + a1.m12*a2.m21  + a1.m13*a2.m31;
+		int t12  = a1.m10*a2.m02  + a1.m11*a2.m12  + a1.m12*a2.m22  + a1.m13*a2.m32;
+		int t13  = a1.m10*a2.m03  + a1.m11*a2.m13  + a1.m12*a2.m23  + a1.m13*a2.m33;
+
+		int t20  = a1.m20*a2.m00  + a1.m21*a2.m10  + a1.m22*a2.m20  + a1.m23*a2.m30;
+		int t21  = a1.m20*a2.m01  + a1.m21*a2.m11  + a1.m22*a2.m21  + a1.m23*a2.m31;
+		int t22  = a1.m20*a2.m02  + a1.m21*a2.m12  + a1.m22*a2.m22  + a1.m23*a2.m32;
+		int t23  = a1.m20*a2.m03  + a1.m21*a2.m13  + a1.m22*a2.m23  + a1.m23*a2.m33;
+		
+		int t30  = a1.m30*a2.m00  + a1.m31*a2.m10  + a1.m32*a2.m20  + a1.m33*a2.m30;
+		int t31  = a1.m30*a2.m01  + a1.m31*a2.m11  + a1.m32*a2.m21  + a1.m33*a2.m31;
+		int t32  = a1.m30*a2.m02  + a1.m31*a2.m12  + a1.m32*a2.m22  + a1.m33*a2.m32;
+		int t33  = a1.m30*a2.m03  + a1.m31*a2.m13  + a1.m32*a2.m23  + a1.m33*a2.m33;
+
+		m00 = t00;
+		m01 = t01;
+		m02 = t02;
+		m03 = t03;
+		m10 = t10;
+		m11 = t11;
+		m12 = t12;
+		m13 = t13;
+		m20 = t20;
+		m21 = t21;
+		m22 = t22;
+		m23 = t23;
+		m30 = t30;
+		m31 = t31;
+		m32 = t32;
+		m33 = t33;
+	}
 
 	public final void setRotationX(int x) { rotx = x; }
 
@@ -260,7 +324,13 @@ public class AffineTrans
 
 	public final void setRotationZ(int z) { rotz = z; }
 
-	public final void setIdentity() {  }
+	public final void setIdentity()
+	{
+		m00 = 1;  m01 = 0;  m02 = 0;  m03 = 0; 
+		m10 = 0;  m11 = 1;  m12 = 0;  m13 = 0; 
+		m20 = 0;  m21 = 0;  m22 = 1;  m23 = 0; 
+		m30 = 0;  m31 = 0;  m32 = 0;  m33 = 1;
+	}
 
 	public final void rotationX(int x) { rotx = x; }
 
