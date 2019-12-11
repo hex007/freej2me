@@ -96,7 +96,7 @@ public class Vector3D
 		double bX = b.x/4096;
 		double bY = b.y/4096;
 		double bZ = b.z/4096;
-		return (int)((aX*bX)+(aY*bY)+(aZ*bZ));
+		return (int)((aX*bX)+(aY*bY)+(aZ*bZ))*4096;
 	}
 
 	public static final Vector3D outerProduct(Vector3D a, Vector3D b)
