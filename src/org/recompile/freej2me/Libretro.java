@@ -284,8 +284,8 @@ public class Libretro
 		if(limitFPS>0) { limitFPS = 1000 / limitFPS; }
 
 		String sound = config.settings.get("sound");
-		Mobile.getPlatform().sound = false;
-		if(sound.equals("on")) { Mobile.getPlatform().sound = true; }
+		Mobile.sound = false;
+		if(sound.equals("on")) { Mobile.sound = true; }
 
 		String phone = config.settings.get("phone");
 		useNokiaControls = false;
