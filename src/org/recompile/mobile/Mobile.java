@@ -38,11 +38,13 @@ public class Mobile
 
 	private static Graphics3D graphics3d;
 
-	public static boolean quiet = false;
+	public static boolean quiet = false; 
 
 	public static boolean nokia = false;
 
 	public static boolean siemens = false;
+
+	public static boolean sound = true;
 
 	public static final int KEY_NUM0  = Canvas.KEY_NUM0;  // 48
 	public static final int KEY_NUM1  = Canvas.KEY_NUM1;  // 49

@@ -50,23 +50,29 @@ public class PlatformPlayer implements Player
 
 		contentType = type;
 
-		if(type.equals("audio/midi") || type.equals("sp-midi") || type.equals("audio/spmidi"))
+		if(Mobile.sound == false)
 		{
-			player = new midiPlayer(stream);
+			player = new audioplayer();
 		}
 		else
 		{
-			if(type.equals("audio/x-wav"))
+			if(type.equals("audio/midi") || type.equals("sp-midi") || type.equals("audio/spmidi"))
 			{
-				player = new wavPlayer(stream);
+				player = new midiPlayer(stream);
 			}
 			else
 			{
-				System.out.println("No Player For: "+contentType);
-				player = new audioplayer();
+				if(type.equals("audio/x-wav"))
+				{
+					player = new wavPlayer(stream);
+				}
+				else
+				{
+					System.out.println("No Player For: "+contentType);
+					player = new audioplayer();
+				}
 			}
 		}
-
 		controls[0] = new volumeControl();
 		controls[1] = new tempoControl();
 		controls[2] = new midiControl();
@@ -76,6 +82,7 @@ public class PlatformPlayer implements Player
 
 	public PlatformPlayer(String locator)
 	{
+		player = new audioplayer();
 		listeners = new Vector<PlayerListener>();
 		controls = new Control[3];
 		System.out.println("Player locator: "+locator);
@@ -84,9 +91,14 @@ public class PlatformPlayer implements Player
 
 	public void close()
 	{
-		player.stop();
-		state = Player.CLOSED;
-		notifyListeners(PlayerListener.CLOSED, null);
+		try
+		{
+			player.stop();
+			state = Player.CLOSED;
+			notifyListeners(PlayerListener.CLOSED, null);	
+		}
+		catch (Exception e) { }
+		state = Player.CLOSED;	
 	}
 
 	public int getState()
@@ -101,18 +113,16 @@ public class PlatformPlayer implements Player
 	public void start()
 	{
 		//System.out.println("Play "+contentType);
-		if(Mobile.getPlatform().sound)
+		try
 		{
-			try
-			{
-				player.start();
-			}
-			catch (Exception e) {  }
+			player.start();
 		}
+		catch (Exception e) {  }
 	}
 
 	public void stop()
 	{
+		//System.out.println("Stop "+contentType);
 		try
 		{
 			player.stop();
@@ -128,6 +138,7 @@ public class PlatformPlayer implements Player
 
 	public void removePlayerListener(PlayerListener playerListener)
 	{
+		//System.out.println("Remove Player Listener");
 		listeners.remove(playerListener);
 	}
 
@@ -139,12 +150,10 @@ public class PlatformPlayer implements Player
 		}
 	}
 
-	public void deallocate() {
+	public void deallocate()
+	{
 		stop();
-		if (player instanceof midiPlayer) {
-			((midiPlayer) player).midi.close();
-		}
-		player = null;
+		player.deallocate();
 		state = Player.CLOSED;
 	}
 
@@ -190,6 +199,7 @@ public class PlatformPlayer implements Player
 		public long setMediaTime(long now) { return now; }
 		public long getMediaTime() { return 0; }
 		public boolean isRunning() { return false; }
+		public void deallocate() {  }
 	}
 
 	private class midiPlayer extends audioplayer
@@ -222,6 +232,11 @@ public class PlatformPlayer implements Player
 			midi.stop();
 			state = Player.REALIZED;
 		}
+		public void deallocate()
+		{
+			midi.close();
+		}
+
 		public void setLoopCount(int count)
 		{
 			loops = count;
