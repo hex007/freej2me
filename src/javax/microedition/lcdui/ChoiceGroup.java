@@ -45,8 +45,12 @@ public class ChoiceGroup extends Item implements Choice
 		type = choiceType;
 		for(int i=0; i<stringElements.length; i++)
 		{
-			strings.add(stringElements[i]);
-			images.add(imageElements[i]);
+			try
+			{
+				strings.add(stringElements[i]);
+				images.add(imageElements[i]);
+			}
+			catch(Exception e) { }
 		}
 	}
 
