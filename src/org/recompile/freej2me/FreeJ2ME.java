@@ -266,6 +266,7 @@ public class FreeJ2ME
 				case KeyEvent.VK_DOWN: return Mobile.NOKIA_DOWN;
 				case KeyEvent.VK_LEFT: return Mobile.NOKIA_LEFT;
 				case KeyEvent.VK_RIGHT: return Mobile.NOKIA_RIGHT;
+				case KeyEvent.VK_ENTER: return Mobile.NOKIA_SOFT3;
 			}
 		}
 

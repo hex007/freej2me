@@ -340,6 +340,7 @@ public class Libretro
 				case 274: return Mobile.NOKIA_DOWN; // Down
 				case 276: return Mobile.NOKIA_LEFT; // Left
 				case 275: return Mobile.NOKIA_RIGHT; // Right
+				case 13: return Mobile.NOKIA_SOFT3; // Middle
 			}
 		}
 		if(useSiemensControls)

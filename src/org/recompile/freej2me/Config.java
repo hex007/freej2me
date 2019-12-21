@@ -217,6 +217,7 @@ public class Config
 						case Mobile.NOKIA_UP: itemid--; break;
 						case Mobile.NOKIA_DOWN: itemid++; break;
 						case Mobile.NOKIA_SOFT1: menuid=0; break;
+						case Mobile.NOKIA_SOFT3: doMenuAction(); break;
 					}
 				}
 				if(settings.get("phone").equals("Siemens"))
