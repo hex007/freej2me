@@ -73,6 +73,7 @@ public abstract class Canvas extends Displayable
 			case Mobile.NOKIA_DOWN: return DOWN;
 			case Mobile.NOKIA_LEFT: return LEFT;
 			case Mobile.NOKIA_RIGHT: return RIGHT;
+			case Mobile.NOKIA_SOFT3: return FIRE;
 		}
 		return 0;
 	}
@@ -85,17 +86,18 @@ public abstract class Canvas extends Displayable
 			//case Mobile.GAME_DOWN: return Mobile.KEY_NUM8;
 			//case Mobile.GAME_LEFT: return Mobile.KEY_NUM4;
 			//case Mobile.GAME_RIGHT: return Mobile.KEY_NUM6;
+			//case Mobile.GAME_FIRE: return Mobile.KEY_NUM5;
 			case Mobile.GAME_UP: return Mobile.NOKIA_UP;
 			case Mobile.GAME_DOWN: return Mobile.NOKIA_DOWN;
 			case Mobile.GAME_LEFT: return Mobile.NOKIA_LEFT;
 			case Mobile.GAME_RIGHT: return Mobile.NOKIA_RIGHT;
-			case Mobile.GAME_FIRE: return Mobile.KEY_NUM5;
+			case Mobile.GAME_FIRE: return Mobile.NOKIA_SOFT3;
 			case Mobile.GAME_A: return Mobile.KEY_NUM1;
 			case Mobile.GAME_B: return Mobile.KEY_NUM3;
 			case Mobile.GAME_C: return Mobile.KEY_NUM7;
 			case Mobile.GAME_D: return Mobile.KEY_NUM9;
 		}
-		return Mobile.KEY_NUM5;
+		return Mobile.NOKIA_SOFT3;
 	}
 
 	public String getKeyName(int keyCode)

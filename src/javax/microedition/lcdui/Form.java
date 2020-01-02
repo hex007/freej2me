@@ -96,6 +96,7 @@ public class Form extends Screen
 			case Mobile.NOKIA_DOWN: currentItem++; break;
 			case Mobile.NOKIA_SOFT1: doLeftCommand(); break;
 			case Mobile.NOKIA_SOFT2: doRightCommand(); break;
+			case Mobile.NOKIA_SOFT3: doDefaultCommand(); break;
 			case Mobile.KEY_NUM5: doDefaultCommand(); break;
 		}
 		if (currentItem>=items.size()) { currentItem=0; }
