@@ -1,5 +1,5 @@
 # freej2me
-A free J2ME emulator with libretro, awt, sdl2 and javafx frontends.
+A free J2ME emulator with libretro, awt and sdl2 frontends.
 
 Authors :
 - David Richardson [Recompile@retropie]
@@ -26,6 +26,20 @@ Development thread:
   https://retropie.org.uk/forum/topic/11441/would-you-like-to-play-nokia-j2me-games-on-retropie/
 
 ----
+**Compilation:**
+```
+> cd freej2me/
+> ant
+
+# SDL2 binary compilation
+> cd src/sdl2
+> make
+> make install
+```
+Will create jar files for each frontend. SDL2 jar file needs SDL binary to be compiled. SDL2 can be used to play on Raspberry pi.
+
+
+---
 **How to contribute as a developer:**
   1) Open an Issue
   2) Try solving that issue
