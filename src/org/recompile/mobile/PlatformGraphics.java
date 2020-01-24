@@ -412,23 +412,26 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		switch(format)
 		{
 			case -1: // TYPE_BYTE_1_GRAY_VERTICAL // used by Monkiki's Castles
-				data = new int[pixels.length*8];
-				int row = 0;
-				int col = 0;
-				for(int b = (offset/8); b<pixels.length; b++)
+				data = new int[width*height];
+				int ods = offset / scanlength;
+				int oms = offset % scanlength;
+				int b = ods % 8; //Bit offset in a byte
+				for (int yj = 0; yj < height; yj++)
 				{
-					for(int j=0; j<8; j++)
+					int ypos = yj * width;
+					int tmp = (ods + yj) / 8 * scanlength+oms;
+					for (int xj = 0; xj < width; xj++)
 					{
-						c = ((pixels[b]>>j)&1);
-						if(transparencyMask!=null) { c |= (((transparencyMask[b]>>j)&1)^1)<<1; }
-						data[((row+j)*width)+col] = Type1[c];
+						c = ((pixels[tmp + xj]>>b)&1);
+						if(transparencyMask!=null) { c |= (((transparencyMask[tmp + xj]>>b)&1)^1)<<1; }
+						data[(yj*width)+xj] = Type1[c];
 					}
-					col++;
-					if(col==width) { col=0; row+=8; }
+					b++;
+					if(b>7) b=0;
 				}
 
 				temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-				temp.setRGB(0, 0, width, height, data, 0, scanlength);
+				temp.setRGB(0, 0, width, height, data, 0, width);
 				gc.drawImage(manipulateImage(temp, manipulation), x, y, null);
 			break;
 
