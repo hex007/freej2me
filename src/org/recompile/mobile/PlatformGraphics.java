@@ -412,7 +412,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		switch(format)
 		{
 			case -1: // TYPE_BYTE_1_GRAY_VERTICAL // used by Monkiki's Castles
-				data = new int[width*height*scanlength];
+				data = new int[width*height];
 				int ods = offset / scanlength;
 				int oms = offset % scanlength;
 				int b=0; //Bit offset in a byte
