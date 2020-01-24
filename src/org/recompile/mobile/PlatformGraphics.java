@@ -415,7 +415,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 				data = new int[width*height];
 				int ods = offset / scanlength;
 				int oms = offset % scanlength;
-				int b=0; //Bit offset in a byte
+				int b = ods % 8; //Bit offset in a byte
 				for (int yj = 0; yj < height; yj++)
 				{
 					int ypos = yj * width;
