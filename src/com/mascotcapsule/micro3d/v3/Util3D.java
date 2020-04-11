@@ -22,20 +22,21 @@ public class Util3D
 
 	public static final int sqrt(int p)
 	{
-		return (int)Math.sqrt(p);
+		//if(p>0) { return (int)Math.sqrt(p); }
+		long n = p & 0x00000000FFFFFFFFL;
+		return (int)Math.sqrt(n);
 	}
 
 	// angle p ranges from 0 to 4096
-	// return result * 1024
 	public static final int sin(int p)
 	{
-		double n = (p/4096) * Math.PI*2;
-		return (int)Math.sin(n)*1024;
+		double n = (((double)p)/4096) * Math.PI*2;
+		return (int)(Math.sin(n)*4096);
 	}
 
 	public static final int cos(int p)
 	{
-		double n = (p/4096) * Math.PI*2;
-		return (int)Math.cos(n)*1024;
+		double n = (((double)p)/4096) * Math.PI*2;
+		return (int)(Math.cos(n)*4096);
 	}
 }

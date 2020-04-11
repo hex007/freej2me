@@ -48,21 +48,21 @@ public class Vector3D
 
 	public final void unit() // unit vector will have a length of 4096 
 	{
-		double len = Math.sqrt(x*x + y*y + z*z);
-		x = (int)((x/len)*4096);
-		y = (int)((y/len)*4096);
-		z = (int)((z/len)*4096);
+		double X = x/4096D;
+		double Y = y/4096D;
+		double Z = z/4096D;
+		double len = Math.sqrt(X*X + Y*Y + Z*Z);
+		x = (int)((X/len)*4096);
+		y = (int)((Y/len)*4096);
+		z = (int)((Z/len)*4096);
 	}
 
 	public final int innerProduct(Vector3D v)
 	{
-		double X = x/4096;
-		double Y = y/4096;
-		double Z = z/4096;
-		double vX = v.x/4096;
-		double vY = v.y/4096;
-		double vZ = v.z/4096;
-		return (int)((X*vX)+(Y*vY)+(Z*vZ));
+		double X = x/4096D;
+		double Y = y/4096D;
+		double Z = z/4096D;
+		return (int)((X*v.x)+(Y*v.y)+(Z*v.z))*4096;
 	}
 
 	public final void outerProduct(Vector3D v)
@@ -71,32 +71,22 @@ public class Vector3D
 		// Lets find the cross-product instead
 		// as the exterior product is a generalization
 		// of the cross product
-		double X = x/4096;
-		double Y = y/4096;
-		double Z = z/4096;
-		double vX = v.x/4096;
-		double vY = v.y/4096;
-		double vZ = v.z/4096;
-
-		double t1 = (Y*vZ) - (Z*vY);
-		double t2 = (Z*vX) - (X*vZ);
-		double t3 = (X*vY) - (Y*vX);
-		x = (int)t1*4096;
-		y = (int)t2*4096;
-		z = (int)t3*4096;
-		unit();
+		double X = x/4096D;
+		double Y = y/4096D;
+		double Z = z/4096D;
+		x = (int)( Y*v.z - Z*v.y )*4096;
+		y = (int)( Z*v.x - X*v.z )*4096;
+		z = (int)( X*v.y - Y*v.x )*4096;
+		//unit();
 	}
 
 	public static final int innerProduct(Vector3D a, Vector3D b)
 	{
 		// Dot product
-		double aX = a.x/4096;
-		double aY = a.y/4096;
-		double aZ = a.z/4096;
-		double bX = b.x/4096;
-		double bY = b.y/4096;
-		double bZ = b.z/4096;
-		return (int)((aX*bX)+(aY*bY)+(aZ*bZ))*4096;
+		double aX = a.x/4096D;
+		double aY = a.y/4096D;
+		double aZ = a.z/4096D;
+		return (int)((aX*b.x)+(aY*b.y)+(aZ*b.z))*4096;
 	}
 
 	public static final Vector3D outerProduct(Vector3D a, Vector3D b)

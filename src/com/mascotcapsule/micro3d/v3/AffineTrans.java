@@ -237,8 +237,15 @@ public class AffineTrans
 
 	public final Vector3D transform(Vector3D v)
 	{
-		// multiply v by matrix
-		return v; 
+		double x = v.x/4096D;
+		double y = v.y/4096D;
+		double z = v.z/4096D;
+
+		int X = (int)( x*m00 + y*m10 + z*m20 );
+		int Y = (int)( x*m01 + y*m11 + z*m21 );
+		int Z = (int)( x*m02 + y*m12 + z*m22 ); 
+		
+		return new Vector3D(X,Y,Z);
 	}
 
 	public final void multiply(AffineTrans a) { mul(this, a); }
@@ -249,18 +256,18 @@ public class AffineTrans
 
 	public final void mul(AffineTrans a1, AffineTrans a2)
 	{
-		double b00 = a2.m00/4096; // Fixed point arithmetic where 1.0 = 4096
-		double b01 = a2.m00/4096; // The multiplier/divisor must not be
-		double b02 = a2.m00/4096; // adjusted.  e.g. a * b will give the
-		double b03 = a2.m00/4096; // wrong result and should be a * (b/4096)
-		double b10 = a2.m00/4096;
-		double b11 = a2.m00/4096;
-		double b12 = a2.m00/4096;
-		double b13 = a2.m00/4096;
-		double b20 = a2.m00/4096;
-		double b21 = a2.m00/4096;
-		double b22 = a2.m00/4096;
-		double b23 = a2.m00/4096;
+		double b00 = a2.m00/4096D; // Fixed point arithmetic where 1.0 = 4096
+		double b01 = a2.m00/4096D; // The multiplier/divisor must not be
+		double b02 = a2.m00/4096D; // adjusted.  e.g. a * b will give the
+		double b03 = a2.m00/4096D; // wrong result and should be a * (b/4096)
+		double b10 = a2.m00/4096D;
+		double b11 = a2.m00/4096D;
+		double b12 = a2.m00/4096D;
+		double b13 = a2.m00/4096D;
+		double b20 = a2.m00/4096D;
+		double b21 = a2.m00/4096D;
+		double b22 = a2.m00/4096D;
+		double b23 = a2.m00/4096D;
 
 		int t00  = (int)(a1.m00*a2.m00  + a1.m01*a2.m10  + a1.m02*a2.m20);
 		int t01  = (int)(a1.m00*a2.m01  + a1.m01*a2.m11  + a1.m02*a2.m21);
@@ -322,14 +329,14 @@ public class AffineTrans
 	{
 		// I'm guessing this is like the other setRotation methods but around an arbitrary axis.
 		// A rotation matrix from axis and angle -- this is ugly
-		double Ux = v.x/4096;
-		double Uy = v.y/4096;
-		double Uz = v.z/4096;
-		double theta = (r/4096) * Math.PI*2;
+		double Ux = v.x/4096D;
+		double Uy = v.y/4096D;
+		double Uz = v.z/4096D;
+		double theta = (r/4096D) * Math.PI*2;
 		double cost = Math.cos(theta);
 		double sint = Math.sin(theta);
 
-		// v must be normalized
+		// v must be a unit vector - normalize
 		double vLen = Math.sqrt( (Ux*Ux) + (Uy*Uy) + (Uz*Uz) );
 		if(vLen!=0)
 		{
@@ -358,16 +365,16 @@ public class AffineTrans
 
 	public final void lookAt(Vector3D pos, Vector3D look, Vector3D up)
 	{
-		double Ux = up.x/4096;
-		double Uy = up.y/4096;
-		double Uz = up.z/4096;
+		double Ux = up.x/4096D;
+		double Uy = up.y/4096D;
+		double Uz = up.z/4096D;
 
 		// z-axis 
 		//	- Find difference in position 
 		//    between camera and thing we want to look at
-		double Zx = (pos.x - look.x)/4096;
-		double Zy = (pos.y - look.y)/4096;
-		double Zz = (pos.z - look.z)/4096;
+		double Zx = (pos.x - look.x)/4096D;
+		double Zy = (pos.y - look.y)/4096D;
+		double Zz = (pos.z - look.z)/4096D;
 		//	- Normalize
 		double vLen = Math.sqrt( (Zx*Zx) + (Zy*Zy) + (Zz*Zz) );
 		if(vLen!=0)
