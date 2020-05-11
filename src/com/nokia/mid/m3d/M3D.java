@@ -118,19 +118,19 @@ public class M3D
 
 	public void frustumxi(int left, int right, int top, int bottom, int nearclip, int farclip) //-3,3, -2,2, 3,1000
 	{
-		//System.out.println("frustrumxi("+a+", "+b+", "+c+", "+d+", "+near+", "+far+");");
-		// c.c: bu.frustumxi(-bp << 11, bp << 11, -bo << 11, bo << 11, 196608, 65536000);
-		double r = right/2048;
-		double l = left/2048;
-		double t = top/2048;
-		double b = bottom/2048;
+		//System.out.println("frustrumxi("+left+", "+right+", "+top+", "+bottom+", "+nearclip+", "+farclip+");");
 
-		double n = nearclip/655360;
-		double f = farclip/655360;
+		double r = right/65536.0;
+		double l = left/65536.0;
+		double t = top/65536.0;
+		double b = bottom/65536.0;
+
+		double n = nearclip/65536.0;
+		double f = farclip/65536.0;
 		
-		near = -0.01;//25;//-n;
+		near = -n;
 		far = -f;
-		projection(projm, r-l, b-t, 90, near, far);
+		projection(projm, r-l, t-b, n, f);
 	}
 
 	public void scalexi(int X, int Y, int Z)
@@ -506,19 +506,17 @@ public class M3D
 		m[12] = 0; m[13] = 0; m[14] = 0; m[15] = 1;
 	}
 
-	private void projection(double[] m, double w, double h, double fov, double near, double far)
+	private void projection(double[] m, double w, double h, double n, double f)
 	{
-		fov = fov * 0.0174533;
-		double sx = 1/Math.tan(fov/2);
-		double sy = -sx*(w/h);
-		double sz = (far / (far-near)); // 1 > z > -1
-		double d  =  -1.0;
-		double e  =  1;
+		//System.out.println("projection("+w+", "+h+", "+n+", "+f+");");
+		double d = -(f+n)/(f-n);
+		double e = -(2*f*n)/(f-n);
 
-		m[0]  = sx;  m[1]  = 0;  m[2]  = 0;  m[3]  = 0;
-		m[4]  = 0;   m[5]  =sy;  m[6]  = 0;  m[7]  = 0;
-		m[8]  = 0;   m[9]  = 0;  m[10] =sz;  m[11] = d;
-		m[12] = 0;   m[13] = 0;  m[14] = e;  m[15] = 0;
+
+		m[0]  = 2*n/w; m[1]  = 0;      m[2]  = 0;  m[3]  = 0;
+		m[4]  = 0;     m[5]  = 2*n/h;  m[6]  = 0;  m[7]  = 0;
+		m[8]  = 0;     m[9]  = 0;      m[10] = d;  m[11] = -1;
+		m[12] = 0;     m[13] = 0;      m[14] = e;  m[15] = 0;
 	}
 
 	private void clone(double[] m1, double[] m2)
