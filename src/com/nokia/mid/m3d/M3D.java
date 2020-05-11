@@ -161,39 +161,41 @@ public class M3D
 		matmul(tempt, matrix);
 		clone(matrix, tempt);
 	}
-
-	public void rotatexi(int Y, int Z, int X, int W) // probably not a quaternion 
+	
+	public void rotatexi(int Angle, int X, int Y, int Z)
 	{
-		//System.out.println("rotatexi("+Y+", "+Z+", "+X+", "+W+");");
-		// 1 degree = 0.0174533 rad
-		// from d:1343 rotatexi(1310720, 65536, 0, 0);
-		// from d:1347 rotatexi(c0, 65536, 0, 0);
-		// from d:1354 rotatexi(cx * 90, 0, 65536, 0);
+		double a = (Angle/65536.0)*0.0174533;
 
-		double x = (X/65536.0)*0.0174533;
-		double y = ((Y/65536.0)-10)*0.0174533;
-		double z = (Z/65536.0)*0.0174533;
-
-		// rotate on y
-		tempr[0]  =  Math.cos(y); tempr[1]  =  0; tempr[2]  = -Math.sin(y); tempr[3]  =  0;
-		tempr[4]  =  0;           tempr[5]  =  1; tempr[6]  =  0;           tempr[7]  =  0;
-		tempr[8]  =  Math.sin(y); tempr[9]  =  0; tempr[10] =  Math.cos(y); tempr[11] =  0;
-		tempr[12] =  0;           tempr[13] =  0; tempr[14] =  0;           tempr[15] =  1;
-		clone(rotm, tempr);
-
-		// rotate on x
-		tempr[0]  =  1; tempr[1]  =  0;            tempr[2]  =  0;           tempr[3]  =  0;
-		tempr[4]  =  0; tempr[5]  =  Math.cos(x);  tempr[6]  =  Math.sin(x); tempr[7]  =  0;
-		tempr[8]  =  0; tempr[9]  = -Math.sin(x);  tempr[10] =  Math.cos(x); tempr[11] =  0;
-		tempr[12] =  0; tempr[13] =  0;            tempr[14] =  0;           tempr[15] =  1;
-		matmul(rotm, tempr);
-
-		// rotate on z
-		tempr[0]  =  Math.cos(z); tempr[1]  =  Math.sin(z); tempr[2]  =  0; tempr[3]  =  0;
-		tempr[4]  = -Math.sin(z); tempr[5]  =  Math.cos(z); tempr[6]  =  0; tempr[7]  =  0;
-		tempr[8]  =  0;           tempr[9]  =  0;           tempr[10] =  1; tempr[11] =  0;
-		tempr[12] =  0;           tempr[13] =  0;           tempr[14] =  0; tempr[15] =  1;
-		matmul(rotm, tempr);
+		// (X, Y, Z) define an axis for rotation
+		// But game uses only X, Y or Z axis
+		// Following code is enough for game to run without issues
+		if(X != 0)
+		{
+			// rotate on x
+			tempr[0]  =  1; tempr[1]  =  0;            tempr[2]  =  0;           tempr[3]  =  0;
+			tempr[4]  =  0; tempr[5]  =  Math.cos(a);  tempr[6]  =  Math.sin(a); tempr[7]  =  0;
+			tempr[8]  =  0; tempr[9]  = -Math.sin(a);  tempr[10] =  Math.cos(a); tempr[11] =  0;
+			tempr[12] =  0; tempr[13] =  0;            tempr[14] =  0;           tempr[15] =  1;
+			clone(rotm, tempr);
+		}
+		if(Y != 0)
+		{
+			// rotate on y
+			tempr[0]  =  Math.cos(a); tempr[1]  =  0; tempr[2]  = -Math.sin(a); tempr[3]  =  0;
+			tempr[4]  =  0;           tempr[5]  =  1; tempr[6]  =  0;           tempr[7]  =  0;
+			tempr[8]  =  Math.sin(a); tempr[9]  =  0; tempr[10] =  Math.cos(a); tempr[11] =  0;
+			tempr[12] =  0;           tempr[13] =  0; tempr[14] =  0;           tempr[15] =  1;
+			clone(rotm, tempr);
+		}
+		if(Z != 0)
+		{
+			// rotate on z
+			tempr[0]  =  Math.cos(a); tempr[1]  =  Math.sin(a); tempr[2]  =  0; tempr[3]  =  0;
+			tempr[4]  = -Math.sin(a); tempr[5]  =  Math.cos(a); tempr[6]  =  0; tempr[7]  =  0;
+			tempr[8]  =  0;           tempr[9]  =  0;           tempr[10] =  1; tempr[11] =  0;
+			tempr[12] =  0;           tempr[13] =  0;           tempr[14] =  0; tempr[15] =  1;
+			clone(rotm, tempr);
+		}
 
 		matmul(rotm, matrix);
 		clone(matrix, rotm);
