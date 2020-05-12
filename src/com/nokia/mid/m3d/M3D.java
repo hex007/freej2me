@@ -485,15 +485,29 @@ public class M3D
 		}
 	}
 
-	public void drawArrays(int a, int b, int c)  // called after clear -- background?
+	// Call order:
+	// vertexPointerub(3, 0, [ -100, 20, -100, 0, -20, 0, 100, 20, -100, ]); // 3, 0, len 9
+	// drawArrays(4, 0, 3);
+	//
+	// Water is a huge triangle with one point under the player. Other 2 (far) points form the horizon.
+	// We'll cheat here. Instead of drawing 3D surface let's calculate Y coordinate (on screen) of far point.
+	// And then fill everything below it with a color.
+	public void drawArrays(int a, int b, int c)
 	{
-		// The expected result.  No idea how to get there from here:
-		//vertexPointerub(3, 0, [ -100, 20, -100, 0, -20, 0, 100, 20, -100, ]); // 3, 0, len 9
-		//drawArrays(4, 0, 3);
 		//System.out.println("drawArrays("+a+", "+b+", "+c+")");
 		gc.setColor(color);
-		gc.fillRect(0,20, width, height);
+		applyMatrix(matrix);
 
+		// projection
+		double y, z;
+		y = verts[1];
+		z = verts[2];
+		y = y*projm[5]/(-z);
+		double oy = height/2;
+		y = (y*oy)+oy;
+
+		//System.out.println("y: "+y);
+		gc.fillRect(0, (int)y, width, height - (int)y);
 	}
 
 	public void bindTexture(int a, Texture b)
