@@ -1,7 +1,4 @@
 # freej2me
-
-![Java CI](https://github.com/hex007/freej2me/workflows/Java%20CI/badge.svg)
-
 A free J2ME emulator with libretro, awt and sdl2 frontends.
 
 Authors :
