@@ -486,7 +486,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		int[] x = new int[nPoints];
 		int[] y = new int[nPoints];
 
-		setColor(argbColor);
+		setAlphaRGB(argbColor);
 
 		for(int i=0; i<nPoints; i++)
 		{
@@ -501,7 +501,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 	{
 		//System.out.println("drawTriange");
 		int temp = color;
-		setColor(argbColor);
+		setAlphaRGB(argbColor);
 		gc.drawPolygon(new int[]{x1,x2,x3}, new int[]{y1,y2,y3}, 3);
 		setColor(temp);
 	}
@@ -512,7 +512,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		int[] x = new int[nPoints];
 		int[] y = new int[nPoints];
 
-		setColor(argbColor);
+		setAlphaRGB(argbColor);
 
 		for(int i=0; i<nPoints; i++)
 		{
@@ -527,7 +527,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 	{
 		//System.out.println("fillTriangle"); // Found In Use
 		int temp = color;
-		setColor(argbColor);
+		setAlphaRGB(argbColor);
 		gc.fillPolygon(new int[]{x1,x2,x3}, new int[]{y1,y2,y3}, 3);
 		setColor(temp);
 	}
