@@ -174,7 +174,7 @@ public class Anbu
 					{
 						bin = keys.read();
 						if(bin==-1) { return; }
-						System.out.print(" "+bin);
+						// System.out.print(" "+bin);
 						din[count] = (byte)(bin & 0xFF);
 						count++;
 						if (count==5)
@@ -191,7 +191,7 @@ public class Anbu
 								case 5: Mobile.getPlatform().keyPressed(getMobileKeyJoy(code)); break;
 
 							}
-							System.out.println(" ("+code+") <- Key");
+							// System.out.println(" ("+code+") <- Key");
 						}
 					}
 				}
