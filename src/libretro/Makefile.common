@@ -1,7 +1,10 @@
-SOURCES_C += freej2me_libretro.c \
-	deps/libretro-common/file/file_path.c \
-	deps/libretro-common/compat/compat_strl.c \
-	deps/libretro-common/compat/compat_strcasestr.c
+SOURCES_C += freej2me_libretro.c
+
+ifneq ($(platform), emscripten)
+SOURCES_C += deps/libretro-common/file/file_path.c \
+			 deps/libretro-common/compat/compat_strl.c \
+			 deps/libretro-common/compat/compat_strcasestr.c
+endif
 
 SOURCES_CXX += 
 
