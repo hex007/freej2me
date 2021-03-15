@@ -433,6 +433,7 @@ void retro_run(void)
 		do
 		{
 			stat = read(pRead[0], readBuffer, readSize);
+			if (stat<=0) break;
 			for(i=0; i<stat; i++)
 			{
 				frameBuffer[status + i] = readBuffer[i];
