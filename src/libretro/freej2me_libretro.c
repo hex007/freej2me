@@ -56,13 +56,16 @@ int pWrite[2];
 
 int joypad[14]; // joypad state
 int joypre[14]; // joypad previous state
-unsigned char joyevent[5] = { 0, 0,0,0,0 };
+unsigned char joyevent[5] = { 0,0,0,0,0 };
 
 int joymouseX = 0;
 int joymouseY = 0;
 long joymouseTime = 0; // countdown to show/hide mouse cursor
 bool joymouseAnalog = false; // flag - using analog stick for mouse movement
 int mouseLpre = 0; // old mouse button state
+
+unsigned int readSize = 16384;
+unsigned char readBuffer[16384];
 
 unsigned int frameWidth = 800;
 unsigned int frameHeight = 800;
@@ -201,6 +204,7 @@ void retro_run(void)
 	int w = 0; // sent frame width
 	int h = 0; // sent frame height
 	int r = 0; // rotation flag
+	int stat = 0;
 	int status = 0;
 	bool mouseChange = false;
 
@@ -369,8 +373,9 @@ void retro_run(void)
 			{
 				//drop frame
 				framesDropped++;
-				if(framesDropped>150)
+				if(framesDropped>250)
 				{
+					printf("More than 250 frames dropped. Exiting!");
 					quit(EXIT_FAILURE);
 				}
 				Video(frame, frameWidth, frameHeight, sizeof(unsigned int) * frameWidth);
@@ -412,6 +417,7 @@ void retro_run(void)
 				frameHeight = h;
 				frameSize = w * h;
 				frameBufferSize = frameSize * 3;
+
 				// update geometry //
 				Geometry.base_width = w;
 				Geometry.base_height = h;
@@ -423,7 +429,17 @@ void retro_run(void)
 		}
 
 		// read frame
-		status = read(pRead[0], frameBuffer, frameBufferSize);
+		status = 0;
+		do
+		{
+			stat = read(pRead[0], readBuffer, readSize);
+			for(i=0; i<stat; i++)
+			{
+				frameBuffer[status + i] = readBuffer[i];
+			}
+			status += stat;
+		} while(status > 0 && status < frameBufferSize);
+
 		if(status>0)
 		{
 			if(r==0)
@@ -555,6 +571,7 @@ pid_t javaOpen(char *cmd, char **params)
 
 		dup2(pWrite[0], fd_stdin);  // read from parent pWrite
 		dup2(pRead[1], fd_stdout); // write to parent pRead
+
 		close(pWrite[1]);
 		close(pRead[0]);
 
