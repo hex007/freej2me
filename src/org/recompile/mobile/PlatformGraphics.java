@@ -523,6 +523,12 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		setColor(temp);
 	}
 
+	public void fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3)
+	{
+		//System.out.println("fillTriangle"); // Found In Use
+		gc.fillPolygon(new int[]{x1,x2,x3}, new int[]{y1,y2,y3}, 3);
+	}
+
 	public void fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, int argbColor)
 	{
 		//System.out.println("fillTriangle"); // Found In Use
