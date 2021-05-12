@@ -18,6 +18,8 @@ Authors :
 * `E` and `R` are alternatives to `*` and `#`.
 * Enter functions as `5`
 
+Click [here](KEYMAP.md) for information about more keybindings
+
 ## Links
 Screenshots:
   https://imgur.com/a/2vAeC
