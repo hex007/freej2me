@@ -222,6 +222,7 @@ public class PlatformPlayer implements Player
 
 		public void start()
 		{
+			midi.setMicrosecondPosition(0);
 			midi.start();
 			state = Player.STARTED;
 			notifyListeners(PlayerListener.STARTED, new Long(0));
