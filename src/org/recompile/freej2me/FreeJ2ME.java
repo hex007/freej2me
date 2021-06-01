@@ -284,6 +284,7 @@ public class FreeJ2ME
 				case KeyEvent.VK_RIGHT: return Mobile.SIEMENS_RIGHT;
 				case KeyEvent.VK_Q: return Mobile.SIEMENS_SOFT1;
 				case KeyEvent.VK_W: return Mobile.SIEMENS_SOFT2;
+				case KeyEvent.VK_ENTER: return Mobile.SIEMENS_FIRE;
 			}
 		}
 

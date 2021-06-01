@@ -359,6 +359,7 @@ public class Libretro
 				case 119: return Mobile.SIEMENS_SOFT2;
 				case 91: return Mobile.SIEMENS_SOFT1;
 				case 93: return Mobile.SIEMENS_SOFT2;
+				case 13: return Mobile.SIEMENS_FIRE;
 			}
 		}
 		if(useMotorolaControls)
@@ -373,6 +374,7 @@ public class Libretro
 				case 119: return Mobile.MOTOROLA_SOFT2;
 				case 91: return Mobile.MOTOROLA_SOFT1;
 				case 93: return Mobile.MOTOROLA_SOFT2;
+				case 13: return Mobile.MOTOROLA_FIRE;
 			}
 		}
 
