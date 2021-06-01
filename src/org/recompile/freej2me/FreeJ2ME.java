@@ -51,6 +51,7 @@ public class FreeJ2ME
 	private Config config;
 	private boolean useNokiaControls = false;
 	private boolean useSiemensControls = false;
+	private boolean useMotorolaControls = false;
 	private boolean rotateDisplay = false;
 	private int limitFPS = 0;
 
@@ -239,10 +240,13 @@ public class FreeJ2ME
 		String phone = config.settings.get("phone");
 		useNokiaControls = false;
 		useSiemensControls = false;
+		useMotorolaControls = false;
 		Mobile.nokia = false;
 		Mobile.siemens = false;
+		Mobile.motorola = false;
 		if(phone.equals("Nokia")) { Mobile.nokia = true; useNokiaControls = true; }
 		if(phone.equals("Siemens")) { Mobile.siemens = true; useSiemensControls = true; }
+		if(phone.equals("Motorola")) { Mobile.motorola = true; useMotorolaControls = true; }
 
 		if(lcdWidth != w || lcdHeight != h)
 		{
@@ -280,6 +284,21 @@ public class FreeJ2ME
 				case KeyEvent.VK_RIGHT: return Mobile.SIEMENS_RIGHT;
 				case KeyEvent.VK_Q: return Mobile.SIEMENS_SOFT1;
 				case KeyEvent.VK_W: return Mobile.SIEMENS_SOFT2;
+				case KeyEvent.VK_ENTER: return Mobile.SIEMENS_FIRE;
+			}
+		}
+
+		if(useMotorolaControls)
+		{
+			switch(keycode)
+			{
+				case KeyEvent.VK_UP: return Mobile.MOTOROLA_UP;
+				case KeyEvent.VK_DOWN: return Mobile.MOTOROLA_DOWN;
+				case KeyEvent.VK_LEFT: return Mobile.MOTOROLA_LEFT;
+				case KeyEvent.VK_RIGHT: return Mobile.MOTOROLA_RIGHT;
+				case KeyEvent.VK_Q: return Mobile.MOTOROLA_SOFT1;
+				case KeyEvent.VK_W: return Mobile.MOTOROLA_SOFT2;
+				case KeyEvent.VK_ENTER: return Mobile.MOTOROLA_FIRE;
 			}
 		}
 
