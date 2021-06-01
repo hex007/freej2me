@@ -44,8 +44,11 @@ public class Mobile
 
 	public static boolean siemens = false;
 
+	public static boolean motorola = false;
+
 	public static boolean sound = true;
 
+	//Standard keycodes
 	public static final int KEY_NUM0  = Canvas.KEY_NUM0;  // 48
 	public static final int KEY_NUM1  = Canvas.KEY_NUM1;  // 49
 	public static final int KEY_NUM2  = Canvas.KEY_NUM2;  // 50
@@ -68,6 +71,7 @@ public class Mobile
 	public static final int GAME_C    = Canvas.GAME_C; // 11
 	public static final int GAME_D    = Canvas.GAME_D; // 12
 
+	//Nokia-specific keycodes
 	public static final int NOKIA_UP    = -1; // KEY_UP_ARROW = -1;
 	public static final int NOKIA_DOWN  = -2; // KEY_DOWN_ARROW = -2;
 	public static final int NOKIA_LEFT  = -3; // KEY_LEFT_ARROW = -3;
@@ -78,6 +82,7 @@ public class Mobile
 	public static final int NOKIA_END   = -11; // KEY_END = -11;
 	public static final int NOKIA_SEND  = -10; // KEY_SEND = -10;
 
+	//Siemens-specific keycodes
 	public static final int SIEMENS_UP    = -59;
 	public static final int SIEMENS_DOWN  = -60;
 	public static final int SIEMENS_LEFT  = -61;
@@ -85,6 +90,15 @@ public class Mobile
 	public static final int SIEMENS_SOFT1 = -1; 
 	public static final int SIEMENS_SOFT2 = -4; 
 	public static final int SIEMENS_FIRE = -26; 
+
+	//Motorola-specific keycodes
+	public static final int MOTOROLA_UP    = -1;
+	public static final int MOTOROLA_DOWN  = -6;
+	public static final int MOTOROLA_LEFT  = -2;
+	public static final int MOTOROLA_RIGHT = -5;
+	public static final int MOTOROLA_SOFT1 = -21; 
+	public static final int MOTOROLA_SOFT2 = -22; 
+	public static final int MOTOROLA_FIRE = -20; 
 
 	public static MobilePlatform getPlatform()
 	{

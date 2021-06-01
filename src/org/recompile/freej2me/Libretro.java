@@ -46,6 +46,7 @@ public class Libretro
 	private Config config;
 	private boolean useNokiaControls = false;
 	private boolean useSiemensControls = false;
+	private boolean useMotorolaControls = false;
 	private boolean rotateDisplay = false;
 	private int limitFPS = 0;
 
@@ -290,10 +291,13 @@ public class Libretro
 		String phone = config.settings.get("phone");
 		useNokiaControls = false;
 		useSiemensControls = false;
+		useMotorolaControls = false;
 		Mobile.nokia = false;
 		Mobile.siemens = false;
+		Mobile.motorola = false;
 		if(phone.equals("Nokia")) { Mobile.nokia = true; useNokiaControls = true; }
 		if(phone.equals("Siemens")) { Mobile.siemens = true; useSiemensControls = true; }
+		if(phone.equals("Motorola")) { Mobile.motorola = true; useMotorolaControls = true; }
 
 		String rotate = config.settings.get("rotate");
 		if(rotate.equals("on")) { rotateDisplay = true; frameHeader[5] = (byte)1; }
@@ -355,6 +359,20 @@ public class Libretro
 				case 119: return Mobile.SIEMENS_SOFT2;
 				case 91: return Mobile.SIEMENS_SOFT1;
 				case 93: return Mobile.SIEMENS_SOFT2;
+			}
+		}
+		if(useMotorolaControls)
+		{
+			switch(keycode)
+			{
+				case 273: return Mobile.MOTOROLA_UP;
+				case 274: return Mobile.MOTOROLA_DOWN;
+				case 276: return Mobile.MOTOROLA_LEFT;
+				case 275: return Mobile.MOTOROLA_RIGHT;
+				case 113: return Mobile.MOTOROLA_SOFT1;
+				case 119: return Mobile.MOTOROLA_SOFT2;
+				case 91: return Mobile.MOTOROLA_SOFT1;
+				case 93: return Mobile.MOTOROLA_SOFT2;
 			}
 		}
 

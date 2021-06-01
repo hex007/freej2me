@@ -69,7 +69,7 @@ public class Config
 		menu.add(new String[]{"96x65","96x96","104x80","128x128","132x176","128x160","176x208","176x220", "208x208", "240x320", "320x240", "240x400", "360x640", "480x800"}); // 1 - Size
 		menu.add(new String[]{"Quit", "Main Menu"}); // 2 - Restart Notice
 		menu.add(new String[]{"On", "Off"}); // 3 - sound
-		menu.add(new String[]{"Standard", "Nokia", "Siemens"}); // 4 - Phone 
+		menu.add(new String[]{"Standard", "Nokia", "Siemens","Motorola"}); // 4 - Phone 
 		menu.add(new String[]{"On", "Off"}); // 5 - rotate 
 		menu.add(new String[]{"Auto", "60 - Fast", "30 - Slow", "15 - Turtle"}); // 6 - FPS
 
@@ -134,6 +134,7 @@ public class Config
 					parts[1] = parts[1].trim();
 					if(parts[0]!="" && parts[1]!="")
 					{
+						//Compatibility with the deprecated "nokia" boolean setting
 						if(parts[0].equals("nokia"))
 						{
 							parts[0] = "phone";
@@ -227,6 +228,16 @@ public class Config
 						case Mobile.SIEMENS_UP: itemid--; break;
 						case Mobile.SIEMENS_DOWN: itemid++; break;
 						case Mobile.SIEMENS_SOFT1: menuid=0; break;
+					}
+				}
+				if(settings.get("phone").equals("Motorola"))
+				{
+					switch(key)
+					{
+						case Mobile.MOTOROLA_UP: itemid--; break;
+						case Mobile.MOTOROLA_DOWN: itemid++; break;
+						case Mobile.MOTOROLA_SOFT1: menuid=0; break;
+						case Mobile.MOTOROLA_FIRE: doMenuAction(); break;
 					}
 				}
 		}
@@ -368,6 +379,7 @@ public class Config
 				if(itemid==0) { updatePhone("Standard"); }
 				if(itemid==1) { updatePhone("Nokia"); }
 				if(itemid==2) { updatePhone("Siemens"); }
+				if(itemid==3) { updatePhone("Motorola"); }
 				menuid=0; itemid=0;
 			break;
 
