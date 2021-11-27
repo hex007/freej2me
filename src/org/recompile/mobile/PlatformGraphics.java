@@ -640,11 +640,11 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 			case DirectGraphics.FLIP_VERTICAL: 
 				return PlatformImage.transformImage(image, Sprite.TRANS_MIRROR_ROT180);
 			case DirectGraphics.ROTATE_90: 
-				return PlatformImage.transformImage(image, Sprite.TRANS_ROT90);
+				return PlatformImage.transformImage(image, Sprite.TRANS_ROT270);
 			case DirectGraphics.ROTATE_180:
 				return PlatformImage.transformImage(image, Sprite.TRANS_ROT180);
 			case DirectGraphics.ROTATE_270:
-				return PlatformImage.transformImage(image, Sprite.TRANS_ROT270);
+				return PlatformImage.transformImage(image, Sprite.TRANS_ROT90);
 			case HV:
 				return PlatformImage.transformImage(image, Sprite.TRANS_ROT180);
 			case H90: 
