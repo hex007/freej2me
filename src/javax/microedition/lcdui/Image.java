@@ -50,7 +50,7 @@ public class Image
 	public static Image createImage(Image img, int x, int y, int width, int height, int transform)
 	{
 		//System.out.println("Create Image from sub-image ");
-		PlatformImage t = new PlatformImage(width-x, height-y);
+		PlatformImage t = new PlatformImage(img, x, y, width, height, transform);
 		if(t.isNull) { return (Image)null; }
 		return t;
 	}
