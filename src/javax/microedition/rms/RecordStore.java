@@ -83,33 +83,30 @@ public class RecordStore
 			System.out.println(e.getMessage());
 			throw(new RecordStoreException("Problem Creating Record Store Path "+rmsPath));
 		}
-
-		try // Check Record Store File
+		file = new File(rmsFile);
+		if(!file.exists())
 		{
-			file = new File(rmsFile);
-			if(!file.exists())
+			if(!createIfNecessary)
 			{
-				if(createIfNecessary)
-				{
-					//System.out.println("> Creating New Record Store "+appname+"/"+recordStoreName);
-					file.createNewFile();
-					version = 1;
-					nextid = 1;
-					count = 0;
-					save();
-					nextid = 1;
-				}
-				else
-				{
-					throw(new RecordStoreNotFoundException("Record Store Doesn't Exist: "+rmsFile));
-				}
+				throw (new RecordStoreNotFoundException("Record Store Doesn't Exist: " + rmsFile));
 			}
-		}
-		catch (Exception e)
-		{
-			//System.out.println("> Problem Opening Record Store (createIfNecessary "+createIfNecessary+"): "+rmsFile);
-			System.out.println(e.getMessage());
-			throw(new RecordStoreException("Problem Opening Record Store (createIfNecessary "+createIfNecessary+"): "+rmsFile));
+
+			try // Check Record Store File
+			{
+				//System.out.println("> Creating New Record Store "+appname+"/"+recordStoreName);
+				file.createNewFile();
+				version = 1;
+				nextid = 1;
+				count = 0;
+				save();
+				nextid = 1;
+			}
+			catch (Exception e)
+			{
+				//System.out.println("> Problem Opening Record Store (createIfNecessary "+createIfNecessary+"): "+rmsFile);
+				System.out.println(e.getMessage());
+				throw(new RecordStoreException("Problem Opening Record Store (createIfNecessary "+createIfNecessary+"): "+rmsFile));
+			}
 		}
 
 		try // Read Records
