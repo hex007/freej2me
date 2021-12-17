@@ -251,7 +251,18 @@ public class MIDletLoader extends URLClassLoader
 		try
 		{
 			url = findResource(resource);
-			return url.openStream();
+			// Read all bytes, return ByteArrayInputStream //
+			InputStream stream = url.openStream();
+
+			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+			int count=0;
+			byte[] data = new byte[4096];
+			while (count!=-1)
+			{
+				count = stream.read(data);
+				if(count!=-1) { buffer.write(data, 0, count); }
+			}
+			return new ByteArrayInputStream(buffer.toByteArray());
 		}
 		catch (Exception e)
 		{

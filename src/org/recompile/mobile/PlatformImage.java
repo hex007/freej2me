@@ -157,8 +157,7 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 		// Create Image from Byte Array Range (Data is PNG, JPG, etc.)
 		try
 		{
-			byte[] range = Arrays.copyOfRange(imageData, imageOffset, imageOffset+imageLength);
-			InputStream stream = new ByteArrayInputStream(range);
+			InputStream stream = new ByteArrayInputStream(imageData, imageOffset, imageLength);
 
 			BufferedImage temp;
 
