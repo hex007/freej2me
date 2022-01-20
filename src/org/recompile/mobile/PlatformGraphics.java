@@ -347,6 +347,8 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		translateX += x;
 		translateY += y;
 		gc.translate(x, y);
+		clipX -= x;
+		clipY -= y;
 	}
 
 	private int AnchorX(int x, int width, int anchor)
