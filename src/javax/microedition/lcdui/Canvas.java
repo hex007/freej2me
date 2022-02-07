@@ -18,6 +18,7 @@ package javax.microedition.lcdui;
 
 import org.recompile.mobile.Mobile;
 import org.recompile.mobile.PlatformImage;
+import org.recompile.mobile.PlatformGraphics;
 
 public abstract class Canvas extends Displayable
 {
@@ -156,9 +157,12 @@ public abstract class Canvas extends Displayable
 
 	public void repaint()
 	{
+		PlatformGraphics graphics;
 		try
 		{
-			paint(platformImage.getNewGraphics());
+			graphics = platformImage.getGraphics();
+			graphics.reset();
+			paint(graphics);
 			if(Mobile.getDisplay().getCurrent() == this)
 			{
 				Mobile.getPlatform().repaint(platformImage, 0, 0, width, height);
@@ -173,7 +177,9 @@ public abstract class Canvas extends Displayable
 
 	public void repaint(int x, int y, int width, int height)
 	{
-		paint(platformImage.getNewGraphics());
+		PlatformGraphics graphics = platformImage.getGraphics();
+		graphics.reset();
+		paint(graphics);
 		if(Mobile.getDisplay().getCurrent() == this)
 		{
 			Mobile.getPlatform().repaint(platformImage, x, y, width, height);

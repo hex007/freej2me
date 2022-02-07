@@ -61,6 +61,15 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		gc.setFont(font.platformFont.awtFont);
 	}
 
+	public void reset() //Internal use method, resets the Graphics object to its inital values
+	{
+		translate(-1 * translateX, -1 * translateY);
+		setClip(0, 0, canvas.getWidth(), canvas.getHeight());
+		setColor(0,0,0);
+		setFont(Font.getDefaultFont());
+		setStrokeStyle(SOLID);
+	}
+
 	public Graphics2D getGraphics2D()
 	{
 		return gc;
