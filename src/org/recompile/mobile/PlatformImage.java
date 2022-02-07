@@ -49,12 +49,6 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 		return gc;
 	}
 
-	public PlatformGraphics getNewGraphics()
-	{
-		createGraphics();
-		return gc;
-	}
-
 	protected void createGraphics()
 	{
 		gc = new PlatformGraphics(this);
