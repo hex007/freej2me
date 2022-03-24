@@ -286,7 +286,12 @@ public class PlatformPlayer implements Player
 
 		public void start()
 		{
-			if(isRunning()) { wavClip.setFramePosition(0); }
+			if(isRunning()) {
+				return;
+			}
+			if(wavClip.getFramePosition() >= wavClip.getFrameLength()) {
+				wavClip.setFramePosition(0);
+			}
 			time = wavClip.getMicrosecondPosition();
 			wavClip.start();
 			state = Player.STARTED;
