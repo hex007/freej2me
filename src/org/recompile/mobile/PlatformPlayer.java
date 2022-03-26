@@ -277,7 +277,7 @@ public class PlatformPlayer implements Player
 			try
 			{
 				wavStream = AudioSystem.getAudioInputStream(stream);
-		        wavClip = AudioSystem.getClip();
+				wavClip = AudioSystem.getClip();
 				wavClip.open(wavStream);
 				state = Player.PREFETCHED;
 			}
@@ -286,10 +286,10 @@ public class PlatformPlayer implements Player
 
 		public void start()
 		{
-			if(isRunning()) {
-				return;
-			}
-			if(wavClip.getFramePosition() >= wavClip.getFrameLength()) {
+			if(isRunning()) { return; }
+			
+			if(wavClip.getFramePosition() >= wavClip.getFrameLength())
+			{
 				wavClip.setFramePosition(0);
 			}
 			time = wavClip.getMicrosecondPosition();
