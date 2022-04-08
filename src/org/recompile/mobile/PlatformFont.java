@@ -20,6 +20,10 @@ import javax.microedition.lcdui.Font;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.awt.font.TextAttribute;
+
+import java.util.Hashtable;
+import java.util.Map;
 
 public class PlatformFont
 {
@@ -29,8 +33,19 @@ public class PlatformFont
 
 	public PlatformFont(Font font)
 	{
-		// TODO: use info from mobilefont to construct font
-		awtFont = new java.awt.Font("SansSerif", java.awt.Font.PLAIN, font.getPointSize());
+		// We'll use SansSerif for both SYSTEM and PROPORTIONAL
+		String fontFace = (font.getFace() == Font.FACE_MONOSPACE) ? java.awt.Font.MONOSPACED : java.awt.Font.SANS_SERIF;
+
+		awtFont = new java.awt.Font(fontFace, font.getStyle(), font.getPointSize());
+
+		// Standard java doesn't handle underlining the same way, so do it here
+		if((font.getStyle() & Font.STYLE_UNDERLINED) > 0) {
+			Map<TextAttribute, Object> map = new Hashtable<TextAttribute, Object>(1);
+			map.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+
+			awtFont = awtFont.deriveFont(map);
+		}
+
 		gc = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB).createGraphics();
 		gc.setFont(awtFont);
 	}
