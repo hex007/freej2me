@@ -34,12 +34,14 @@ public class PlatformFont
 	public PlatformFont(Font font)
 	{
 		// We'll use SansSerif for both SYSTEM and PROPORTIONAL
-		String fontFace = (font.getFace() == Font.FACE_MONOSPACE) ? java.awt.Font.MONOSPACED : java.awt.Font.SANS_SERIF;
+		String fontFace = java.awt.Font.SANS_SERIF;
+		if(font.getFace() == Font.FACE_MONOSPACE) { fontFace = java.awt.Font.MONOSPACED; }
 
 		awtFont = new java.awt.Font(fontFace, font.getStyle(), font.getPointSize());
 
 		// Standard java doesn't handle underlining the same way, so do it here
-		if((font.getStyle() & Font.STYLE_UNDERLINED) > 0) {
+		if((font.getStyle() & Font.STYLE_UNDERLINED) > 0)
+		{
 			Map<TextAttribute, Object> map = new Hashtable<TextAttribute, Object>(1);
 			map.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
 
