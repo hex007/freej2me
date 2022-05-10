@@ -175,8 +175,8 @@ public class MIDletLoader extends URLClassLoader
 					if(url==null)
 					{
 						return;
-					}	
-				}	
+					}
+				}
 			}
 		}
 
@@ -189,9 +189,9 @@ public class MIDletLoader extends URLClassLoader
 		{
 			InputStream is = url.openStream();
 			BufferedReader br = new BufferedReader(new InputStreamReader(is));
-			
+
 			ArrayList<String> lines = new ArrayList<String>();
-			while ((line = br.readLine()) != null) 
+			while ((line = br.readLine()) != null)
 			{
 				if(line.startsWith(" "))
 				{
@@ -324,6 +324,30 @@ public class MIDletLoader extends URLClassLoader
 		}
 	}
 
+	public InputStream getMIDletResourceAsStream(Class c, String resource) {
+		return getMIDletResourceAsStream(resolveName(c, resource));
+	}
+
+	private String resolveName(Class clazz, String name) {
+		if (name == null) {
+			return name;
+		}
+		if (!name.startsWith("/")) {
+			while (clazz.isArray()) {
+				clazz = clazz.getComponentType();
+			}
+			String baseName = clazz.getName();
+			int index = baseName.lastIndexOf('.');
+			if (index != -1) {
+				name = baseName.substring(0, index).replace('.', '/')
+						+ "/" + name;
+			}
+		} else {
+			name = name.substring(1);
+		}
+		return name;
+	}
+
 	public byte[] getMIDletResourceAsByteArray(String resource)
 	{
 		URL url = getResource(resource);
@@ -436,7 +460,7 @@ public class MIDletLoader extends URLClassLoader
 	}
 
 
-/* ************************************************************** 
+/* **************************************************************
  * Instrumentation
  * ************************************************************** */
 
