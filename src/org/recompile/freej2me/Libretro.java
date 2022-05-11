@@ -441,6 +441,31 @@ public class Libretro
 				case 3: return Mobile.NOKIA_RIGHT; // Right
 			}
 		}
+		if(useSiemensControls)
+		{
+			switch(keycode)
+			{
+				case 0: return Mobile.SIEMENS_UP; // Up
+				case 1: return Mobile.SIEMENS_DOWN; // Down
+				case 2: return Mobile.SIEMENS_LEFT; // Left
+				case 3: return Mobile.SIEMENS_RIGHT; // Right
+				case 8: return Mobile.SIEMENS_SOFT2; // Start
+				case 9: return Mobile.SIEMENS_SOFT1; // Select
+			}
+		}
+		if(useMotorolaControls)
+		{
+			switch(keycode)
+			{
+				case 0: return Mobile.MOTOROLA_UP; // Up
+				case 1: return Mobile.MOTOROLA_DOWN; // Down
+				case 2: return Mobile.MOTOROLA_LEFT; // Left
+				case 3: return Mobile.MOTOROLA_RIGHT; // Right
+				case 8: return Mobile.MOTOROLA_SOFT2; // Start
+				case 9: return Mobile.MOTOROLA_SOFT1; // Select
+			}
+		}
+
 		switch(keycode)
 		{
 			case 0: return Mobile.KEY_NUM2; // Up
