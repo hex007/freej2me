@@ -38,7 +38,7 @@ public class Mobile
 
 	private static Graphics3D graphics3d;
 
-	public static boolean quiet = false;
+	public static boolean quiet = false; 
 
 	public static boolean nokia = false;
 
@@ -63,8 +63,8 @@ public class Mobile
 	public static final int KEY_POUND = Canvas.KEY_POUND; // 35
 	public static final int GAME_UP   = Canvas.UP;     // 1
 	public static final int GAME_DOWN = Canvas.DOWN;   // 6
-	public static final int GAME_LEFT = Canvas.LEFT;   // 2
-	public static final int GAME_RIGHT= Canvas.RIGHT;  // 5
+	public static final int GAME_LEFT = Canvas.LEFT;   // 2 
+	public static final int GAME_RIGHT= Canvas.RIGHT;  // 5 
 	public static final int GAME_FIRE = Canvas.FIRE;   // 8
 	public static final int GAME_A    = Canvas.GAME_A; // 9
 	public static final int GAME_B    = Canvas.GAME_B; // 10
@@ -87,18 +87,18 @@ public class Mobile
 	public static final int SIEMENS_DOWN  = -60;
 	public static final int SIEMENS_LEFT  = -61;
 	public static final int SIEMENS_RIGHT = -62;
-	public static final int SIEMENS_SOFT1 = -1;
-	public static final int SIEMENS_SOFT2 = -4;
-	public static final int SIEMENS_FIRE = -26;
+	public static final int SIEMENS_SOFT1 = -1; 
+	public static final int SIEMENS_SOFT2 = -4; 
+	public static final int SIEMENS_FIRE = -26; 
 
 	//Motorola-specific keycodes
 	public static final int MOTOROLA_UP    = -1;
 	public static final int MOTOROLA_DOWN  = -6;
 	public static final int MOTOROLA_LEFT  = -2;
 	public static final int MOTOROLA_RIGHT = -5;
-	public static final int MOTOROLA_SOFT1 = -21;
-	public static final int MOTOROLA_SOFT2 = -22;
-	public static final int MOTOROLA_FIRE = -20;
+	public static final int MOTOROLA_SOFT1 = -21; 
+	public static final int MOTOROLA_SOFT2 = -22; 
+	public static final int MOTOROLA_FIRE = -20; 
 
 	public static MobilePlatform getPlatform()
 	{
@@ -132,7 +132,7 @@ public class Mobile
 
 	public static InputStream getResourceAsStream(Class c, String resource)
 	{
-		return platform.loader.getMIDletResourceAsStream(c,resource);
+		return platform.loader.getMIDletResourceAsStream(resource);
 	}
 
 	public static InputStream getMIDletResourceAsStream(String resource)
