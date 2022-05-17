@@ -132,7 +132,7 @@ public class Mobile
 
 	public static InputStream getResourceAsStream(Class c, String resource)
 	{
-		return platform.loader.getMIDletResourceAsStream(resource);
+		return platform.loader.getMIDletResourceAsStream(c,resource);
 	}
 
 	public static InputStream getMIDletResourceAsStream(String resource)

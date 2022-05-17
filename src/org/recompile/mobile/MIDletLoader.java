@@ -324,6 +324,28 @@ public class MIDletLoader extends URLClassLoader
 		}
 	}
 
+	public InputStream getMIDletResourceAsStream(Class c, String resource)
+	{
+		if (resource == null) {
+			return null;
+		}
+		// if not start with '/' , then it is a relative path
+		if (!resource.startsWith("/")) {
+			while (c.isArray()) {
+				c = c.getComponentType();
+			}
+			String baseName = c.getName();
+			int index = baseName.lastIndexOf('.');
+			if (index != -1) {
+				resource = baseName.substring(0, index).replace('.', '/')
+						+ "/" + resource;
+			}
+		} else {
+			resource = resource.substring(1);
+		}
+		return getMIDletResourceAsStream(resource);
+	}
+
 	public byte[] getMIDletResourceAsByteArray(String resource)
 	{
 		URL url = getResource(resource);
