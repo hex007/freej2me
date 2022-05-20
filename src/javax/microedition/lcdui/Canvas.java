@@ -135,7 +135,7 @@ public abstract class Canvas extends Displayable
 
 	public boolean hasPointerMotionEvents() { return false; }
 
-	public boolean hasRepeatEvents() { return false; }
+	public boolean hasRepeatEvents() { return true; }
 
 	public void hideNotify() { }
 

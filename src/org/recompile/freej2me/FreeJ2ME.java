@@ -54,6 +54,8 @@ public class FreeJ2ME
 	private boolean useMotorolaControls = false;
 	private boolean rotateDisplay = false;
 	private int limitFPS = 0;
+	
+	private boolean[] pressedKeys = new boolean[128];
 
 	public FreeJ2ME(String args[])
 	{
@@ -115,15 +117,11 @@ public class FreeJ2ME
 		{
 			public void keyPressed(KeyEvent e)
 			{
-				if(config.isRunning)
-				{
-					config.keyPressed(getMobileKey(e.getKeyCode()));
-				}
-				else
-				{
-					Mobile.getPlatform().keyPressed(getMobileKey(e.getKeyCode()));
-				}
-				switch(e.getKeyCode())
+				int keycode = e.getKeyCode();
+				int mobikey = getMobileKey(keycode);
+				int mobikeyN = (mobikey + 64) & 0x7F; //Normalized value for indexing the pressedKeys array
+				
+				switch(keycode) // Handle emulator control keys
 				{
 					case KeyEvent.VK_PLUS:
 					case KeyEvent.VK_ADD:
@@ -145,17 +143,53 @@ public class FreeJ2ME
 						}
 					break;
 				}
+				
+				if (mobikey == 0) //Ignore events from keys not mapped to a phone keypad key
+				{
+					return; 
+				}
+				
+				if(config.isRunning)
+				{
+					config.keyPressed(mobikey);
+				}
+				else
+				{
+					if (pressedKeys[mobikeyN] == false)
+					{
+						//~ System.out.println("keyPressed:  " + Integer.toString(mobikey));
+						Mobile.getPlatform().keyPressed(mobikey);
+					}
+					else
+					{
+						//~ System.out.println("keyRepeated:  " + Integer.toString(mobikey));
+						Mobile.getPlatform().keyRepeated(mobikey);
+					}
+				}
+				pressedKeys[mobikeyN] = true;
+				
 			}
 
 			public void keyReleased(KeyEvent e)
 			{
+				int mobikey = getMobileKey(e.getKeyCode());
+				int mobikeyN = (mobikey + 64) & 0x7F; //Normalized value for indexing the pressedKeys array
+				
+				if (mobikey == 0) //Ignore events from keys not mapped to a phone keypad key
+				{
+					return; 
+				}
+				
+				pressedKeys[mobikeyN] = false;
+				
 				if(config.isRunning)
 				{
-					config.keyReleased(getMobileKey(e.getKeyCode()));
+					config.keyReleased(mobikey);
 				}
 				else
 				{
-					Mobile.getPlatform().keyReleased(getMobileKey(e.getKeyCode()));
+					//~ System.out.println("keyReleased: " + Integer.toString(mobikey));
+					Mobile.getPlatform().keyReleased(mobikey);
 				}
 			}
 
@@ -346,7 +380,7 @@ public class FreeJ2ME
 			// Config //
 			case KeyEvent.VK_ESCAPE: config.start();
 		}
-		return keycode;
+		return 0;
 	}
 
 	private void resize()

@@ -94,6 +94,7 @@ public abstract class Displayable
 
 	public void keyPressed(int key) { }
 	public void keyReleased(int key) { }
+	public void keyRepeated(int key) { }
 	public void pointerDragged(int x, int y) { }
 	public void pointerPressed(int x, int y) { }
 	public void pointerReleased(int x, int y) { }
