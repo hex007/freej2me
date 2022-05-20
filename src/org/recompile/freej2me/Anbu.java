@@ -44,6 +44,8 @@ public class Anbu
 	private int lcdWidth;
 	private int lcdHeight;
 
+	private boolean[] pressedKeys = new boolean[128];
+
 	private Runnable painter;
 
 	public Anbu(String args[])
@@ -165,6 +167,8 @@ public class Anbu
 			private byte[] din = new byte[6];
 			private int count = 0;
 			private int code;
+			private int mobikey;
+			private int mobikeyN;
 
 			public void run()
 			{
@@ -174,24 +178,51 @@ public class Anbu
 					{
 						bin = keys.read();
 						if(bin==-1) { return; }
-						// System.out.print(" "+bin);
+						//~ System.out.print(" "+bin);
 						din[count] = (byte)(bin & 0xFF);
 						count++;
 						if (count==5)
 						{
 							count = 0;
 							code = (din[1]<<24) | (din[2]<<16) | (din[3]<<8) | din[4];
-							switch(din[0])
+							//~ System.out.println(" ("+code+") <- Key");
+							switch(din[0] >>> 1)
 							{
-								case 0: Mobile.getPlatform().keyReleased(getMobileKey(code)); break;
-								case 1: Mobile.getPlatform().keyPressed(getMobileKey(code)); break;
-								case 2: Mobile.getPlatform().keyReleased(getMobileKeyPad(code)); break;
-								case 3: Mobile.getPlatform().keyPressed(getMobileKeyPad(code)); break;
-								case 4: Mobile.getPlatform().keyReleased(getMobileKeyJoy(code)); break;
-								case 5: Mobile.getPlatform().keyPressed(getMobileKeyJoy(code)); break;
-
+								case 0: mobikey = getMobileKey(code); break;
+								case 1: mobikey = getMobileKeyPad(code); break;
+								case 2: mobikey = getMobileKeyJoy(code); break;
+								default: continue;
 							}
-							// System.out.println(" ("+code+") <- Key");
+							
+							if (mobikey == 0) //Ignore events from keys not mapped to a phone keypad key
+							{
+								return; 
+							}
+							mobikeyN = (mobikey + 64) & 0x7F; //Normalized value for indexing the pressedKeys array
+							
+							if (din[0] % 2 == 0)
+							{
+								//Key released
+								//~ System.out.println("keyReleased:  " + Integer.toString(mobikey));
+								Mobile.getPlatform().keyReleased(mobikey);
+								pressedKeys[mobikeyN] = false;
+							}
+							else
+							{
+								//Key pressed or repeated
+								if (pressedKeys[mobikeyN] == false)
+								{
+									//~ System.out.println("keyPressed:  " + Integer.toString(mobikey));
+									Mobile.getPlatform().keyPressed(mobikey);
+								}
+								else
+								{
+									//~ System.out.println("keyRepeated:  " + Integer.toString(mobikey));
+									Mobile.getPlatform().keyRepeated(mobikey);
+								}
+								pressedKeys[mobikeyN] = true;
+							}
+							
 						}
 					}
 				}
@@ -272,7 +303,7 @@ public class Anbu
 				case : return Mobile.NOKIA_SOFT3;
 				*/
 			}
-			return keycode;
+			return 0;
 		}
 
 		private int getMobileKeyPad(int keycode)
@@ -291,7 +322,7 @@ public class Anbu
 				case 0x06: return Mobile.NOKIA_SOFT1;
 				case 0x07: return Mobile.NOKIA_SOFT2;
 			}
-			return keycode;
+			return 0;
 		}
 
 		private int getMobileKeyJoy(int keycode)
@@ -303,7 +334,7 @@ public class Anbu
 				case 0x02: return Mobile.KEY_NUM6;
 				case 0x08: return Mobile.KEY_NUM8;
 			}
-			return keycode;
+			return 0;
 		}
 
 	} // sdl
