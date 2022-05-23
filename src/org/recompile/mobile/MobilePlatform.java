@@ -102,6 +102,11 @@ public class MobilePlatform
 		Mobile.getDisplay().getCurrent().keyReleased(keycode);
 	}
 
+	public void keyRepeated(int keycode)
+	{
+		Mobile.getDisplay().getCurrent().keyRepeated(keycode);
+	}
+
 	public void pointerDragged(int x, int y)
 	{
 		Mobile.getDisplay().getCurrent().pointerDragged(x, y);

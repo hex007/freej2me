@@ -50,6 +50,8 @@ public class Libretro
 	private boolean rotateDisplay = false;
 	private int limitFPS = 0;
 
+	private boolean[] pressedKeys = new boolean[128];
+
 	private byte[] frameBuffer = new byte[800*800*3];
 	private byte[] frameHeader = new byte[]{(byte)0xFE, 0, 0, 0, 0, 0};
 
@@ -121,6 +123,7 @@ public class Libretro
 			private int[] din = new int[5];
 			private int count = 0;
 			private int code;
+			private int mobikey;
 			private StringBuilder path;
 			private URL url;
 
@@ -141,13 +144,37 @@ public class Libretro
 							code = (din[1]<<24) | (din[2]<<16) | (din[3]<<8) | din[4];
 							switch(din[0])
 							{
-								case 0: keyUp(getMobileKey(code)); break;
+								case 0: // keyboard key up
+									mobikey = getMobileKey(code);
+									if (mobikey != 0)
+									{
+										keyUp(mobikey);
+									}
+								break;
 
-								case 1:	keyDown(getMobileKey(code)); break;
+								case 1:	// keyboard key down
+									mobikey = getMobileKey(code);
+									if (mobikey != 0)
+									{
+										keyDown(mobikey);
+									}
+								break;
 
-								case 2:	keyUp(getMobileKeyJoy(code)); break;
+								case 2:	// joypad key up
+									mobikey = getMobileKeyJoy(code);
+									if (mobikey != 0)
+									{
+										keyUp(mobikey);
+									}
+								break;
 
-								case 3: keyDown(getMobileKeyJoy(code)); break;
+								case 3: // joypad key down
+									mobikey = getMobileKeyJoy(code);
+									if (mobikey != 0)
+									{
+										keyDown(mobikey);
+									}
+								break;
 
 								case 4: // mouse up
 									mousex = (din[1]<<8) | din[2];
@@ -316,22 +343,33 @@ public class Libretro
 
 	private void keyDown(int key)
 	{
+		int mobikeyN = (key + 64) & 0x7F; //Normalized value for indexing the pressedKeys array
 		if(config.isRunning)
 		{
 			config.keyPressed(key);
 		}
 		else
 		{
-			Mobile.getPlatform().keyPressed(key);
+			if (pressedKeys[mobikeyN] == false)
+			{
+				Mobile.getPlatform().keyPressed(key);
+			}
+			else
+			{
+				Mobile.getPlatform().keyRepeated(key);
+			}
 		}
+		pressedKeys[mobikeyN] = true;
 	}
 
 	private void keyUp(int key)
 	{
+		int mobikeyN = (key + 64) & 0x7F; //Normalized value for indexing the pressedKeys array
 		if(!config.isRunning)
 		{
 			Mobile.getPlatform().keyReleased(key);
 		}
+		pressedKeys[mobikeyN] = false;
 	}
 
 	private int getMobileKey(int keycode)
@@ -426,7 +464,7 @@ public class Libretro
 			case 27: config.start();
 
 		}
-		return keycode;
+		return 0;
 	}
 
 	private int getMobileKeyJoy(int keycode)
