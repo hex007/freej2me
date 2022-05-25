@@ -12,11 +12,13 @@ Authors :
 
 ## Controls
 
-* `Q` and `W` for `soft1` and `soft2`.
-* Arrow keys for nav, unless you turn nokia off, when arrow keys become 2, 4, 6, and 8.
-* Numbers work as expected, the number pad is inverted (123 swap with 789, like a phone) ESC brings up the menu.
+* `Q` and `W` for left and right softkeys.
+* Arrow keys for nav, unless phone is set to "Standard", when arrow keys become 2, 4, 6, and 8.
+* Numbers work as expected, the number pad is inverted (123 swap with 789, like a phone)
 * `E` and `R` are alternatives to `*` and `#`.
-* Enter functions as `5`
+* Enter functions as the Fire key or `5` on "Standard" mode
+* ESC brings up the settings menu
+* In the AWT frontend (freej2me.jar) `Ctrl+C` takes a screenshot and `+`/`-` can be used to control the window scaling factor
 
 Click [here](KEYMAP.md) for information about more keybindings
 
@@ -43,6 +45,19 @@ Development thread:
 ```
 Will create jar files for each frontend. SDL2 jar file needs SDL binary to be compiled. SDL2 can be used to play on Raspberry pi.
 
+----
+**Usage:**
+
+Launching the AWT frontend (freej2me.jar) will bring up a filepicker to select the MIDlet to run.
+
+Alternatively it can be launched from the command line: `java -jar freej2me.jar 'file:///path/to/midlet.jar' [width] [height] [scale]`
+Where _width_, _height_ (dimensions of the simulated screen) and _scale_ (initial scale factor of the window) are optional arguments.
+
+The SDL2 frontend (freej2me-sdl.jar) accepts the same command-line arguments format, aside from the _scale_ option which is unavailable.
+
+When running under Microsoft Windows please do note paths require an additional `/` prefixed. For example, `C:\path\to\midlet.jar` should be passed as `file:///C:\path\to\midlet.jar`
+
+FreeJ2ME keeps savedata and config at the working directory it is run from. Currently any resolution specified at the config file takes precedence over the values passed via command-line.
 
 ---
 **How to contribute as a developer:**
