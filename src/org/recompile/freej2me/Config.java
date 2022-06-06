@@ -86,7 +86,7 @@ public class Config
 	public void init()
 	{
 		String appname = Mobile.getPlatform().loader.suitename;
-		configPath = Mobile.getPlatform().dataPath + "config/"+appname;
+		configPath = Mobile.getPlatform().dataPath + "/config/"+appname;
 		configFile = configPath + "/game.conf";
 		// Load Config //
 		try
