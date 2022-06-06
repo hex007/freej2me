@@ -112,7 +112,7 @@ void quit(int state)
 	{
 		kill(javaProcess, SIGKILL);
 	}
-	exit(state);
+	//exit(state);
 }
 
 static void Keyboard(bool down, unsigned keycode, uint32_t character, uint16_t key_modifiers)
