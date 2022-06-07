@@ -74,6 +74,7 @@ unsigned int frameBufferSize = 1920000;
 unsigned int frame[640000];
 unsigned char frameBuffer[1920000];
 unsigned char frameHeader[5];
+struct retro_game_info gameinfo;
 
 bool frameRequested = false;
 int framesDropped = 0;
@@ -162,6 +163,8 @@ bool retro_load_game(const struct retro_game_info *info)
 {
 	int len = 0;
 
+	//Game info is passed to a global variable to enable restarts
+	gameinfo = *info;
 	// Send savepath to java
 	char *savepath;
 	Environ(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY, &savepath);
@@ -535,7 +538,9 @@ void retro_deinit(void)
 
 void retro_reset(void)
 {
-	quit(0);
+	retro_deinit();
+	retro_init();
+	retro_load_game(&gameinfo);
 }
 
 /* Stubs */
