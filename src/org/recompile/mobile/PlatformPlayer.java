@@ -62,7 +62,7 @@ public class PlatformPlayer implements Player
 			}
 			else
 			{
-				if(type.equals("audio/x-wav"))
+				if(type.equals("audio/x-wav") || type.equals("audio/X-wav"))
 				{
 					player = new wavPlayer(stream);
 				}
