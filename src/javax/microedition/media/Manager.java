@@ -41,7 +41,8 @@ public final class Manager
 	public static String[] getSupportedContentTypes(String protocol)
 	{
 		//System.out.println("Get Supported Media Content Types");
-		return new String[]{"audio/midi", "audio/x-wav"};
+		return new String[]{"audio/midi", "audio/x-wav", 
+		"audio/amr", "audio/mpeg"};
 	}
 	
 	public static String[] getSupportedProtocols(String content_type)
