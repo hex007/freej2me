@@ -71,10 +71,10 @@ void retro_set_environment_core_info(retro_environment_t fn)
    };
 
    static const struct retro_input_descriptor desc[] = {
-      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT,  "Arrow Left" },
-      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP,    "Arrow Up" },
-      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN,  "Arrow Down" },
-      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT, "Arrow Right" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT,  "Arrow Left, Num 4" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP,    "Arrow Up, Num 2" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN,  "Arrow Down, Num 8" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT, "Arrow Right, Num 6" },
 	  { 0, RETRO_DEVICE_ANALOG, 0, RETRO_DEVICE_ID_ANALOG_X,     "Mouse Pointer Horizontal"},
 	  { 0, RETRO_DEVICE_ANALOG, 0, RETRO_DEVICE_ID_ANALOG_Y,     "Mouse Pointer Vertical"},
       { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B,     "Num 7" },
