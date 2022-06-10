@@ -56,17 +56,17 @@ public class PlatformPlayer implements Player
 		}
 		else
 		{
-			if(type.equals("audio/midi") || type.equals("sp-midi") || type.equals("audio/spmidi"))
+			if(type.equals("audio/mid") || type.equals("Audio/midi") || type.equals("audio/midi") || type.equals("sp-midi") || type.equals("audio/spmidi"))
 			{
 				player = new midiPlayer(stream);
 			}
 			else
 			{
-				if(type.equals("audio/x-wav") || type.equals("audio/X-wav"))
+				if(type.equals("audio/x-wav") || type.equals("audio/X-wav") || type.equals("audio/wav"))
 				{
 					player = new wavPlayer(stream);
 				}
-				else
+				else /* TODO: Implement a player for amr and mpeg audio types */
 				{
 					System.out.println("No Player For: "+contentType);
 					player = new audioplayer();
