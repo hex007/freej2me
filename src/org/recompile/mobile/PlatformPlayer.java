@@ -324,7 +324,12 @@ public class PlatformPlayer implements Player
 
 		public boolean isRunning()
 		{
-			return wavClip.isRunning();
+			if(wavClip == null)
+			{
+				System.out.println("Warning: MIDlet loaded a NULL wavClip, can't use the isRunning() call");
+				return false;
+			}
+			else { return wavClip.isRunning(); }
 		}
 	}
 
