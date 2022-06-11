@@ -56,13 +56,13 @@ public class PlatformPlayer implements Player
 		}
 		else
 		{
-			if(type.equals("audio/mid") || type.equals("Audio/midi") || type.equals("audio/midi") || type.equals("sp-midi") || type.equals("audio/spmidi"))
+			if(type.equalsIgnoreCase("audio/mid") || type.equalsIgnoreCase("audio/midi") || type.equalsIgnoreCase("sp-midi") || type.equalsIgnoreCase("audio/spmidi"))
 			{
 				player = new midiPlayer(stream);
 			}
 			else
 			{
-				if(type.equals("audio/x-wav") || type.equals("audio/X-wav") || type.equals("audio/wav"))
+				if(type.equalsIgnoreCase("audio/x-wav") || type.equalsIgnoreCase("audio/wav"))
 				{
 					player = new wavPlayer(stream);
 				}
