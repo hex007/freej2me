@@ -41,25 +41,18 @@ void retro_set_video_refresh(retro_video_refresh_t fn) { Video = fn; }
 void retro_set_audio_sample(retro_audio_sample_t fn) { Audio = fn; }
 void retro_set_audio_sample_batch(retro_audio_sample_batch_t fn) { AudioBatch = fn;}
 
-void retro_set_environment(retro_environment_t fn) 
-{ 
-	Environ = fn; 
-
-	retro_set_environment_core_info(fn);
-}
-
 void retro_set_environment_core_info(retro_environment_t fn) 
 {
-	static const struct retro_subsystem_rom_info subsystem_rom[] = 
+	/*static const struct retro_subsystem_rom_info subsystem_rom[] = 
 	{
 		{ "Rom", "jar", true, true, true, NULL, 0 },
-	};
+	}; */
 
 	/* subsystem_rom is unavailable for this core */
 	/*static const struct retro_subsystem_info subsystems[] = 
 	{
 		{ "Java J2ME", "j2me", subsystem_rom, 1, RETRO_GAME_TYPE_J2ME }, 
-	};*/
+	}; */
 
 	/* Environ(RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO, (void*)subsystems); */ /* Not used yet */
 
@@ -101,6 +94,12 @@ void retro_set_environment_core_info(retro_environment_t fn)
 	Environ(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, (void*)desc);
 }
 
+void retro_set_environment(retro_environment_t fn) 
+{ 
+	Environ = fn; 
+
+	retro_set_environment_core_info(fn);
+}
 
 void retro_set_input_poll(retro_input_poll_t fn) { InputPoll = fn; }
 void retro_set_input_state(retro_input_state_t fn) { InputState = fn; }
