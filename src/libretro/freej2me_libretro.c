@@ -65,14 +65,14 @@ void retro_set_environment_core_info(retro_environment_t fn)
 
 	static const struct retro_controller_description port_1[] = 
 	{
-    	{ "Joypad Auto", RETRO_DEVICE_JOYPAD },
-    	{ "Joypad Port Empty", RETRO_DEVICE_NONE },
+		{ "Joypad Auto", RETRO_DEVICE_JOYPAD },
+		{ "Joypad Port Empty", RETRO_DEVICE_NONE },
    	};
 
 	static const struct retro_controller_info ports[] = 
 	{
-    	{ port_1, 16 },
-    	{ 0 },
+		{ port_1, 16 },
+		{ 0 },
    	};
 
 	static const struct retro_input_descriptor desc[] = 
