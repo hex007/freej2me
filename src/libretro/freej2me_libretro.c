@@ -37,10 +37,70 @@ retro_audio_sample_batch_t AudioBatch;
 retro_input_poll_t InputPoll;
 retro_input_state_t InputState;
 
-void retro_set_environment(retro_environment_t fn) { Environ = fn; }
 void retro_set_video_refresh(retro_video_refresh_t fn) { Video = fn; }
 void retro_set_audio_sample(retro_audio_sample_t fn) { Audio = fn; }
-void retro_set_audio_sample_batch(retro_audio_sample_batch_t fn) { AudioBatch = fn; }
+void retro_set_audio_sample_batch(retro_audio_sample_batch_t fn) { AudioBatch = fn;}
+
+void retro_set_environment_core_info(retro_environment_t fn) 
+{
+	/*static const struct retro_subsystem_rom_info subsystem_rom[] = 
+	{
+		{ "Rom", "jar", true, true, true, NULL, 0 },
+	}; */
+
+	/* subsystem_rom is unavailable for this core */
+	/*static const struct retro_subsystem_info subsystems[] = 
+	{
+		{ "Java J2ME", "j2me", subsystem_rom, 1, RETRO_GAME_TYPE_J2ME }, 
+	}; */
+
+	/* Environ(RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO, (void*)subsystems); */ /* Not used yet */
+
+	static const struct retro_controller_description port_1[] = 
+	{
+		{ "Joypad Auto",        RETRO_DEVICE_JOYPAD },
+		{ "Joypad Port Empty",  RETRO_DEVICE_NONE },
+   	};
+
+	static const struct retro_controller_info ports[] = 
+	{
+		{ port_1, 16 },
+		{ 0 },
+   	};
+
+	static const struct retro_input_descriptor desc[] = 
+	{
+		{ 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT,    "Arrow Left, Num 4" },
+		{ 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP,	     "Arrow Up, Num 2" },
+		{ 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN,    "Arrow Down, Num 8" },
+		{ 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT,   "Arrow Right, Num 6" },
+		{ 0, RETRO_DEVICE_ANALOG, 0, RETRO_DEVICE_ID_ANALOG_X,       "Mouse Pointer Horizontal"},
+		{ 0, RETRO_DEVICE_ANALOG, 0, RETRO_DEVICE_ID_ANALOG_Y,       "Mouse Pointer Vertical"},
+		{ 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B,       "Num 7" },
+		{ 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A,       "Num 9" },
+		{ 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X,       "Num 0" },
+		{ 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y,       "Num 5" },
+		{ 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L,       "Num 1" },
+		{ 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R,       "Num 3" },
+		{ 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R2,      "Key #"},
+		{ 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2,      "Key *"},
+		{ 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT,  "Left Options Key" },
+		{ 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START,   "Right Back Key" },
+
+		{ 0 },
+	};
+
+	Environ(RETRO_ENVIRONMENT_SET_CONTROLLER_INFO, (void*)ports);
+	Environ(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, (void*)desc);
+}
+
+void retro_set_environment(retro_environment_t fn) 
+{ 
+	Environ = fn; 
+
+	retro_set_environment_core_info(fn);
+}
+
 void retro_set_input_poll(retro_input_poll_t fn) { InputPoll = fn; }
 void retro_set_input_state(retro_input_state_t fn) { InputState = fn; }
 
