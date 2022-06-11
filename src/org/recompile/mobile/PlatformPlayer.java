@@ -62,7 +62,7 @@ public class PlatformPlayer implements Player
 			}
 			else
 			{
-				if(type.equalsIgnoreCase("audio/x-wav") || type.equalsIgnoreCase("audio/wav"))
+				if(type.equalsIgnoreCase("audio/x-wav"))
 				{
 					player = new wavPlayer(stream);
 				}
@@ -324,12 +324,7 @@ public class PlatformPlayer implements Player
 
 		public boolean isRunning()
 		{
-			if(wavClip == null)
-			{
-				System.out.println("Warning: MIDlet loaded a NULL wavClip, can't use the isRunning() call");
-				return false;
-			}
-			else { return wavClip.isRunning(); }
+			return wavClip.isRunning();
 		}
 	}
 
