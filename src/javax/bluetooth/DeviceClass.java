@@ -16,14 +16,15 @@
 */ 
 package javax.bluetooth;
 
-public abstract class DeviceClass
+public class DeviceClass extends Object
 {
 
     public DeviceClass(int record) { System.out.println("DeviceClass record:" + record); }
 
-    public abstract int getMajorDeviceClass();
+    public int getMajorDeviceClass() { return 0x200; } 
 
-    public abstract int getMinorDeviceClass();
+    public int getMinorDeviceClass() { return 0x04; }
 
-    public abstract int getServiceClasses();
+    public int getServiceClasses() { return 0x22000 | 0x100000; }
+
 } 

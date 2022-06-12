@@ -18,28 +18,59 @@ package javax.bluetooth;
 
 import javax.microedition.io.Connection;
 
+import java.util.Hashtable;
 
-public abstract class LocalDevice 
+import javax.obex.SessionNotifier;
+
+public class LocalDevice extends Object
 {
-    public abstract String getBluetoothAddress();
 
-    public abstract DeviceClass getDeviceClass();
+    private static LocalDevice locDevc;
 
-    public abstract int getDiscoverable();
+    private static DiscoveryAgent disAgnt;
 
-    public abstract DiscoveryAgent getDiscoveryAgent();
+    private static DeviceClass devcCls;
 
-    public abstract String getFriendlyName();
+    private static ServiceRecord srvcRcd;
 
-    public abstract LocalDevice getLocalDevice();
+    private static Hashtable<String, String> properties = new Hashtable<String, String>();
 
-    public abstract String getProperty(String property);
+    static {
+		properties.put("bluetooth.api.version", "0.0");
+		properties.put("bluetooth.master.switch", "false");
+		properties.put("bluetooth.sd.attr.retrievable.max", "0");
+		properties.put("bluetooth.connected.devices.max", "0");
+		properties.put("bluetooth.l2cap.receiveMTU.max", "0");
+		properties.put("bluetooth.sd.trans.max", "0");
+		properties.put("bluetooth.connected.inquiry.scan", "false");
+		properties.put("bluetooth.connected.page.scan", "false");
+		properties.put("bluetooth.connected.inquiry", "false");
+		properties.put("bluetooth.connected.page", "false");
+	}
 
-    public abstract ServiceRecord getRecord(Connection notifier);
+    public static String getBluetoothAddress() throws BluetoothStateException { return "000000000000"; }
 
-    public static boolean isPowerOn() { return false; /* We won't have functional Bluetooth yet */ }
+    public static DeviceClass getDeviceClass() { return devcCls; }
 
-    public abstract boolean setDiscoverable(int mode);    
+    public static int getDiscoverable() { return DiscoveryAgent.NOT_DISCOVERABLE; }
 
-    public abstract void updateRecord(ServiceRecord srvRecord);
+    public static DiscoveryAgent getDiscoveryAgent() { return disAgnt; }
+
+    public static String getFriendlyName() { return "noDevice"; }
+
+    public static LocalDevice getLocalDevice() throws BluetoothStateException { return locDevc; }
+
+    public static String getProperty(String property) { return properties.get(property); }
+
+    public static ServiceRecord getRecord(Connection notifier) throws IllegalArgumentException, 
+    NullPointerException { return srvcRcd; }
+
+    public static boolean isPowerOn() { return false; } /* We won't have functional Bluetooth yet */
+
+    public static boolean setDiscoverable(int mode) throws IllegalArgumentException, 
+    BluetoothStateException { return false; }    
+
+    public static void updateRecord(ServiceRecord srvRecord) throws NullPointerException, 
+    IllegalArgumentException, ServiceRegistrationException { }
+
 }

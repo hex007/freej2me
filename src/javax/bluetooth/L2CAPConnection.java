@@ -17,23 +17,25 @@
 package javax.bluetooth;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 
 import javax.microedition.io.Connection;
 
 public interface L2CAPConnection extends Connection 
 {
 
-	public static final int DEFAULT_MTU = 672;
+	static final int DEFAULT_MTU = 0x02A0;
 
-	public static final int MINIMUM_MTU = 48;
+	static final int MINIMUM_MTU = 0x30;
 
-	public int getTransmitMTU() throws IOException;
+	int getTransmitMTU() throws IOException;
 
-	public int getReceiveMTU() throws IOException;
+	int getReceiveMTU() throws IOException;
 
-	public void send(byte[] data) throws IOException;
+	void send(byte[] data) throws IOException, NullPointerException;
 
-	public int receive(byte[] inBuf) throws IOException;
+	int receive(byte[] inBuf) throws IOException, NullPointerException, InterruptedIOException;
 
-	public boolean ready() throws IOException;
+	boolean ready() throws IOException;
+
 }

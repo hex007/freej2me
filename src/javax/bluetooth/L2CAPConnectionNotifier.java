@@ -23,6 +23,6 @@ import javax.microedition.io.Connection;
 public interface L2CAPConnectionNotifier extends Connection 
 {
 
-	public L2CAPConnection acceptAndOpen() throws IOException;
+	L2CAPConnection acceptAndOpen() throws IOException, ServiceRegistrationException, BluetoothStateException;
 
 }

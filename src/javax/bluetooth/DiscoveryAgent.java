@@ -16,28 +16,29 @@
 */ 
 package javax.bluetooth;
 
-public abstract class DiscoveryAgent
+public class DiscoveryAgent extends Object
 {
     
-    public static final int CACHED = 0;
+    public static final int CACHED = 0x00;
 
-    public static final int GIAC = 10390323;
+    public static final int GIAC = 0x9E8B33;
 
-    public static final int LIAC = 10390272;
+    public static final int LIAC = 0x9E8B00;
 
-    public static final int NOT_DISCOVERABLE = 0;
+    public static final int NOT_DISCOVERABLE = 0x00;
     
-    public static final int PREKNOWN = 1;
+    public static final int PREKNOWN = 0x01;
 
-    public abstract boolean cancelInquiry(DiscoveryListener listener);
+    public boolean cancelInquiry(DiscoveryListener listener) { return false; }
 
-    public abstract boolean cancelServiceSearch(int transID);
+    public boolean cancelServiceSearch(int transID) { return false; }
 
-    public abstract RemoteDevice[] retrieveDevices(int option);
+    public RemoteDevice[] retrieveDevices(int option) { return null; }
 
-    public abstract int searchServices(int[] attrSet, UUID[] uuidSet, RemoteDevice btDev, DiscoveryListener discListener);
+    public int searchServices(int[] attrSet, UUID[] uuidSet, RemoteDevice btDev, DiscoveryListener discListener) { return 0; }
 
-    public abstract String selectService(UUID uuid, int security, boolean master);
+    public String selectService(UUID uuid, int security, boolean master) { return null; }
 
-    public abstract boolean startInquiry(int accessCode, DiscoveryListener listener);
+    public boolean startInquiry(int accessCode, DiscoveryListener listener) { return false; }
+    
 }

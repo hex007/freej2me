@@ -17,16 +17,20 @@
 */
 package javax.bluetooth;
 
-public abstract class UUID 
+public class UUID extends Object
 {
-    public UUID(long uuidValue) { System.out.println("UUID Value:" + uuidValue); }
+	UUID uuid;
+	private static final String BASE_UUID_VALUE = "0x0000000000001000800000805F9B34FB";
 
-    public UUID(String uuidValue, boolean shortUUID) { System.out.println("UUID Value:" + uuidValue); }
+    public UUID(long uuidValue) throws IllegalArgumentException { System.out.println("UUID Value:" + uuidValue); }
 
-    public abstract boolean equals(Object value);
+    public UUID(String uuidValue, boolean shortUUID) throws IllegalArgumentException, NullPointerException,
+	NumberFormatException { System.out.println("UUID Value:" + uuidValue); }
 
-    public abstract int hashCode();
+    public boolean equals(Object value) { return false; }
 
-    public abstract String toString();
+    public int hashCode() { return uuid.hashCode(); }
+
+    public String toString() { return BASE_UUID_VALUE; }
 }
  

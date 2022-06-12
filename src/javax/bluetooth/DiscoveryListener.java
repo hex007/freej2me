@@ -16,30 +16,31 @@
 */ 
 package javax.bluetooth;
 
-public abstract interface DiscoveryListener
+public interface DiscoveryListener
 {
 
-    public static int INQUIRY_COMPLETED = 0;
+    static final int INQUIRY_COMPLETED = 0x00;
 
-    public static int INQUIRY_ERROR = 7;
+    static final int INQUIRY_ERROR = 0x07;
 
-    public static int INQUIRY_TERMINATED = 5;
+    static final int INQUIRY_TERMINATED = 0x05;
 
-    public static int SERVICE_SEARCH_COMPLETED = 1;
+    static final int SERVICE_SEARCH_COMPLETED = 0x01;
 
-    public static int SERVICE_SEARCH_DEVICE_NOT_REACHABLE  = 6;
+    static final int SERVICE_SEARCH_DEVICE_NOT_REACHABLE  = 0x06;
 
-    public static int SERVICE_SEARCH_ERROR = 3;
+    static final int SERVICE_SEARCH_ERROR = 0x03;
 
-    public static int SERVICE_SEARCH_NO_RECORDS = 4;
+    static final int SERVICE_SEARCH_NO_RECORDS = 0x04;
 
-    public static int SERVICE_SEARCH_TERMINATED = 2;
+    static final int SERVICE_SEARCH_TERMINATED = 0x02;
 
-    public abstract void deviceDiscovered(RemoteDevice btDevice, DeviceClass cod);
+    void deviceDiscovered(RemoteDevice btDevice, DeviceClass cod);
 
-    public abstract void inquiryCompleted(int discType);
+    void inquiryCompleted(int discType);
 
-    public abstract void servicesDiscovered(int transID, ServiceRecord[] servRecord);
+    void servicesDiscovered(int transID, ServiceRecord[] servRecord);
 
-    public abstract void serviceSearchCompleted(int transID, int respCode);
+    void serviceSearchCompleted(int transID, int respCode);
+    
 }
