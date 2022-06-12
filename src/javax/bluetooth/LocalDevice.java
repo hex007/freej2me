@@ -22,7 +22,7 @@ import java.util.Hashtable;
 
 import javax.obex.SessionNotifier;
 
-public class LocalDevice extends Object
+public class LocalDevice
 {
 
     private static LocalDevice locDevc;

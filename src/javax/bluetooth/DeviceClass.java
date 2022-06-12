@@ -16,7 +16,7 @@
 */ 
 package javax.bluetooth;
 
-public class DeviceClass extends Object
+public class DeviceClass
 {
 
     public DeviceClass(int record) { System.out.println("DeviceClass record:" + record); }

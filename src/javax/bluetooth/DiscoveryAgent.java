@@ -16,7 +16,7 @@
 */ 
 package javax.bluetooth;
 
-public class DiscoveryAgent extends Object
+public class DiscoveryAgent
 {
     
     public static final int CACHED = 0x00;

@@ -17,8 +17,9 @@
 */
 package javax.bluetooth;
 
-public class UUID extends Object
+public class UUID
 {
+	
 	UUID uuid;
 	private static final String BASE_UUID_VALUE = "0x0000000000001000800000805F9B34FB";
 
@@ -32,5 +33,6 @@ public class UUID extends Object
     public int hashCode() { return uuid.hashCode(); }
 
     public String toString() { return BASE_UUID_VALUE; }
+
 }
  
