@@ -18,9 +18,10 @@ package javax.microedition.io.file;
 
 public interface FileSystemListener 
 {
-	public static final int ROOT_ADDED = 1;
+	static final int ROOT_ADDED = 0;
 
-	public static final int ROOT_REMOVED = 0;
+	static final int ROOT_REMOVED = 1;
 
-	public abstract void rootChanged(int state, String rootName);
+	void rootChanged(int state, String rootName) throws NullPointerException, IllegalArgumentException;
+	
 }
