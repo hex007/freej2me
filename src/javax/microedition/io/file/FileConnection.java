@@ -27,6 +27,7 @@ import javax.microedition.io.StreamConnection;
 
 public interface FileConnection extends StreamConnection 
 {
+
     long availableSize() throws SecurityException, IllegalModeException, ConnectionClosedException;
 
     boolean canRead() throws SecurityException, IllegalModeException, ConnectionClosedException;
@@ -65,16 +66,16 @@ public interface FileConnection extends StreamConnection
 
     void mkdir() throws IOException, SecurityException, IllegalModeException, ConnectionClosedException;
 
-    @Override /* Throws IOException in the docs, but not on the overriden class */
+    @Override 
     DataInputStream openDataInputStream() throws SecurityException, IllegalModeException;
 
-    @Override /* Throws IOException in the docs, but not on the overriden class */
+    @Override
     DataOutputStream openDataOutputStream() throws SecurityException, IllegalModeException;
 
-    @Override /* Throws IOException in the docs, but not on the overriden class */
+    @Override
     InputStream openInputStream() throws SecurityException, IllegalModeException;
 
-    @Override /* Throws IOException in the docs, but not on the overriden class */
+    @Override
     OutputStream openOutputStream() throws SecurityException, IllegalModeException;
 
     OutputStream openOutputStream(long byteOffset) throws IOException, SecurityException, IllegalModeException, 

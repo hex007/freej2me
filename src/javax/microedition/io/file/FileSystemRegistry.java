@@ -20,6 +20,7 @@ import java.util.Enumeration;
 
 public class FileSystemRegistry extends Object
 {
+	
 	Enumeration roots; /* A zero-length Enumeration to be used below */
 
     public static boolean addFileSystemListener(FileSystemListener listener) throws SecurityException, 

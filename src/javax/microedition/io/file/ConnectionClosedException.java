@@ -18,6 +18,7 @@ package javax.microedition.io.file;
 
 public class ConnectionClosedException extends RuntimeException 
 {
+	
 	public ConnectionClosedException() { } /* Constructs an instance of the class with its stack trace */
 
 	/* Constructs an instance of the class with its stack trace and message */

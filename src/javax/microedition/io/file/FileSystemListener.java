@@ -18,6 +18,7 @@ package javax.microedition.io.file;
 
 public interface FileSystemListener 
 {
+	
 	static final int ROOT_ADDED = 0;
 
 	static final int ROOT_REMOVED = 1;
