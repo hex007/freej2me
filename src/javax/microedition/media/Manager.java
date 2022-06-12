@@ -29,7 +29,6 @@ public final class Manager
 
 	public static Player createPlayer(InputStream stream, String type) throws IOException, MediaException
 	{
-		if(stream == null) { throw new IllegalArgumentException(); } 
 		//System.out.println("Create Player Stream "+type);
 		return new PlatformPlayer(stream, type);
 	}
