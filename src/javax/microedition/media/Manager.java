@@ -17,6 +17,7 @@
 package javax.microedition.media;
 
 import java.io.InputStream;
+import java.io.IOException;
 
 import org.recompile.mobile.PlatformPlayer;
 
@@ -26,8 +27,9 @@ public final class Manager
 	public static final String TONE_DEVICE_LOCATOR = "device://tone";
 
 
-	public static Player createPlayer(InputStream stream, String type) throws MediaException
+	public static Player createPlayer(InputStream stream, String type) throws IOException, MediaException
 	{
+		if(stream == null) { throw new IllegalArgumentException(); } 
 		//System.out.println("Create Player Stream "+type);
 		return new PlatformPlayer(stream, type);
 	}
