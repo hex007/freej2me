@@ -93,5 +93,4 @@ public class ResponseCodes extends Object
 
     public static final int OBEX_DATABASE_LOCKED = 0xE1;
 
-
 }
