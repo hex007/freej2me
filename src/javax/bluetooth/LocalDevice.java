@@ -35,7 +35,8 @@ public class LocalDevice
 
     private static Hashtable<String, String> properties = new Hashtable<String, String>();
 
-    static {
+    static 
+	{   /* We won't have functional Bluetooth yet */
 		properties.put("bluetooth.api.version", "0.0");
 		properties.put("bluetooth.master.switch", "false");
 		properties.put("bluetooth.sd.attr.retrievable.max", "0");
@@ -62,15 +63,12 @@ public class LocalDevice
 
     public static String getProperty(String property) { return properties.get(property); }
 
-    public static ServiceRecord getRecord(Connection notifier) throws IllegalArgumentException, 
-    NullPointerException { return srvcRcd; }
+    public static ServiceRecord getRecord(Connection notifier) throws IllegalArgumentException, NullPointerException { return srvcRcd; }
 
-    public static boolean isPowerOn() { return false; } /* We won't have functional Bluetooth yet */
+    public static boolean isPowerOn() { return false; }
 
-    public static boolean setDiscoverable(int mode) throws IllegalArgumentException, 
-    BluetoothStateException { return false; }    
+    public static boolean setDiscoverable(int mode) throws IllegalArgumentException, BluetoothStateException { return false; }    
 
-    public static void updateRecord(ServiceRecord srvRecord) throws NullPointerException, 
-    IllegalArgumentException, ServiceRegistrationException { }
+    public static void updateRecord(ServiceRecord srvRecord) throws NullPointerException, IllegalArgumentException, ServiceRegistrationException { }
 
 }

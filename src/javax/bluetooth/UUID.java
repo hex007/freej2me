@@ -20,19 +20,76 @@ package javax.bluetooth;
 public class UUID
 {
 	
-	UUID uuid;
-	private static final String BASE_UUID_VALUE = "0x0000000000001000800000805F9B34FB";
+	private final long baseUUID1 = 0x00000000;
+	
+	private final long baseUUID2 = 0x00001000; 
+	
+	private final long baseUUID3 = 0x80000080; 
+	
+	private final long baseUUID4 = 0x5F9B34FB;
 
-    public UUID(long uuidValue) throws IllegalArgumentException { System.out.println("UUID Value:" + uuidValue); }
+	private final long UUID1, UUID2, UUID3, UUID4;
 
-    public UUID(String uuidValue, boolean shortUUID) throws IllegalArgumentException, NullPointerException,
-	NumberFormatException { System.out.println("UUID Value:" + uuidValue); }
+	public UUID(long uuidValue) throws IllegalArgumentException
+	{
+		if (uuidValue < 0L || uuidValue > 0xffffffffL) { throw new IllegalArgumentException("Invalid UUID Value, must be between 0 an (2^32)-1"); }
+		else
+		{
+			UUID1 = baseUUID1;
+			UUID2 = baseUUID2;
+			UUID3 = baseUUID3;
+			UUID4 = uuidValue;
+		}
+	}
 
-    public boolean equals(Object value) { return false; }
+	public UUID(String uuidValue, boolean shortUUID) throws IllegalArgumentException, NullPointerException, NumberFormatException
+	{ 
+		if (uuidValue == null) { throw new NullPointerException("Received a NULL UUID string."); }
 
-    public int hashCode() { return uuid.hashCode(); }
+		if (uuidValue.length() == 0) { throw new IllegalArgumentException("Received an empty UUID string."); }
+		
+		if (shortUUID)
+		{
+			if(uuidValue.length() > 8) { throw new IllegalArgumentException("UUID string is too long for a shortUUID"); }
+			else
+			{
+				String formattedUuidValue = String.format("%08d", uuidValue);
+				UUID1 = baseUUID1;
+				UUID2 = baseUUID2;
+				UUID3 = baseUUID3;
+				UUID4 = Long.parseUnsignedLong(formattedUuidValue, 16);
+			}
+		}
+		else
+		{
+			if(uuidValue.length() > 32) { throw new IllegalArgumentException("UUID value is too long"); }
+			else
+			{
+				String formattedUuidValue = String.format("%032d", uuidValue);
+				UUID1 = Long.parseUnsignedLong(formattedUuidValue.substring(0, 8), 16);
+				UUID2 = Long.parseUnsignedLong(formattedUuidValue.substring(8, 16), 16);
+				UUID3 = Long.parseUnsignedLong(formattedUuidValue.substring(16, 24), 16);
+				UUID4 = Long.parseUnsignedLong(formattedUuidValue.substring(24, 32), 16);
+			}
+		}
+	}
 
-    public String toString() { return BASE_UUID_VALUE; }
+	@Override
+	public boolean equals(Object value) 
+	{
+		if (value == null || (value instanceof UUID) == false) { return false; }
+		
+		return this.equals(value);
+	}
+
+	@Override
+	public int hashCode() { return this.hashCode(); }
+
+	@Override
+	public String toString()
+	{
+		String uuidString = Long.toHexString(UUID1) + Long.toHexString(UUID2) + Long.toHexString(UUID3) + Long.toHexString(UUID4);
+		return uuidString.toUpperCase().replaceFirst("^0+(?!$)", "");
+	}
 
 }
- 
