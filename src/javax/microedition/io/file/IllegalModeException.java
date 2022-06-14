@@ -19,9 +19,8 @@ package javax.microedition.io.file;
 public class IllegalModeException extends RuntimeException 
 {
 	
-	public IllegalModeException() { } /* Constructs an instance of the class with its stack trace */
+	public IllegalModeException() { }
 
-	/* Constructs an instance of the class with its stack trace and message */
 	public IllegalModeException(String detailMessage) { System.out.println("IllegalModeException: " + detailMessage); }
 
 }

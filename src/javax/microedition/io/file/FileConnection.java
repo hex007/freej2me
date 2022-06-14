@@ -38,8 +38,7 @@ public interface FileConnection extends StreamConnection
 
     void delete() throws IOException, SecurityException, IllegalModeException, ConnectionClosedException;
 
-    long directorySize(boolean includeSubDirs) throws IOException, SecurityException, IllegalModeException, 
-    ConnectionClosedException;
+    long directorySize(boolean includeSubDirs) throws IOException, SecurityException, IllegalModeException, ConnectionClosedException;
 
     boolean exists() throws SecurityException, IllegalModeException, ConnectionClosedException;
 
@@ -61,8 +60,7 @@ public interface FileConnection extends StreamConnection
 
     Enumeration list() throws IOException, SecurityException, IllegalModeException, ConnectionClosedException;
 
-    Enumeration list(String filter, boolean includeHidden) throws NullPointerException, IllegalArgumentException, 
-    IOException, SecurityException, IllegalModeException, ConnectionClosedException;
+    Enumeration list(String filter, boolean includeHidden) throws NullPointerException, IllegalArgumentException, IOException, SecurityException, IllegalModeException, ConnectionClosedException;
 
     void mkdir() throws IOException, SecurityException, IllegalModeException, ConnectionClosedException;
 
@@ -78,14 +76,11 @@ public interface FileConnection extends StreamConnection
     @Override
     OutputStream openOutputStream() throws SecurityException, IllegalModeException;
 
-    OutputStream openOutputStream(long byteOffset) throws IOException, SecurityException, IllegalModeException, 
-    IllegalArgumentException;
+    OutputStream openOutputStream(long byteOffset) throws IOException, SecurityException, IllegalModeException, IllegalArgumentException;
 
-    void rename(String newName) throws IOException, SecurityException, IllegalModeException, ConnectionClosedException, 
-    NullPointerException, IllegalArgumentException;
+    void rename(String newName) throws IOException, SecurityException, IllegalModeException, ConnectionClosedException, NullPointerException, IllegalArgumentException;
 
-    void setFileConnection(String fileName) throws IOException, SecurityException, NullPointerException, 
-    IllegalArgumentException;
+    void setFileConnection(String fileName) throws IOException, SecurityException, NullPointerException, IllegalArgumentException;
 
     void setHidden(boolean hidden) throws IOException, SecurityException, IllegalModeException, ConnectionClosedException;
 
@@ -95,8 +90,7 @@ public interface FileConnection extends StreamConnection
 
     long totalSize() throws SecurityException, IllegalModeException, ConnectionClosedException;
 
-    void truncate(long byteOffset) throws IOException, SecurityException, IllegalModeException, ConnectionClosedException, 
-    IllegalArgumentException;
+    void truncate(long byteOffset) throws IOException, SecurityException, IllegalModeException, ConnectionClosedException, IllegalArgumentException;
 
     long usedSize() throws SecurityException, IllegalModeException, ConnectionClosedException;
 

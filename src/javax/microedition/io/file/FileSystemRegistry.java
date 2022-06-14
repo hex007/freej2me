@@ -23,11 +23,12 @@ public class FileSystemRegistry extends Object
 	
 	Enumeration roots; /* A zero-length Enumeration to be used below */
 
-    public static boolean addFileSystemListener(FileSystemListener listener) throws SecurityException, 
-	NullPointerException { return false; } /* Returns if the fileSystemListener was added, similar for the remove below */
+	/* Returns true if the fileSystemListener was added. */
+    public static boolean addFileSystemListener(FileSystemListener listener) throws SecurityException, NullPointerException { return false; }
 
     public Enumeration listRoots() { return roots; }; /*If no roots are found, or it's not supported, return a zero-len enum*/
 
+	/* Returns true if the fileSystemListener was removed. */
     public static boolean removeFileSystemListener(FileSystemListener listener) throws NullPointerException { return false; };
 
 }
