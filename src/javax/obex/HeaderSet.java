@@ -51,8 +51,7 @@ public interface HeaderSet
 
     int[] getHeaderList() throws IOException;
 
-    void createAuthenticationChallenge(java.lang.String realm, boolean userID, 
-    boolean access);
+    void createAuthenticationChallenge(java.lang.String realm, boolean userID, boolean access);
 
     int getResponseCode() throws IOException;    
 

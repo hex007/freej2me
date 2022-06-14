@@ -27,8 +27,7 @@ public interface Operation extends Connection
 
     HeaderSet getReceivedHeaders() throws IOException;
 
-    void sendHeaders(HeaderSet headers) throws IOException, NullPointerException, 
-    IllegalArgumentException;
+    void sendHeaders(HeaderSet headers) throws IOException, NullPointerException, IllegalArgumentException;
 
     int getResponseCode() throws IOException;
 

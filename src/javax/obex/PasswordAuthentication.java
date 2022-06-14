@@ -21,8 +21,7 @@ public class PasswordAuthentication extends Object
 
     byte[] name, pass;
 
-    public PasswordAuthentication(byte[] userName, byte[] password) throws
-    NullPointerException 
+    public PasswordAuthentication(byte[] userName, byte[] password) throws NullPointerException 
     { 
         name = userName; 
         pass = password; 

@@ -23,10 +23,8 @@ import javax.microedition.io.Connection;
 public interface SessionNotifier extends Connection
 {
 
-    Connection acceptAndOpen(ServerRequestHandler handler) throws IOException,
-    NullPointerException;
+    Connection acceptAndOpen(ServerRequestHandler handler) throws IOException, NullPointerException;
 
-    Connection acceptAndOpen(ServerRequestHandler handler, Authenticator auth)
-    throws IOException, NullPointerException;
+    Connection acceptAndOpen(ServerRequestHandler handler, Authenticator auth) throws IOException, NullPointerException;
 
 }

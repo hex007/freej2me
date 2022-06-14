@@ -35,8 +35,7 @@ public interface ClientSession extends Connection
 
     HeaderSet disconnect(HeaderSet headers) throws IOException, IllegalArgumentException;
 
-    HeaderSet setPath(HeaderSet headers, boolean backup, boolean create) throws IOException, 
-    IllegalArgumentException;
+    HeaderSet setPath(HeaderSet headers, boolean backup, boolean create) throws IOException, IllegalArgumentException;
 
     HeaderSet delete(HeaderSet headers) throws IOException, IllegalArgumentException;
 
