@@ -548,7 +548,6 @@ public class RecordStore
 			//System.out.println("> Next Record ID (idx:"+index+" cnt:"+count+")");
 			if(keepupdated) { rebuild(); }
 			if(index>=count) { throw(new InvalidRecordIDException()); }
-			if(index < 0) return elements[0]; // If an invalid index is received, truncate it to 0.
 			return elements[index];
 		}
 
