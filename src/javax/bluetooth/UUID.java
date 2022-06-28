@@ -20,13 +20,13 @@ package javax.bluetooth;
 public class UUID
 {
 	
-	private final long baseUUID1 = 0x00000000;
+	private final long baseUUID1 = 0x0000_0000L;
 	
-	private final long baseUUID2 = 0x00001000; 
+	private final long baseUUID2 = 0x0000_1000L; 
 	
-	private final long baseUUID3 = 0x80000080; 
+	private final long baseUUID3 = 0x8000_0080L; 
 	
-	private final long baseUUID4 = 0x5F9B34FB;
+	private final long baseUUID4 = 0x5F9B_34FBL;
 
 	private final long UUID1, UUID2, UUID3, UUID4;
 
@@ -88,8 +88,8 @@ public class UUID
 	@Override
 	public String toString()
 	{
-		String uuidString = Long.toHexString(UUID1) + Long.toHexString(UUID2) + Long.toHexString(UUID3) + Long.toHexString(UUID4);
-		return uuidString.toUpperCase().replaceFirst("^0+(?!$)", "");
+		String uuidString = String.format("%08X", UUID1) + String.format("%08X", UUID2) + String.format("%08X", UUID3) + String.format("%08X", UUID4);
+		return uuidString.replaceFirst("^0+", "");
 	}
 
 }
