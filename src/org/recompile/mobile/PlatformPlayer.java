@@ -62,7 +62,7 @@ public class PlatformPlayer implements Player
 			}
 			else
 			{
-				if(type.equalsIgnoreCase("audio/x-wav"))
+				if(type.equalsIgnoreCase("audio/x-wav") || type.equalsIgnoreCase("audio/wav"))
 				{
 					player = new wavPlayer(stream);
 				}
@@ -281,7 +281,11 @@ public class PlatformPlayer implements Player
 				wavClip.open(wavStream);
 				state = Player.PREFETCHED;
 			}
-			catch (Exception e) { }
+			catch (Exception e) 
+			{ 
+				System.out.println("Couldn't load wav file: " + e.getMessage());
+				wavClip.close();
+			}
 		}
 
 		public void start()
