@@ -231,7 +231,7 @@ public class PlatformPlayer implements Player
 		public void stop()
 		{
 			midi.stop();
-			state = Player.REALIZED;
+			state = Player.PREFETCHED;
 		}
 		public void deallocate()
 		{
