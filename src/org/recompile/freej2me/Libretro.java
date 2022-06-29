@@ -461,7 +461,7 @@ public class Libretro
 			case 93: return Mobile.NOKIA_SOFT2; // ]
 
 			// ESC - Config Menu
-			case 27: config.start();
+			//case 27: config.start(); /* This menu won't be available on the Libretro frontend */
 
 		}
 		return 0;

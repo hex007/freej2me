@@ -415,12 +415,13 @@ void retro_run(void)
 				}
 			}
 
-			if(joypad[8]+joypad[10]+joypad[11]==3)
+			// This isn't as useful on libretro, and also freezes the frontend if "Exit" is selected
+			/*if(joypad[8]+joypad[10]+joypad[11]==3)
 			{
 				// start+L+R = ESC
 				unsigned char event[5] = { 1, 0,0,0,27 };
 				write(pWrite[1], event, 5);
-			}
+			}*/
 		}
 
 		// grab frame
