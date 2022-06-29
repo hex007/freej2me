@@ -1,4 +1,3 @@
- 
 /*
 	This file is part of FreeJ2ME.
 
