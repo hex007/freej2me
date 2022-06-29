@@ -43,7 +43,7 @@ public class UUID
 
 		if(uuidValue == null || length==0 || length>32 || (shortUUID && length>8) )
 		{
-			throw new IllegalArgumentException("Received an invalid UUID String. Check it's size and type.");
+			throw new IllegalArgumentException("Received an invalid UUID String. Check its size and type.");
 		}
 
 		if (shortUUID)
