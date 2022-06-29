@@ -185,7 +185,7 @@ public class Libretro
 									}
 									else
 									{
-										Mobile.getPlatform().pointerReleased(lcdWidth-mousey, mousex);
+										Mobile.getPlatform().pointerReleased(-mousey+lcdWidth, mousex);
 									}
 								break;
 
@@ -198,7 +198,7 @@ public class Libretro
 									}
 									else
 									{
-										Mobile.getPlatform().pointerPressed(lcdWidth-mousey, mousex);
+										Mobile.getPlatform().pointerPressed(-mousey+lcdWidth, mousex);
 									}
 								break;
 
@@ -211,7 +211,7 @@ public class Libretro
 									}
 									else
 									{
-										Mobile.getPlatform().pointerDragged(lcdWidth-mousey, mousex);
+										Mobile.getPlatform().pointerDragged(-mousey+lcdWidth, mousex);
 									}
 								break;
 
