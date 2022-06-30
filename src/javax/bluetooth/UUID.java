@@ -37,17 +37,17 @@ public class UUID
 	}
 
 	public UUID(String uuidValue, boolean shortUUID) throws IllegalArgumentException, NullPointerException, NumberFormatException
-	{ 	
+	{ 
 		int length = uuidValue.length();
 
-		if(uuidValue == null || length==0 || length>32 || (shortUUID && length>8) )
+		if(length == 0 || length > 32 || (shortUUID && length > 8) )
 		{
-			throw new IllegalArgumentException("Received an invalid UUID String. Check its size and type.");
+			throw new IllegalArgumentException("Received an UUID with invalid length.");
 		}
 
 		if (shortUUID)
 		{
-			String formattedUuidValue = String.format("%08X", uuidValue);
+			String formattedUuidValue = String.format("%1$" + 8 + "s", uuidValue).replace(' ', '0');
 			UUIDval[0] = Long.parseUnsignedLong(formattedUuidValue, 16);
 			UUIDval[1] = baseUUID[1];
 			UUIDval[2] = baseUUID[2];
@@ -55,7 +55,7 @@ public class UUID
 		}
 		else
 		{
-			String formattedUuidValue = String.format("%032X", uuidValue);
+			String formattedUuidValue = String.format("%1$" + 32 + "s", uuidValue).replace(' ', '0');
 			UUIDval[0] = Long.parseUnsignedLong(formattedUuidValue.substring(0, 8), 16);
 			UUIDval[1] = Long.parseUnsignedLong(formattedUuidValue.substring(8, 16), 16);
 			UUIDval[2] = Long.parseUnsignedLong(formattedUuidValue.substring(16, 24), 16);
