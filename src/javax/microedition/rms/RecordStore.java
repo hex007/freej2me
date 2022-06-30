@@ -441,6 +441,7 @@ public class RecordStore
 		{
 			keepupdated = keepUpdated;
 			index = 0;
+			count = 0;
 
 			this.filter = filter;
 			this.comparator = comparator;
@@ -587,6 +588,7 @@ public class RecordStore
 		{
 			build();
 			if(index >= count) { index = count-1; }
+			if(index < 0) { index = 0; }
 		}
 
 		public void reset()
