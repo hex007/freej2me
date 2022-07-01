@@ -19,9 +19,9 @@ package javax.bluetooth;
 public class UUID
 {
 	
-	private final long[] baseUUID = { 0x0000_0000L, 0x0000_1000L, 0x8000_0080L, 0x5F9B_34FBL };
+	private static final long[] baseUUID = { 0x0000_0000L, 0x0000_1000L, 0x8000_0080L, 0x5F9B_34FBL };
 
-	private final long[] UUIDval  = { 0x0000_0000L, 0x0000_0000L, 0x0000_0000L, 0x0000_0000L };
+	private long[] UUIDval  = { 0x0000_0000L, 0x0000_0000L, 0x0000_0000L, 0x0000_0000L };
 
 
 	public UUID(long uuidValue) throws IllegalArgumentException
