@@ -31,13 +31,13 @@ public class PIMException extends Exception
 	public PIMException() { reason = GENERAL_ERROR; }
 
 	public PIMException(String detailMessage) 
-    {
+	{
 		super(detailMessage);
 		reason = GENERAL_ERROR;
 	}
 
 	public PIMException(String detailMessage, int reason) 
-    {
+	{
 		super(detailMessage);
 		this.reason = reason;
 	}

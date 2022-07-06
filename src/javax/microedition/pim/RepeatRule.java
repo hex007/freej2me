@@ -67,7 +67,7 @@ public class RepeatRule
 	public RepeatRule() { }
 
 	public Enumeration dates(long startDate, long subsetBeginning, long subsetEnding) 
-    {
+	{
 		return null;
 	}
 

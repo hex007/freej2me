@@ -33,7 +33,7 @@ public abstract class PIM
 	protected PIM() { }
 
 	public static PIM getInstance() 
-    {
+	{
 		throw new SecurityException("PIM is stubbed, can't access this device's instance");
 	}
 

@@ -27,13 +27,13 @@ public class UnsupportedFieldException extends RuntimeException
     {
 		super(detailMessage);
 		fieldVal = -1;
-	}
+    }
 
 	public UnsupportedFieldException(String detailMessage, int field) 
     {
 		super(detailMessage);
 		this.fieldVal = field;
-	}
+    }
 
 	public int getField() { return fieldVal; }
 }

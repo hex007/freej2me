@@ -24,13 +24,13 @@ public class FieldEmptyException extends RuntimeException
 	public FieldEmptyException() { fieldVal = -1; }
 
 	public FieldEmptyException(String detailMessage) 
-    {
+	{
 		super(detailMessage);
 		fieldVal = -1;
 	}
 
 	public FieldEmptyException(String detailMessage, int field) 
-    {
+	{
 		super(detailMessage);
 		this.fieldVal = field;
 	}
