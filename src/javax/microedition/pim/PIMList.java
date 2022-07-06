@@ -23,61 +23,61 @@ public interface PIMList
 
 	public static final String UNCATEGORIZED = null;
 
-	String getName();
+	public String getName();
 
-	void close() throws PIMException;
+	public void close() throws PIMException;
 
-	Enumeration items() throws PIMException, SecurityException;
+	public Enumeration items() throws PIMException, SecurityException;
 
-	Enumeration items(PIMItem matchingItem) throws PIMException, IllegalArgumentException, 
+	public Enumeration items(PIMItem matchingItem) throws PIMException, IllegalArgumentException, 
         NullPointerException, SecurityException;
 
-	Enumeration items(String matchingValue) throws PIMException, NullPointerException, 
+	public Enumeration items(String matchingValue) throws PIMException, NullPointerException, 
         SecurityException;
 
-	Enumeration itemsByCategory(String category) throws PIMException, SecurityException;
+	public Enumeration itemsByCategory(String category) throws PIMException, SecurityException;
 
-	String[] getCategories() throws PIMException;
+	public String[] getCategories() throws PIMException;
 
-	boolean isCategory(String category) throws PIMException, NullPointerException;
+	public boolean isCategory(String category) throws PIMException, NullPointerException;
 
-	void addCategory(String category) throws PIMException, SecurityException, 
+	public void addCategory(String category) throws PIMException, SecurityException, 
         NullPointerException;
 
-	void deleteCategory(String category, boolean deleteUnassignedItems) throws PIMException, 
+	public void deleteCategory(String category, boolean deleteUnassignedItems) throws PIMException, 
         SecurityException, NullPointerException;
 
-	void renameCategory(String currentCategory, String newCategory) throws PIMException, 
+	public void renameCategory(String currentCategory, String newCategory) throws PIMException, 
         SecurityException, NullPointerException;
 
-	int maxCategories();
+	public int maxCategories();
 
-	boolean isSupportedField(int field);
+	public boolean isSupportedField(int field);
 
-	int[] getSupportedFields();
+	public int[] getSupportedFields();
 
-	boolean isSupportedAttribute(int field, int attribute);
+	public boolean isSupportedAttribute(int field, int attribute);
 
-	int[] getSupportedAttributes(int field) throws IllegalArgumentException, 
+	public int[] getSupportedAttributes(int field) throws IllegalArgumentException, 
         UnsupportedFieldException;
 
-	boolean isSupportedArrayElement(int stringArrayField, int arrayElement);
+	public boolean isSupportedArrayElement(int stringArrayField, int arrayElement);
 
-	int[] getSupportedArrayElements(int stringArrayField) throws IllegalArgumentException, 
+	public int[] getSupportedArrayElements(int stringArrayField) throws IllegalArgumentException, 
         UnsupportedFieldException;
 
-	int getFieldDataType(int field) throws IllegalArgumentException, UnsupportedFieldException;
+	public int getFieldDataType(int field) throws IllegalArgumentException, UnsupportedFieldException;
 
-	String getFieldLabel(int field) throws IllegalArgumentException, 
+	public String getFieldLabel(int field) throws IllegalArgumentException, 
         UnsupportedFieldException;
 
-	String getAttributeLabel(int attribute) throws IllegalArgumentException, 
+	public String getAttributeLabel(int attribute) throws IllegalArgumentException, 
         UnsupportedFieldException;
 
-	String getArrayElementLabel(int stringArrayField, int arrayElement) 
+	public String getArrayElementLabel(int stringArrayField, int arrayElement) 
         throws IllegalArgumentException, UnsupportedFieldException;
 
-	int maxValues(int field) throws IllegalArgumentException;
+	public int maxValues(int field) throws IllegalArgumentException;
 
-	int stringArraySize(int stringArrayField) throws IllegalArgumentException;
+	public int stringArraySize(int stringArrayField) throws IllegalArgumentException;
 }
