@@ -21,12 +21,12 @@ import java.util.Enumeration;
 public interface ToDoList extends PIMList 
 {
 
-	ToDo createToDo();
+	public ToDo createToDo();
 
-	ToDo importToDo(ToDo item) throws NullPointerException;
+	public ToDo importToDo(ToDo item) throws NullPointerException;
 
-	void removeToDo(ToDo item) throws NullPointerException, SecurityException, PIMException;
+	public void removeToDo(ToDo item) throws NullPointerException, SecurityException, PIMException;
 
-	Enumeration items(int field, long startDate, long endDate) throws IllegalArgumentException, 
+	public Enumeration items(int field, long startDate, long endDate) throws IllegalArgumentException, 
         SecurityException, PIMException;
 }
