@@ -19,7 +19,7 @@ package javax.microedition.pim;
 public class UnsupportedFieldException extends RuntimeException 
 {
 
-	private final int fieldVal;
+	private int fieldVal;
 
 	public UnsupportedFieldException() { fieldVal = -1; }
 
@@ -32,7 +32,7 @@ public class UnsupportedFieldException extends RuntimeException
 	public UnsupportedFieldException(String detailMessage, int field) 
     {
 		super(detailMessage);
-		this.fieldVal = field;
+		fieldVal = field;
     }
 
 	public int getField() { return fieldVal; }
