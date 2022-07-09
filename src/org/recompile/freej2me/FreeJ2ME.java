@@ -203,6 +203,14 @@ public class FreeJ2ME
 			{
 				int x = (int)((e.getX()-lcd.cx) * lcd.scalex);
 				int y = (int)((e.getY()-lcd.cy) * lcd.scaley);
+
+				// Adjust the pointer coords if the screen is rotated, same for mouseReleased
+				if(rotateDisplay)
+				{
+					x = (int)((lcd.ch-(e.getY()-lcd.cy)) * lcd.scaley);
+					y = (int)((e.getX()-lcd.cx) * lcd.scalex);
+				}
+
 				Mobile.getPlatform().pointerPressed(x, y);
 			}
 
@@ -210,6 +218,13 @@ public class FreeJ2ME
 			{
 				int x = (int)((e.getX()-lcd.cx) * lcd.scalex);
 				int y = (int)((e.getY()-lcd.cy) * lcd.scaley);
+
+				if(rotateDisplay)
+				{
+					x = (int)((lcd.ch-(e.getY()-lcd.cy)) * lcd.scaley);
+					y = (int)((e.getX()-lcd.cx) * lcd.scalex);
+				}
+
 				Mobile.getPlatform().pointerReleased(x, y);
 			}
 
@@ -282,10 +297,25 @@ public class FreeJ2ME
 		if(phone.equals("Siemens")) { Mobile.siemens = true; useSiemensControls = true; }
 		if(phone.equals("Motorola")) { Mobile.motorola = true; useMotorolaControls = true; }
 
-		if(lcdWidth != w || lcdHeight != h)
+		String rotate = config.settings.get("rotate");
+		if(rotate.equals("on")) { rotateDisplay = true; }
+		if(rotate.equals("off")) { rotateDisplay = false; }
+
+		// Create a standard size LCD if not rotated, else invert window's width and height.
+		if(!rotateDisplay) 
 		{
 			lcdWidth = w;
 			lcdHeight = h;
+
+			Mobile.getPlatform().resizeLCD(w, h);
+			
+			resize();
+			main.setSize(lcdWidth*scaleFactor+xborder , lcdHeight*scaleFactor+yborder);
+		}
+		else 
+		{
+			lcdWidth = h;
+			lcdHeight = w;
 
 			Mobile.getPlatform().resizeLCD(w, h);
 
@@ -433,11 +463,30 @@ public class FreeJ2ME
 				Graphics2D cgc = (Graphics2D)this.getGraphics();
 				if (config.isRunning)
 				{
-					g.drawImage(config.getLCD(), cx, cy, cw, ch, null);
+					if(!rotateDisplay)
+					{
+						g.drawImage(config.getLCD(), cx, cy, cw, ch, null);
+					}
+					else
+					{
+						// If rotated, simply redraw the config menu with different width and height
+						g.drawImage(config.getLCD(), cy, cx, cw, ch, null);
+					}
 				}
 				else
 				{
-					g.drawImage(Mobile.getPlatform().getLCD(), cx, cy, cw, ch, null);
+					if(!rotateDisplay)
+					{
+						g.drawImage(Mobile.getPlatform().getLCD(), cx, cy, cw, ch, null);
+					}
+					else
+					{
+						// Rotate the FB 90 degrees counterclockwise with an adjusted pivot
+						cgc.rotate(Math.toRadians(-90), ch/2, ch/2);
+						// Draw the rotated FB with adjusted cy and cx values
+						cgc.drawImage(Mobile.getPlatform().getLCD(), 0, cx, ch, cw, null);
+					}
+
 					if(limitFPS>0)
 					{
 						Thread.sleep(limitFPS);
