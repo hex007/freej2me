@@ -208,6 +208,8 @@ public class PlatformPlayer implements Player
 
 		private int loops = 0;
 
+		private Long tick = new Long(0);
+
 		public midiPlayer(InputStream stream)
 		{
 			try
@@ -224,16 +226,22 @@ public class PlatformPlayer implements Player
 		{
 			if(isRunning()) { return; }
 
-			midi.setMicrosecondPosition(0);
+			if(midi.getTickPosition() >= midi.getTickLength())
+			{
+				midi.setTickPosition(0);
+			}
+			tick = midi.getTickPosition();
 			midi.start();
 			state = Player.STARTED;
-			notifyListeners(PlayerListener.STARTED, new Long(0));
+			notifyListeners(PlayerListener.STARTED, tick);
 		}
 
 		public void stop()
 		{
 			midi.stop();
 			state = Player.PREFETCHED;
+			tick = midi.getTickPosition();
+			notifyListeners(PlayerListener.STOPPED, tick);
 		}
 		public void deallocate()
 		{
