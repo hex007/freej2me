@@ -379,12 +379,10 @@ void retro_run(void)
 			touchY = (int)(((float)(touchY + 0x7FFF)) * ((float)frameHeight / (float)0xFFFE));
 			joymouseAnalog = false;
 			joyevent[0] = 5; // mouse down
-			joyevent[1] = (touchX >> 8) & 0xFF;
-			joyevent[2] = (touchX) & 0xFF;
-			joyevent[3] = (touchY >> 8) & 0xFF;
-			joyevent[4] = (touchY) & 0xFF;
-			write(pWrite[1], joyevent, 5);
-			joyevent[0] = 4; // mouse up
+			joyevent[1] = (joymouseX >> 8) & 0xFF;
+			joyevent[2] = (joymouseX) & 0xFF;
+			joyevent[3] = (joymouseY >> 8) & 0xFF;
+			joyevent[4] = (joymouseY) & 0xFF;
 			write(pWrite[1], joyevent, 5);
 		}
 
