@@ -208,7 +208,7 @@ public class PlatformPlayer implements Player
 
 		private int loops = 0;
 
-		private Long tick = new Long(0);
+		private long tick = 0L;
 
 		public midiPlayer(InputStream stream)
 		{
@@ -280,7 +280,7 @@ public class PlatformPlayer implements Player
 
 		private int loops = 0;
 
-		private Long time = new Long(0);
+		private long time = 0L;
 
 		public wavPlayer(InputStream stream)
 		{
