@@ -222,6 +222,8 @@ public class PlatformPlayer implements Player
 
 		public void start()
 		{
+			if(isRunning()) { return; }
+
 			midi.setMicrosecondPosition(0);
 			midi.start();
 			state = Player.STARTED;
@@ -254,7 +256,7 @@ public class PlatformPlayer implements Player
 		}
 		public long getMediaTime()
 		{
-			return 0;
+			return midi.getTickPosition();
 		}
 		public boolean isRunning()
 		{
