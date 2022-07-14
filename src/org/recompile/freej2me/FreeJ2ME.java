@@ -234,6 +234,23 @@ public class FreeJ2ME
 
 		});
 
+		lcd.addMouseMotionListener(new MouseMotionAdapter() 
+		{
+			public void mouseDragged(MouseEvent e)
+			{
+				int x = (int)((e.getX()-lcd.cx) * lcd.scalex);
+				int y = (int)((e.getY()-lcd.cy) * lcd.scaley);
+
+				if(rotateDisplay)
+				{
+					x = (int)((lcd.ch-(e.getY()-lcd.cy)) * lcd.scaley);
+					y = (int)((e.getX()-lcd.cx) * lcd.scalex);
+				}
+				
+				Mobile.getPlatform().pointerDragged(x, y); 
+			}
+		});
+
 		main.addComponentListener(new ComponentAdapter()
 		{
 			public void componentResized(ComponentEvent e)
