@@ -123,6 +123,8 @@ int joymouseY = 0;
 long joymouseTime = 0; // countdown to show/hide mouse cursor
 bool joymouseAnalog = false; // flag - using analog stick for mouse movement
 int mouseLpre = 0; // old mouse button state
+bool uses_mouse = true;
+bool uses_touch = false;
 
 unsigned int readSize = 16384;
 unsigned char readBuffer[16384];
@@ -320,16 +322,6 @@ void retro_run(void)
 		int touchY = InputState(0, RETRO_DEVICE_POINTER, 0, RETRO_DEVICE_ID_POINTER_Y);
 		int touchP = InputState(0, RETRO_DEVICE_POINTER, 0, RETRO_DEVICE_ID_POINTER_PRESSED);
 
-		// mouse - move joymouse
-		if(mouseX != 0 || mouseY !=0)
-		{
-			joymouseAnalog = false;
-			joymouseTime = DefaultFPS;
-			joymouseX += mouseX;
-			joymouseY += mouseY;
-
-			mouseChange = true;
-		}
 
 		// analog left - move joymouse
 		joyLx /= 8192;
@@ -349,42 +341,60 @@ void retro_run(void)
 		if(joymouseX>frameWidth-17) { joymouseX=frameWidth-17; }
 		if(joymouseY>frameHeight) { joymouseY=frameHeight; }
 
-		// drag
-		if(mouseL>0 && mouseChange)
+		if(uses_mouse)
 		{
-			joyevent[0] = 6;
-			joyevent[1] = (joymouseX >> 8) & 0xFF;
-			joyevent[2] = (joymouseX) & 0xFF;
-			joyevent[3] = (joymouseY >> 8) & 0xFF;
-			joyevent[4] = (joymouseY) & 0xFF;
-			write(pWrite[1], joyevent, 5);
-		}
+			// mouse - move joymouse
+			if(mouseX != 0 || mouseY !=0)
+			{
+				joymouseAnalog = false;
+				joymouseTime = DefaultFPS;
+				joymouseX += mouseX;
+				joymouseY += mouseY;
 
-		// mouse - down/up
-		if(mouseLpre != mouseL)
-		{
-			joyevent[0] = 4 + mouseL;
-			joyevent[1] = (joymouseX >> 8) & 0xFF;
-			joyevent[2] = (joymouseX) & 0xFF;
-			joyevent[3] = (joymouseY >> 8) & 0xFF;
-			joyevent[4] = (joymouseY) & 0xFF;
-			write(pWrite[1], joyevent, 5);
-		}
-		mouseLpre = mouseL;
+				mouseChange = true;
+			}
 
-		// touch event
-		if(touchP!=0)
-		{
-			touchX = (int)(((float)(touchX + 0x7FFF)) * ((float)frameWidth / (float)0xFFFE));
-			touchY = (int)(((float)(touchY + 0x7FFF)) * ((float)frameHeight / (float)0xFFFE));
-			joymouseAnalog = false;
-			joyevent[0] = 5; // mouse down
-			joyevent[1] = (joymouseX >> 8) & 0xFF;
-			joyevent[2] = (joymouseX) & 0xFF;
-			joyevent[3] = (joymouseY >> 8) & 0xFF;
-			joyevent[4] = (joymouseY) & 0xFF;
-			write(pWrite[1], joyevent, 5);
+			// mouse - drag
+			if(mouseL>0 && mouseChange)
+			{
+				joyevent[0] = 6;
+				joyevent[1] = (joymouseX >> 8) & 0xFF;
+				joyevent[2] = (joymouseX) & 0xFF;
+				joyevent[3] = (joymouseY >> 8) & 0xFF;
+				joyevent[4] = (joymouseY) & 0xFF;
+				write(pWrite[1], joyevent, 5);
+			}
+
+			// mouse - down/up
+			if(mouseLpre != mouseL)
+			{
+				joyevent[0] = 4 + mouseL;
+				joyevent[1] = (joymouseX >> 8) & 0xFF;
+				joyevent[2] = (joymouseX) & 0xFF;
+				joyevent[3] = (joymouseY >> 8) & 0xFF;
+				joyevent[4] = (joymouseY) & 0xFF;
+				write(pWrite[1], joyevent, 5);
+			}
+			mouseLpre = mouseL;
 		}
+		else if(uses_touch)
+		{
+			// touch event
+			if(touchP!=0)
+			{
+				touchX = (int)(((float)(touchX + 0x7FFF)) * ((float)frameWidth / (float)0xFFFE));
+				touchY = (int)(((float)(touchY + 0x7FFF)) * ((float)frameHeight / (float)0xFFFE));
+				joymouseAnalog = false;
+				joyevent[0] = 5; // touch down
+				joyevent[1] = (touchX >> 8) & 0xFF;
+				joyevent[2] = (touchX) & 0xFF;
+				joyevent[3] = (touchY >> 8) & 0xFF;
+				joyevent[4] = (touchY) & 0xFF;
+				write(pWrite[1], joyevent, 5);
+				joyevent[0] = 4; // touch up
+			}
+		}
+		
 
 		for(i=0; i<14; i++)
 		{
