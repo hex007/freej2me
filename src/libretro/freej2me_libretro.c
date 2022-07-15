@@ -392,6 +392,7 @@ void retro_run(void)
 				joyevent[4] = (touchY) & 0xFF;
 				write(pWrite[1], joyevent, 5);
 				joyevent[0] = 4; // touch up
+				write(pWrite[1], joyevent, 5);
 			}
 		}
 		
