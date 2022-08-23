@@ -56,17 +56,17 @@ public class PlatformPlayer implements Player
 		}
 		else
 		{
-			if(type.equals("audio/midi") || type.equals("sp-midi") || type.equals("audio/spmidi"))
+			if(type.equalsIgnoreCase("audio/mid") || type.equalsIgnoreCase("audio/midi") || type.equalsIgnoreCase("sp-midi") || type.equalsIgnoreCase("audio/spmidi"))
 			{
 				player = new midiPlayer(stream);
 			}
 			else
 			{
-				if(type.equals("audio/x-wav"))
+				if(type.equalsIgnoreCase("audio/x-wav") || type.equalsIgnoreCase("audio/wav"))
 				{
 					player = new wavPlayer(stream);
 				}
-				else
+				else /* TODO: Implement a player for amr and mpeg audio types */
 				{
 					System.out.println("No Player For: "+contentType);
 					player = new audioplayer();
@@ -208,6 +208,8 @@ public class PlatformPlayer implements Player
 
 		private int loops = 0;
 
+		private long tick = 0L;
+
 		public midiPlayer(InputStream stream)
 		{
 			try
@@ -222,16 +224,24 @@ public class PlatformPlayer implements Player
 
 		public void start()
 		{
-			midi.setMicrosecondPosition(0);
+			if(isRunning()) { return; }
+
+			if(midi.getTickPosition() >= midi.getTickLength())
+			{
+				midi.setTickPosition(0);
+			}
+			tick = midi.getTickPosition();
 			midi.start();
 			state = Player.STARTED;
-			notifyListeners(PlayerListener.STARTED, new Long(0));
+			notifyListeners(PlayerListener.STARTED, tick);
 		}
 
 		public void stop()
 		{
 			midi.stop();
-			state = Player.REALIZED;
+			state = Player.PREFETCHED;
+			tick = midi.getTickPosition();
+			notifyListeners(PlayerListener.STOPPED, tick);
 		}
 		public void deallocate()
 		{
@@ -254,7 +264,7 @@ public class PlatformPlayer implements Player
 		}
 		public long getMediaTime()
 		{
-			return 0;
+			return midi.getTickPosition();
 		}
 		public boolean isRunning()
 		{
@@ -270,7 +280,7 @@ public class PlatformPlayer implements Player
 
 		private int loops = 0;
 
-		private Long time = new Long(0);
+		private long time = 0L;
 
 		public wavPlayer(InputStream stream)
 		{
@@ -281,7 +291,11 @@ public class PlatformPlayer implements Player
 				wavClip.open(wavStream);
 				state = Player.PREFETCHED;
 			}
-			catch (Exception e) { }
+			catch (Exception e) 
+			{ 
+				System.out.println("Couldn't load wav file: " + e.getMessage());
+				wavClip.close();
+			}
 		}
 
 		public void start()

@@ -17,6 +17,7 @@
 package javax.microedition.media;
 
 import java.io.InputStream;
+import java.io.IOException;
 
 import org.recompile.mobile.PlatformPlayer;
 
@@ -26,7 +27,7 @@ public final class Manager
 	public static final String TONE_DEVICE_LOCATOR = "device://tone";
 
 
-	public static Player createPlayer(InputStream stream, String type) throws MediaException
+	public static Player createPlayer(InputStream stream, String type) throws IOException, MediaException
 	{
 		//System.out.println("Create Player Stream "+type);
 		return new PlatformPlayer(stream, type);
@@ -41,7 +42,8 @@ public final class Manager
 	public static String[] getSupportedContentTypes(String protocol)
 	{
 		//System.out.println("Get Supported Media Content Types");
-		return new String[]{"audio/midi", "audio/x-wav"};
+		return new String[]{"audio/midi", "audio/x-wav", 
+		"audio/amr", "audio/mpeg"};
 	}
 	
 	public static String[] getSupportedProtocols(String content_type)
