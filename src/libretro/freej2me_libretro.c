@@ -22,7 +22,7 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include "libretro.h"
+#include "freej2me_libretro.h"
 #include <file/file_path.h>
 #include <retro_miscellaneous.h>
 
