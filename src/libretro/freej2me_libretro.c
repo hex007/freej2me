@@ -109,12 +109,13 @@ int framesDropped = 0;
 
 /* Libretro exposed config variables START */
 
-char *options_update;
-unsigned int optstrlen;
+char *options_update; /* String containing the options updated in check_variables() */
+unsigned int optstrlen; /* length of the string above */
 unsigned long int screenRes[2]; /* {width, height} */
 int rotateScreen; /* acts as a boolean */
 int phoneType; /* 0=standard, 1=nokia, 2=siemens, 3=motorola */
 int gameFPS; /* Auto(0), 60, 30, 15 */
+int soundEnabled; /* also acts as a boolean */
 /* Variables used to manage the pointer speed when controlled from an analog stick */
 int pointerXSpeed = 8;
 int pointerYSpeed = 8;
@@ -233,6 +234,14 @@ static void check_variables(bool first_time_startup)
    }
 
 
+   var.key = "freej2me_sound";
+   if (Environ(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+		if (!strcmp(var.value, "off"))     { soundEnabled = 0; }
+		else if (!strcmp(var.value, "on")) { soundEnabled = 1; }
+   }
+
+
    var.key = "freej2me_pointertype";
 	if (Environ(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
 	{
@@ -311,7 +320,7 @@ static void check_variables(bool first_time_startup)
 	
 	
 	/* Prepare a string to pass those core options to the Java app */
-	snprintf(options_update, PIPE_MAX_LEN, "FJ2ME_LR_OPTS:|%lux%lu|%d|%d|%d", screenRes[0], screenRes[1], rotateScreen, phoneType, gameFPS);
+	snprintf(options_update, PIPE_MAX_LEN, "FJ2ME_LR_OPTS:|%lux%lu|%d|%d|%d|%d", screenRes[0], screenRes[1], rotateScreen, phoneType, gameFPS, soundEnabled);
 	optstrlen = strlen(options_update);
 
 	/* 0xD = 13, which is the special case where the java app will receive the updated configs */
@@ -355,19 +364,21 @@ void retro_init(void)
 	 * off, etc. 
 	 */
 	check_variables(true);
-	char resArg[2][4], rotateArg[2], phoneArg[2], fpsArg[2];;
+	
+	char resArg[2][4], rotateArg[2], phoneArg[2], fpsArg[2], soundArg[2];
 	sprintf(resArg[0], "%lu", screenRes[0]); /* Libretro config Width  */
 	sprintf(resArg[1], "%lu", screenRes[1]); /* Libretro config Height */
 	sprintf(rotateArg, "%d", rotateScreen);
 	sprintf(phoneArg,  "%d", phoneType);
 	sprintf(fpsArg, "%d", gameFPS);
+	sprintf(soundArg, "%d", soundEnabled);
 
 	/* start java process */
 	char *javapath;
 	Environ(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &javapath);
 	char *outPath = malloc(sizeof(char) * PATH_MAX_LENGTH);
 	fill_pathname_join(outPath, javapath, "freej2me-lr.jar", PATH_MAX_LENGTH);
-	char *params[] = { "java", "-jar", outPath, resArg[0], resArg[1], rotateArg, phoneArg, fpsArg,  NULL };
+	char *params[] = { "java", "-jar", outPath, resArg[0], resArg[1], rotateArg, phoneArg, fpsArg, soundArg, NULL };
 	javaProcess = javaOpen(params[0], params);
 
 	/* wait for java process */

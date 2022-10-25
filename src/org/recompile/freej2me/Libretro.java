@@ -99,7 +99,16 @@ public class Libretro
 			else if(Integer.parseInt(args[3]) == 2) { useSiemensControls = true;  } /* Siemens controls */
 			else if(Integer.parseInt(args[3]) == 3) { useMotorolaControls = true; } /* Motorola controls */
 		}
-		if(args.length>=5) { limitFPS = Integer.parseInt(args[4]); }
+		if(args.length>=5) 
+		{ 
+			limitFPS = Integer.parseInt(args[4]); 
+		}
+		if(args.length>=6) 
+		{
+			int soundEnabled = Integer.parseInt(args[5]);
+			if(soundEnabled == 1)       { Mobile.sound = true;  }
+			else if(soundEnabled == 0)  { Mobile.sound = false; }
+		}
 
 		surface = new BufferedImage(lcdWidth, lcdHeight, BufferedImage.TYPE_INT_ARGB); // libretro display
 		gc = (Graphics2D)surface.getGraphics();
@@ -331,6 +340,9 @@ public class Libretro
 									if(Integer.parseInt(cfgtokens[4])==3) { config.settings.put("phone", "Motorola"); }
 
 									config.settings.put("fps", ""+cfgtokens[5]);
+
+									if(Integer.parseInt(cfgtokens[6])==1) { config.settings.put("sound", "on");  }
+									if(Integer.parseInt(cfgtokens[6])==0) { config.settings.put("sound", "off"); }
 
 									config.saveConfig();
 									settingsChanged();

@@ -23,7 +23,7 @@ static const struct retro_controller_description port_1[] =
     { "Joypad Port Empty", RETRO_DEVICE_NONE },
 };
 
-/* No use having more than one input port with this core */
+/* No use having more than one input port on this core */
 static const struct retro_controller_info ports[] =
 {
     { port_1, 16 },
@@ -73,8 +73,8 @@ struct retro_core_option_v2_definition core_options[] =
 {
     {
         "freej2me_resolution",
-        "Virtual Phone Settings > Phone resolution (Core Restart required)",
-        "Phone resolution (Core Restart required)",
+        "Virtual Phone Settings > Phone Resolution (Core Restart required)",
+        "Phone Resolution (Core Restart required)",
         "Not all J2ME games run at the same screen resolution. If the game's window is too small, or has sections of it cut off, try increasing or decreasing the internal screen resolution.",
         "Not all J2ME games run at the same screen resolution. If the game's window is too small, or has sections of it cut off, try increasing or decreasing the internal screen resolution.",
         "vphone_settings",
@@ -102,8 +102,8 @@ struct retro_core_option_v2_definition core_options[] =
     },
     {
         "freej2me_rotate",
-        "Virtual Phone Settings > Rotate screen",
-        "Rotate screen",
+        "Virtual Phone Settings > Rotate Screen",
+        "Rotate Screen",
         "Some games, especially ones that support touch controls, tend to expect the screen to be rotated. This option comes in handy on those cases.",
         "Some games, especially ones that support touch controls, tend to expect the screen to be rotated. This option comes in handy on those cases.",
         "vphone_settings",
@@ -116,8 +116,8 @@ struct retro_core_option_v2_definition core_options[] =
     },
     {
         "freej2me_phone",
-        "Virtual Phone Settings > Phone key layout",
-        "Phone key layout",
+        "Virtual Phone Settings > Phone Key Layout",
+        "Phone Key Layout",
         "Due to the different mobile phone manufacturers on the J2ME space, it's usual to have some games expecting a certain phone's key layout like Nokia's for example. If a game is not responding to the inputs correctly, try changing this option.",
         "Due to the different mobile phone manufacturers on the J2ME space, it's usual to have some games expecting a certain phone's key layout like Nokia's for example. If a game is not responding to the inputs correctly, try changing this option.",
         "vphone_settings",
@@ -145,6 +145,20 @@ struct retro_core_option_v2_definition core_options[] =
             { NULL, NULL },
         },
         "60"
+    },
+    {
+        "freej2me_sound",
+        "Virtual Phone Settings > Virtual Phone Sound",
+        "Virtual Phone Sound",
+        "Enables or disables the virtual phone's ability to load and play audio samples/tones. Some games require support for codecs not yet implemented, or have issues that can be worked around by disabling audio in FreeJ2ME (ID Software games such as DOOM II RPG having memory leaks with MIDI samples being one example). If a game doesn't run or has issues during longer sessions, try disabling this option.",
+        "Enables or disables the virtual phone's ability to load and play audio samples/tones. Some games require support for codecs not yet implemented, or have issues that can be worked around by disabling audio in FreeJ2ME (ID Software games such as DOOM II RPG having memory leaks with MIDI samples being one example). If a game doesn't run or has issues during longer sessions, try disabling this option.",
+        "vphone_settings",
+        {
+            { "on",  "On"  },
+            { "off", "Off" },
+            { NULL, NULL },
+        },
+        "on"
     },
     {
         "freej2me_pointertype",
@@ -271,7 +285,7 @@ struct retro_core_option_definition core_options_v1 [] =
 {
     {
         "freej2me_resolution",
-        "Phone resolution (Core Restart required)",
+        "Phone Resolution (Core Restart required)",
         "Not all J2ME games run at the same screen resolution. If the game's window is too small, or has sections of it cut off, try increasing or decreasing the internal screen resolution.",
         {
             { "96x65",     NULL },
@@ -297,7 +311,7 @@ struct retro_core_option_definition core_options_v1 [] =
     },
     {
         "freej2me_rotate",
-        "Rotate screen",
+        "Rotate Screen",
         "Some games, especially ones that support touch controls, tend to expect the screen to be rotated. This option comes in handy on those cases.",
         {
             { "off", "Disabled" },
@@ -308,7 +322,7 @@ struct retro_core_option_definition core_options_v1 [] =
     },
     {
         "freej2me_phone",
-        "Phone key layout",
+        "Phone Key Layout",
         "Due to the different mobile phone manufacturers on the J2ME space, it's usual to have some games expecting a certain phone's key layout like Nokia's for example. If a game is not responding to the inputs correctly, try changing this option.",
         {
             { "Standard",  NULL },
@@ -331,6 +345,17 @@ struct retro_core_option_definition core_options_v1 [] =
             { NULL, NULL },
         },
         "60"
+    },
+    {
+        "freej2me_sound",
+        "Virtual Phone Sound",
+        "Enables or disables the virtual phone's ability to load and play audio samples/tones. Some games require support for codecs not yet implemented, or have issues that can be worked around by disabling audio in FreeJ2ME (ID Software games such as DOOM II RPG having memory leaks with MIDI samples being one example). If a game doesn't run or has issues during longer sessions, try disabling this option.",
+        {
+            { "on",  "On"  },
+            { "off", "Off" },
+            { NULL, NULL },
+        },
+        "on"
     },
     {
         "freej2me_pointertype",
@@ -430,43 +455,47 @@ struct retro_core_option_definition core_options_v1 [] =
 /* Core config variables if running on a legacy frontend without support for CORE_OPTIONS */
 static const struct retro_variable vars[] =
 {
-    { // Resolution
+    { /* Screen Resolution */
         "freej2me_resolution",
-        "Phone resolution (Core Restart required); 96x65|96x96|104x80|128x128|132x176|128x160|176x208|176x220|208x208|240x320|320x240|240x400|352x416|360x640|640x360|480x800|800x480" 
+        "Phone Resolution (Core Restart required); 96x65|96x96|104x80|128x128|132x176|128x160|176x208|176x220|208x208|240x320|320x240|240x400|352x416|360x640|640x360|480x800|800x480" 
     },
-    { // Screen Rotation
+    { /* Screen Rotation */
         "freej2me_rotate",
-        "Rotate screen; off|on" 
+        "Rotate Screen; off|on" 
     },
-    { // Phone Control Type
+    { /* Phone Control Type */
         "freej2me_phone",
-        "Phone key layout; Standard|Nokia|Siemens|Motorola" 
+        "Phone Key Layout; Standard|Nokia|Siemens|Motorola" 
     },
-    { // Game FPS limit
+    { /* Game FPS limit */
         "freej2me_fps",
         "Game FPS Limit; 60|30|15|Auto" 
     },
-    { // Pointer Type
+    { /* Virtual Phone Sound */
+        "freej2me_sound",
+        "Virtual Phone Sound; on|off"
+    },
+    { /* Pointer Type */
         "freej2me_pointertype",
         "Pointer Type; Mouse|Touch|None",
     },
-    { // Screen Pointer X Speed
+    { /* Screen Pointer X Speed */
         "freej2me_pointerxspeed",
         "Pointer X Speed; 4|1|2|8|16",
     },
-    { // Screen Pointer Y Speed
+    { /* Screen Pointer Y Speed */
         "freej2me_pointeryspeed",
         "Pointer Y Speed; 4|1|2|8|16",
     },
-    { // Pointer's inner color
+    { /* Pointer's inner color */
         "freej2me_pointerinnercolor",
         "Pointer Inner Color; White|Red|Green|Blue|Yellow|Pink|Cyan|Black",
     },
-    { // Pointer's outline color
+    { /* Pointer's outline color */
         "freej2me_pointeroutercolor",
         "Pointer Outline Color; Black|Red|Green|Blue|Yellow|Pink|Cyan|White",
     },
-    { // Pointer's click indicator color
+    { /* Pointer's click indicator color */
         "freej2me_pointerclickcolor",
         "Pointer Click Indicator Color; Yellow|Black|Red|Green|Blue|Pink|Cyan|White",
     },
