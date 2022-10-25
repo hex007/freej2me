@@ -169,7 +169,7 @@ public class Config
 
 	}
 
-	private void saveConfig()
+	public void saveConfig()
 	{
 		try
 		{

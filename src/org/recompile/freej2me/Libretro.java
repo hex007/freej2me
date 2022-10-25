@@ -33,6 +33,9 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.net.URL;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 public class Libretro
 {
 	private int lcdWidth;
@@ -58,17 +61,45 @@ public class Libretro
 	private int mousex;
 	private int mousey;
 
+	/* 
+	 * StringBuilder used to get the updated configs from the libretro core
+	 * String[] used to tokenize each setting as its own string.
+	 */
+	private StringBuilder cfgs;
+	String[] cfgtokens;
+
 	LibretroIO lio;
 
 	public static void main(String args[])
 	{
-		Libretro app = new Libretro();
+		Libretro app = new Libretro(args);
 	}
 
-	public Libretro()
+	public Libretro(String args[])
 	{
 		lcdWidth = 240;
 		lcdHeight = 320;
+
+		/* Checks if any arguments were received from the commandline */
+		if(args.length>=2) /* width and height args */
+		{
+			lcdWidth = Integer.parseInt(args[0]);
+			lcdHeight = Integer.parseInt(args[1]);
+		}
+		if(args.length>=3) /* rotation arg */
+		{
+			int rotate = Integer.parseInt(args[2]);
+			if(rotate == 1)      { rotateDisplay = true; }
+			else if(rotate == 0) { rotateDisplay = false; }
+		}
+		if(args.length>=4) /* phone control type arg */
+		{	
+			/* If it's equal to 0, it's using the Standard controls, hence it doesn't need a code line */
+			if(Integer.parseInt(args[3]) == 1)      { useNokiaControls = true;    } /* Nokia controls */
+			else if(Integer.parseInt(args[3]) == 2) { useSiemensControls = true;  } /* Siemens controls */
+			else if(Integer.parseInt(args[3]) == 3) { useMotorolaControls = true; } /* Motorola controls */
+		}
+		if(args.length>=5) { limitFPS = Integer.parseInt(args[4]); }
 
 		surface = new BufferedImage(lcdWidth, lcdHeight, BufferedImage.TYPE_INT_ARGB); // libretro display
 		gc = (Graphics2D)surface.getGraphics();
@@ -77,6 +108,27 @@ public class Libretro
 
 		config = new Config();
 		config.onChange = new Runnable() { public void run() { settingsChanged(); } };
+
+		if(args.length>=2) /* Update configs at boot if at least res cmd arguments were received */
+		{
+			config.settings.put("width",  ""+lcdWidth);
+			config.settings.put("height", ""+lcdHeight);
+
+			config.settings.put("sound", "on"); /* Audio will always be on for libretro */
+
+			if(rotateDisplay)  { config.settings.put("rotate", "on");  }
+			if(!rotateDisplay) { config.settings.put("rotate", "off"); }
+
+			if(useNokiaControls)         { config.settings.put("phone", "Nokia");    }
+			else if(useSiemensControls)  { config.settings.put("phone", "Siemens");  }
+			else if(useMotorolaControls) { config.settings.put("phone", "Motorola"); }
+			else                         { config.settings.put("phone", "Standard"); }
+
+			config.settings.put("fps", ""+limitFPS);
+
+			config.saveConfig();
+			settingsChanged();
+		}
 
 		lio = new LibretroIO();
 
@@ -249,6 +301,41 @@ public class Libretro
 									Mobile.getPlatform().dataPath = path.toString();
 								break;
 
+								case 13:
+									/* Received updated settings from libretro core */
+									cfgs = new StringBuilder();
+									for(int i=0; i<code; i++)
+									{
+										bin = System.in.read();
+										cfgs.append((char)bin);
+									}
+									String cfgvars = cfgs.toString();
+									/* Tokens: [0]="FJ2ME_LR_OPTS:", [1]=width, [2]=height, [3]=rotate, [4]=phone, [5]=fps, ... */
+									cfgtokens = cfgvars.split("[| x]", 0);
+									/* 
+									 * cfgtokens[0] is the string used to indicate that the 
+									 * received string is a config update. Only useful for debugging, 
+									 * but better leave it in there as we might make adjustments later.
+									 */
+									config.settings.put("width",  ""+Integer.parseInt(cfgtokens[1]));
+									config.settings.put("height", ""+Integer.parseInt(cfgtokens[2]));
+									
+									config.settings.put("sound", "on"); /* Audio will always be on for libretro */
+
+									if(Integer.parseInt(cfgtokens[3])==1) { config.settings.put("rotate", "on");  }
+									if(Integer.parseInt(cfgtokens[3])==0) { config.settings.put("rotate", "off"); }
+
+									if(Integer.parseInt(cfgtokens[4])==0) { config.settings.put("phone", "Standard"); }
+									if(Integer.parseInt(cfgtokens[4])==1) { config.settings.put("phone", "Nokia");    }
+									if(Integer.parseInt(cfgtokens[4])==2) { config.settings.put("phone", "Siemens");  }
+									if(Integer.parseInt(cfgtokens[4])==3) { config.settings.put("phone", "Motorola"); }
+
+									config.settings.put("fps", ""+cfgtokens[5]);
+
+									config.saveConfig();
+									settingsChanged();
+								break;
+								
 								case 15:
 									// Send Frame Libretro //
 									try
@@ -290,7 +377,6 @@ public class Libretro
 										System.out.print("Error sending frame: "+e.getMessage());
 										System.exit(0);
 									}
-
 								break;
 							}
 							//System.out.println(" ("+code+") <- Key");
