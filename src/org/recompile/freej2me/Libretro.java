@@ -33,9 +33,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.net.URL;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 public class Libretro
 {
 	private int lcdWidth;
@@ -51,6 +48,7 @@ public class Libretro
 	private boolean useSiemensControls = false;
 	private boolean useMotorolaControls = false;
 	private boolean rotateDisplay = false;
+	private boolean soundEnabled = true;
 	private int limitFPS = 0;
 
 	private boolean[] pressedKeys = new boolean[128];
@@ -77,37 +75,25 @@ public class Libretro
 
 	public Libretro(String args[])
 	{
-		lcdWidth = 240;
+		lcdWidth  = 240;
 		lcdHeight = 320;
 
-		/* Checks if any arguments were received from the commandline */
-		if(args.length>=2) /* width and height args */
+		/* Checks if the arguments were received from the commandline -> width, height, rotate, phonetype, fps, sound, ... */
+		if(args.length >= 6)
 		{
-			lcdWidth = Integer.parseInt(args[0]);
+			/* width and height args */
+			lcdWidth =  Integer.parseInt(args[0]);
 			lcdHeight = Integer.parseInt(args[1]);
-		}
-		if(args.length>=3) /* rotation arg */
-		{
-			int rotate = Integer.parseInt(args[2]);
-			if(rotate == 1)      { rotateDisplay = true; }
-			else if(rotate == 0) { rotateDisplay = false; }
-		}
-		if(args.length>=4) /* phone control type arg */
-		{	
-			/* If it's equal to 0, it's using the Standard controls, hence it doesn't need a code line */
-			if(Integer.parseInt(args[3]) == 1)      { useNokiaControls = true;    } /* Nokia controls */
-			else if(Integer.parseInt(args[3]) == 2) { useSiemensControls = true;  } /* Siemens controls */
-			else if(Integer.parseInt(args[3]) == 3) { useMotorolaControls = true; } /* Motorola controls */
-		}
-		if(args.length>=5) 
-		{ 
-			limitFPS = Integer.parseInt(args[4]); 
-		}
-		if(args.length>=6) 
-		{
-			int soundEnabled = Integer.parseInt(args[5]);
-			if(soundEnabled == 1)       { Mobile.sound = true;  }
-			else if(soundEnabled == 0)  { Mobile.sound = false; }
+
+			if(Integer.parseInt(args[2]) == 1) { rotateDisplay = true; }
+
+			if(Integer.parseInt(args[3]) == 1)      { useNokiaControls = true;    }
+			else if(Integer.parseInt(args[3]) == 2) { useSiemensControls = true;  }
+			else if(Integer.parseInt(args[3]) == 3) { useMotorolaControls = true; }
+
+			limitFPS = Integer.parseInt(args[4]);
+
+			if(Integer.parseInt(args[5]) == 0) { soundEnabled = false; }
 		}
 
 		surface = new BufferedImage(lcdWidth, lcdHeight, BufferedImage.TYPE_INT_ARGB); // libretro display
@@ -117,27 +103,6 @@ public class Libretro
 
 		config = new Config();
 		config.onChange = new Runnable() { public void run() { settingsChanged(); } };
-
-		if(args.length>=2) /* Update configs at boot if at least res cmd arguments were received */
-		{
-			config.settings.put("width",  ""+lcdWidth);
-			config.settings.put("height", ""+lcdHeight);
-
-			config.settings.put("sound", "on"); /* Audio will always be on for libretro */
-
-			if(rotateDisplay)  { config.settings.put("rotate", "on");  }
-			if(!rotateDisplay) { config.settings.put("rotate", "off"); }
-
-			if(useNokiaControls)         { config.settings.put("phone", "Nokia");    }
-			else if(useSiemensControls)  { config.settings.put("phone", "Siemens");  }
-			else if(useMotorolaControls) { config.settings.put("phone", "Motorola"); }
-			else                         { config.settings.put("phone", "Standard"); }
-
-			config.settings.put("fps", ""+limitFPS);
-
-			config.saveConfig();
-			settingsChanged();
-		}
 
 		lio = new LibretroIO();
 
@@ -154,7 +119,7 @@ public class Libretro
 				catch (Exception e) { }
 			}
 		};
-
+		
 		Mobile.getPlatform().setPainter(painter);
 
 		System.out.println("+READY");
@@ -288,6 +253,25 @@ public class Libretro
 									{
 										// Check config
 										config.init();
+
+										/* Override configs with the ones passed through commandline */
+										config.settings.put("width",  ""+lcdWidth);
+										config.settings.put("height", ""+lcdHeight);
+
+										if(rotateDisplay)   { config.settings.put("rotate", "on");  }
+										if(!rotateDisplay)  { config.settings.put("rotate", "off"); }
+
+										if(useNokiaControls)         { config.settings.put("phone", "Nokia");    }
+										else if(useSiemensControls)  { config.settings.put("phone", "Siemens");  }
+										else if(useMotorolaControls) { config.settings.put("phone", "Motorola"); }
+										else                         { config.settings.put("phone", "Standard"); }
+
+										if(soundEnabled)   { config.settings.put("sound", "on");  }
+										if(!soundEnabled)  { config.settings.put("sound", "off"); }
+
+										config.settings.put("fps", ""+limitFPS);
+
+										config.saveConfig();
 										settingsChanged();
 
 										// Run jar
@@ -328,8 +312,6 @@ public class Libretro
 									 */
 									config.settings.put("width",  ""+Integer.parseInt(cfgtokens[1]));
 									config.settings.put("height", ""+Integer.parseInt(cfgtokens[2]));
-									
-									config.settings.put("sound", "on"); /* Audio will always be on for libretro */
 
 									if(Integer.parseInt(cfgtokens[3])==1) { config.settings.put("rotate", "on");  }
 									if(Integer.parseInt(cfgtokens[3])==0) { config.settings.put("rotate", "off"); }
