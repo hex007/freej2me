@@ -186,6 +186,23 @@ unsigned int joymouseClickedImage[408] =
 	0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0
 };
 
+/* 
+ * Custom functions to read from, and write to, pipes.
+ * Those functions are ussed to simplify the upcoming port
+ * to WIN32, since all ifdefs will only need to be done here 
+ * instead of all around the core whenever a pipe write/read is
+ * requested.
+ */
+void write_to_pipe(int pipe, unsigned char *data, int datasize)
+{
+	write(pipe, data, datasize);
+}
+
+int read_from_pipe(int pipe, unsigned char *data, int datasize)
+{
+	return read(pipe, data, datasize);
+}
+
 /* Function to check the core's config states in the libretro frontend */
 static void check_variables(bool first_time_startup)
 {
@@ -327,8 +344,8 @@ static void check_variables(bool first_time_startup)
 	unsigned char optupdateevent[5] = { 0xD, (optstrlen>>24)&0xFF, (optstrlen>>16)&0xFF, (optstrlen>>8)&0xFF, optstrlen&0xFF };
 
 	/* Sends the event to set Java in core options read mode, then send the string containing those options*/
-	write(pWrite[1], optupdateevent, 5);
-	write(pWrite[1], options_update, optstrlen);
+	write_to_pipe(pWrite[1], optupdateevent, 5);
+	write_to_pipe(pWrite[1], (unsigned char*) options_update, optstrlen);
 }
 
 /* Core exit function */
@@ -345,7 +362,7 @@ static void Keyboard(bool down, unsigned keycode, uint32_t character, uint16_t k
 {
 	unsigned char event[5] = {down, (keycode>>24)&0xFF, (keycode>>16)&0xFF, (keycode>>8)&0xFF, keycode&0xFF };
 
-	write(pWrite[1], event, 5);
+	write_to_pipe(pWrite[1], event, 5);
 }
 
 void retro_init(void)
@@ -386,7 +403,7 @@ void retro_init(void)
 	int status = 0;
 	while(status<1 && isRunning(javaProcess))
 	{
-		status = read(pRead[0], &t, 1);
+		status = read_from_pipe(pRead[0], (unsigned char*) &t, 1);
 
 		if(status<0 && errno != EAGAIN)
 		{
@@ -423,16 +440,16 @@ bool retro_load_game(const struct retro_game_info *info)
 	len += 10;
 
 	unsigned char saveevent[5] = { 0xB, (len>>24)&0xFF, (len>>16)&0xFF, (len>>8)&0xFF, len&0xFF };
-	write(pWrite[1], saveevent, 5);
-	write(pWrite[1], savepath, len-10);
-	write(pWrite[1], "/freej2me/", 10);
+	write_to_pipe(pWrite[1], saveevent, 5);
+	write_to_pipe(pWrite[1], (unsigned char*) savepath, len-10);
+	write_to_pipe(pWrite[1], (unsigned char*) "/freej2me/", 10);
 
 	/* Tell java app to load and run game */
 	len = strlen(info->path);
 
 	unsigned char loadevent[5] = { 0xA, (len>>24)&0xFF, (len>>16)&0xFF, (len>>8)&0xFF, len&0xFF };
-	write(pWrite[1], loadevent, 5);
-	write(pWrite[1], info->path, len);
+	write_to_pipe(pWrite[1], loadevent, 5);
+	write_to_pipe(pWrite[1], (unsigned char*) info->path, len);
 
 	return true;
 }
@@ -464,7 +481,7 @@ void retro_run(void)
 		/* request frame */
 		if(!frameRequested)
 		{
-			write(pWrite[1], javaRequestFrame, 5);
+			write_to_pipe(pWrite[1], javaRequestFrame, 5);
 			frameRequested = true;
 		}
 
@@ -545,7 +562,7 @@ void retro_run(void)
 				joyevent[2] = (joymouseX) & 0xFF;
 				joyevent[3] = (joymouseY >> 8) & 0xFF;
 				joyevent[4] = (joymouseY) & 0xFF;
-				write(pWrite[1], joyevent, 5);
+				write_to_pipe(pWrite[1], joyevent, 5);
 			}
 
 			/* mouse - down/up */
@@ -557,7 +574,7 @@ void retro_run(void)
 				joyevent[2] = (joymouseX) & 0xFF;
 				joyevent[3] = (joymouseY >> 8) & 0xFF;
 				joyevent[4] = (joymouseY) & 0xFF;
-				write(pWrite[1], joyevent, 5);
+				write_to_pipe(pWrite[1], joyevent, 5);
 			}
 			mouseLpre = mouseL;
 		}
@@ -576,9 +593,9 @@ void retro_run(void)
 				joyevent[2] = (touchX) & 0xFF;
 				joyevent[3] = (touchY >> 8) & 0xFF;
 				joyevent[4] = (touchY) & 0xFF;
-				write(pWrite[1], joyevent, 5);
+				write_to_pipe(pWrite[1], joyevent, 5);
 				joyevent[0] = 4; /* touch up */
-				write(pWrite[1], joyevent, 5);
+				write_to_pipe(pWrite[1], joyevent, 5);
 			}
 		}
 		
@@ -598,7 +615,7 @@ void retro_run(void)
 					joyevent[2] = (joymouseX) & 0xFF;
 					joyevent[3] = (joymouseY >> 8) & 0xFF;
 					joyevent[4] = (joymouseY) & 0xFF;
-					write(pWrite[1], joyevent, 5);
+					write_to_pipe(pWrite[1], joyevent, 5);
 				}
 				else
 				{
@@ -607,7 +624,7 @@ void retro_run(void)
 					joyevent[2] = 0;
 					joyevent[3] = 0;
 					joyevent[4] = i;
-					write(pWrite[1], joyevent, 5);
+					write_to_pipe(pWrite[1], joyevent, 5);
 				}
 			}
 
@@ -618,7 +635,7 @@ void retro_run(void)
 			{
 				// start+L+R = ESC
 				unsigned char event[5] = { 1, 0,0,0,27 };
-				write(pWrite[1], event, 5);
+				write_to_pipe(pWrite[1], event, 5);
 			}
 			 */
 		}
@@ -632,7 +649,7 @@ void retro_run(void)
 		while(t!=0xFE && isRunning(javaProcess))
 		{
 			i++;
-			status = read(pRead[0], &t, 1);
+			status = read_from_pipe(pRead[0], (unsigned char*) &t, 1);
 
 			if(i>255 && t!=0xFE)
 			{
@@ -665,7 +682,7 @@ void retro_run(void)
 		frameRequested = false;
 		framesDropped = 0;
 
-		status = read(pRead[0], frameHeader, 5);
+		status = read_from_pipe(pRead[0], frameHeader, 5);
 
 		if(status>0)
 		{
@@ -699,7 +716,7 @@ void retro_run(void)
 		status = 0;
 		do
 		{
-			stat = read(pRead[0], readBuffer, readSize);
+			stat = read_from_pipe(pRead[0], readBuffer, readSize);
 			if (stat<=0) break;
 			for(i=0; i<stat; i++)
 			{
