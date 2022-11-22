@@ -249,6 +249,16 @@ public class FreeJ2ME
 		if(Mobile.getPlatform().loadJar(jarfile))
 		{
 			config.init();
+
+			/* Allows FreeJ2ME to set the width and height passed as cmd arguments. */
+			if(args.length>=3)
+			{
+				lcdWidth = Integer.parseInt(args[1]);
+				lcdHeight = Integer.parseInt(args[2]);
+				config.settings.put("width",  ""+lcdWidth);
+				config.settings.put("height", ""+lcdHeight);
+			}
+
 			settingsChanged();
 
 			Mobile.getPlatform().runJar();
