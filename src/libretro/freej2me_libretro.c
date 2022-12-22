@@ -236,12 +236,12 @@ bool retro_load_game(const struct retro_game_info *info)
 		len = strlen(savepath);
 	}
 
-	len += 9;
+	len += 10;
 
 	unsigned char saveevent[5] = { 0xB, (len>>24)&0xFF, (len>>16)&0xFF, (len>>8)&0xFF, len&0xFF };
 	write(pWrite[1], saveevent, 5);
-	write(pWrite[1], savepath, len-9);
-	write(pWrite[1], "freej2me/", 9);
+	write(pWrite[1], savepath, len-10);
+	write(pWrite[1], "/freej2me/", 10);
 
 	// Tell java app to load and run game //
 	len = strlen(info->path);
