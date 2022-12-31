@@ -91,6 +91,7 @@ bool joymouseAnalog = false; /* flag - using analog stick for mouse movement */
 int mouseLpre = 0; /* old mouse button state */
 bool uses_mouse = true;
 bool uses_pointer = false;
+bool booted = false;
 
 unsigned int readSize = 16384;
 unsigned char readBuffer[16384];
@@ -193,12 +194,12 @@ unsigned int joymouseClickedImage[408] =
  * instead of all around the core whenever a pipe write/read is
  * requested.
  */
-void write_to_pipe(int pipe, unsigned char *data, int datasize)
+void write_to_pipe(int pipe, void *data, int datasize)
 {
 	write(pipe, data, datasize);
 }
 
-int read_from_pipe(int pipe, unsigned char *data, int datasize)
+int read_from_pipe(int pipe, void *data, int datasize)
 {
 	return read(pipe, data, datasize);
 }
@@ -344,8 +345,11 @@ static void check_variables(bool first_time_startup)
 	unsigned char optupdateevent[5] = { 0xD, (optstrlen>>24)&0xFF, (optstrlen>>16)&0xFF, (optstrlen>>8)&0xFF, optstrlen&0xFF };
 
 	/* Sends the event to set Java in core options read mode, then send the string containing those options*/
-	write_to_pipe(pWrite[1], optupdateevent, 5);
-	write_to_pipe(pWrite[1], (unsigned char*) options_update, optstrlen);
+	if(booted)
+	{
+		write_to_pipe(pWrite[1], optupdateevent, 5);
+		write_to_pipe(pWrite[1], options_update, optstrlen);
+	}
 }
 
 /* Core exit function */
@@ -403,7 +407,7 @@ void retro_init(void)
 	int status = 0;
 	while(status<1 && isRunning(javaProcess))
 	{
-		status = read_from_pipe(pRead[0], (unsigned char*) &t, 1);
+		status = read_from_pipe(pRead[0], &t, 1);
 
 		if(status<0 && errno != EAGAIN)
 		{
@@ -441,8 +445,8 @@ bool retro_load_game(const struct retro_game_info *info)
 
 	unsigned char saveevent[5] = { 0xB, (len>>24)&0xFF, (len>>16)&0xFF, (len>>8)&0xFF, len&0xFF };
 	write_to_pipe(pWrite[1], saveevent, 5);
-	write_to_pipe(pWrite[1], (unsigned char*) savepath, len-10);
-	write_to_pipe(pWrite[1], (unsigned char*) "/freej2me/", 10);
+	write_to_pipe(pWrite[1], savepath, len-10);
+	write_to_pipe(pWrite[1], "/freej2me/", 10);
 
 	/* Tell java app to load and run game */
 	len = strlen(info->path);
@@ -649,7 +653,7 @@ void retro_run(void)
 		while(t!=0xFE && isRunning(javaProcess))
 		{
 			i++;
-			status = read_from_pipe(pRead[0], (unsigned char*) &t, 1);
+			status = read_from_pipe(pRead[0], &t, 1);
 
 			if(i>255 && t!=0xFE)
 			{
@@ -906,6 +910,7 @@ pid_t javaOpen(char *cmd, char **params)
 		quit(EXIT_FAILURE);
 	}
 
+	booted = true;
 	return pid;
 }
 
