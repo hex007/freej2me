@@ -29,7 +29,13 @@ along with FreeJ2ME.  If not, see http://www.gnu.org/licenses/
 #include <assert.h>
 #include <map>
 
+#ifdef _WIN32
+#include <windows.h>
+#include <string>
+#else
 #include <pthread.h>
+#endif
+
 #include <SDL2/SDL.h>
 #include <FreeImage.h>
 
@@ -38,7 +44,13 @@ along with FreeJ2ME.  If not, see http://www.gnu.org/licenses/
 
 using namespace std;
 
+#ifdef _WIN32
+DWORD t_capturing;
+#else
 pthread_t t_capturing;
+#endif
+
+string bg_image = "";
 
 int angle = 0;
 int source_width = 0, source_height = 0;
@@ -276,8 +288,13 @@ void init(Uint8 r = 0, Uint8 g = 0, Uint8 b = 0)
 	SDL_RenderSetLogicalSize(mRenderer, display_width, display_height);
 }
 
-void startStreaming(string bg_image)
+#ifdef _WIN32
+DWORD WINAPI startStreaming(LPVOID lpParam)
 {
+#else
+void *startStreaming(void *args)
+{
+#endif
 	SDL_Rect dest = getDestinationRect();
 
 	loadBackground(bg_image);
@@ -295,9 +312,15 @@ void startStreaming(string bg_image)
 
 	SDL_DestroyTexture(mTexture);
 	delete[] frame;
+
+#ifdef _WIN32
+	return 0;
+#else
+	pthread_exit(NULL);
+#endif
 }
 
-void *startCapturing(void *args)
+void startCapturing()
 {
 	int key;
 	SDL_JoystickEventState(SDL_ENABLE);
@@ -364,14 +387,12 @@ void *startCapturing(void *args)
 			fflush(stdout);
 		}
 	}
-	pthread_exit(NULL);
 }
 
 /*********************************************************************** Main */
 int main(int argc, char* argv[])
 {
 	int c = 0;
-	string bg_image = "";
 	Uint8 r = 44, g = 62, b = 80; // Midnight Blue
 
 	while (++c < argc)
@@ -399,15 +420,30 @@ int main(int argc, char* argv[])
 
 	init(r, g, b);
 	bool initialCursorState = SDL_ShowCursor(0) == 1;
-	if (pthread_create(&t_capturing, 0, &startCapturing, NULL))
+
+#ifdef _WIN32
+	HANDLE hThreadCapturing;
+	if ((hThreadCapturing = CreateThread(NULL, 0, &startStreaming, NULL, 0, &t_capturing)) == NULL) {
+		std::cerr << "Unable to start thread, exiting ..." << endl;
+		SDL_Quit();
+		return 1;
+	}
+#else
+	if (pthread_create(&t_capturing, 0, &startStreaming, NULL))
 	{
 		std::cerr << "Unable to start thread, exiting ..." << endl;
 		SDL_Quit();
 		return 1;
 	}
+#endif
 
-	startStreaming(bg_image);
+	startCapturing();
+#ifdef _WIN32
+    WaitForSingleObject(hThreadCapturing, INFINITE);
+	CloseHandle(hThreadCapturing);
+#else
 	pthread_join(t_capturing, NULL);
+#endif
 	SDL_ShowCursor(initialCursorState);
 	SDL_Quit();
 	return 0;
