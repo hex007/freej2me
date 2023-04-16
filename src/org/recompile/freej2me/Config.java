@@ -108,7 +108,7 @@ public class Config
 				settings.put("width", ""+width);
 				settings.put("height", ""+height);
 				settings.put("sound", "on");
-				settings.put("phone", "Standard");
+				settings.put("phone", "Nokia");
 				settings.put("rotate", "off");
 				settings.put("fps", "0");
 				saveConfig();
