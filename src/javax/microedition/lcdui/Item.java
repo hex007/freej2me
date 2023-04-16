@@ -51,7 +51,7 @@ public abstract class Item
 
 	private String label;
 
-	private ArrayList<Command> commands;
+	private ArrayList<Command> commands = new ArrayList();
 
 	private int layout;
 
