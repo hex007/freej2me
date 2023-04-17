@@ -6,3 +6,4 @@ config/
 rms/
 out/*
 .idea/
+target/
