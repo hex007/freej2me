@@ -131,6 +131,7 @@ public class Display
 	{
 		try
 		{
+			if (next == null) return;
 			next.showNotify();
 			current = next;
 			current.notifySetCurrent();
