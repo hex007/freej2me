@@ -106,10 +106,10 @@ public final class Font
 	{
 		switch(size)
 		{
-			case SIZE_LARGE  : return 14;
-			case SIZE_MEDIUM : return 12;
-			case SIZE_SMALL  : return 10;
-			default          : return 10;
+			case SIZE_LARGE  : return 16;
+			case SIZE_MEDIUM : return 14;
+			case SIZE_SMALL  : return 12;
+			default          : return 12;
 		}
 	}
 }
