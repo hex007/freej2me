@@ -78,23 +78,27 @@ public class Libretro
 		lcdWidth  = 240;
 		lcdHeight = 320;
 
-		/* Checks if the arguments were received from the commandline -> width, height, rotate, phonetype, fps, sound, ... */
-		if(args.length >= 6)
-		{
-			/* width and height args */
-			lcdWidth =  Integer.parseInt(args[0]);
-			lcdHeight = Integer.parseInt(args[1]);
+		/* 
+		 * Checks if the arguments were received from the commandline -> width, height, rotate, phonetype, fps, sound, ...
+		 * 
+		 * NOTE:
+		 * Due to differences in how linux and win32 pass their cmd arguments, we can't explictly check for a given size
+		 * on the argv array. Linux includes the "java", "-jar" and "path/to/freej2me" into the array while WIN32 doesn't.
+		 */
+		lcdWidth =  Integer.parseInt(args[0]);
+		lcdHeight = Integer.parseInt(args[1]);
 
-			if(Integer.parseInt(args[2]) == 1) { rotateDisplay = true; }
+		if(Integer.parseInt(args[2]) == 1) { rotateDisplay = true; }
 
-			if(Integer.parseInt(args[3]) == 1)      { useNokiaControls = true;    }
-			else if(Integer.parseInt(args[3]) == 2) { useSiemensControls = true;  }
-			else if(Integer.parseInt(args[3]) == 3) { useMotorolaControls = true; }
+		if(Integer.parseInt(args[3]) == 1)      { useNokiaControls = true;    }
+		else if(Integer.parseInt(args[3]) == 2) { useSiemensControls = true;  }
+		else if(Integer.parseInt(args[3]) == 3) { useMotorolaControls = true; }
 
-			limitFPS = Integer.parseInt(args[4]);
+		limitFPS = Integer.parseInt(args[4]);
 
-			if(Integer.parseInt(args[5]) == 0) { soundEnabled = false; }
-		}
+		if(Integer.parseInt(args[5]) == 0) { soundEnabled = false; }
+
+		/* Once it finishes parsing all arguments, it's time to set up freej2me-lr */
 
 		surface = new BufferedImage(lcdWidth, lcdHeight, BufferedImage.TYPE_INT_ARGB); // libretro display
 		gc = (Graphics2D)surface.getGraphics();

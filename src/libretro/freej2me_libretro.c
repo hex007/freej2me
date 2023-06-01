@@ -20,8 +20,12 @@
 #include <unistd.h>
 #include <errno.h>
 #include <signal.h>
+#ifdef __linux__
 #include <sys/types.h>
 #include <sys/wait.h>
+#elif _WIN32
+#include <windows.h>
+#endif
 #include "freej2me_libretro.h"
 #include <file/file_path.h>
 #include <retro_miscellaneous.h>
@@ -40,13 +44,27 @@ retro_audio_sample_batch_t AudioBatch;
 retro_input_poll_t InputPoll;
 retro_input_state_t InputState;
 
+static struct retro_log_callback logging;
+static retro_log_printf_t log_fn;
+
 void retro_set_video_refresh(retro_video_refresh_t fn) { Video = fn; }
 void retro_set_audio_sample(retro_audio_sample_t fn) { Audio = fn; }
 void retro_set_audio_sample_batch(retro_audio_sample_batch_t fn) { AudioBatch = fn;}
 
-void retro_set_environment_core_info(retro_environment_t fn) 
+static void fallback_log(enum retro_log_level level, const char *fmt, ...)
+{
+   (void)level;
+   va_list va;
+   vfprintf(stderr, fmt, va);
+}
+
+void retro_set_environment_core_info(retro_environment_t fn)
 {
 	int core_opt_version = 0;
+
+	/* Logging support */
+	if (fn(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &logging)) { log_fn = logging.log; }
+	else { log_fn = fallback_log; }
 
 	/* Checks if the core options version is v2 or v1*/
 	if (!Environ(RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION, &core_opt_version)) { core_opt_version = 0; }
@@ -59,9 +77,9 @@ void retro_set_environment_core_info(retro_environment_t fn)
 	else { Environ(RETRO_ENVIRONMENT_SET_VARIABLES, (void*)vars); }
 }
 
-void retro_set_environment(retro_environment_t fn) 
-{ 
-	Environ = fn; 
+void retro_set_environment(retro_environment_t fn)
+{
+	Environ = fn;
 
 	retro_set_environment_core_info(fn);
 }
@@ -72,12 +90,21 @@ void retro_set_input_state(retro_input_state_t fn) { InputState = fn; }
 /* Global variables */
 struct retro_game_geometry Geometry;
 
+#ifdef __linux__
 bool isRunning(pid_t pid);
-
 pid_t javaOpen(char *cmd, char **params);
 pid_t javaProcess;
 int pRead[2];
 int pWrite[2];
+#elif _WIN32
+BOOL succeeded = FALSE;
+bool isRunning();
+void javaOpen(char *cmd, char **params);
+PROCESS_INFORMATION javaProcess;
+STARTUPINFO startInfo;
+HANDLE pRead[2];
+HANDLE pWrite[2];
+#endif
 
 int joypad[14]; /* joypad state */
 int joypre[14]; /* joypad previous state */
@@ -187,21 +214,66 @@ unsigned int joymouseClickedImage[408] =
 	0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0
 };
 
-/* 
+/*
  * Custom functions to read from, and write to, pipes.
- * Those functions are ussed to simplify the upcoming port
- * to WIN32, since all ifdefs will only need to be done here 
+ * Those functions are used to simplify the upcoming port
+ * to WIN32, since all ifdefs will only need to be done here
  * instead of all around the core whenever a pipe write/read is
  * requested.
  */
+#ifdef __linux__
 void write_to_pipe(int pipe, void *data, int datasize)
 {
 	write(pipe, data, datasize);
+#elif _WIN32
+void write_to_pipe(void* pipe, void *data, int datasize)
+{
+	BOOL succeeded = FALSE;
+	succeeded = WriteFile(
+		pipe,               /* pipe handle */
+		data,               /* message */
+		datasize,           /* message length */
+		NULL,               /* bytes written (not needed) */
+		NULL);              /* not overlapped */
+	if (!succeeded)
+	{
+		log_fn(RETRO_LOG_ERROR, "Failed to write to pipe. Error: %d!\n", GetLastError() );
+		retro_deinit();
+	}
+#endif
 }
 
+#ifdef __linux__
 int read_from_pipe(int pipe, void *data, int datasize)
 {
 	return read(pipe, data, datasize);
+#elif _WIN32
+int read_from_pipe(void* pipe, void *data, int datasize)
+{
+	BOOL succeeded = FALSE;
+	/*
+	 * BytesRead is basically a long unsigned int which is
+	 * casted to int later in order to keep compatibility with
+	 * the unix origins of this file. The amount of bytes read
+	 * doesn't ever go beyond what is allowed on an int, so this
+	 * cast can be considered safe.
+	 */
+	long unsigned int bytesRead = 0;
+
+	succeeded = ReadFile( /* Same args as WriteFile */
+		pipe,
+		data,
+		datasize,
+		&bytesRead,
+		NULL);
+	if (!succeeded)
+	{
+		log_fn(RETRO_LOG_ERROR, "Failed to read from pipe. Error: %d!\n", GetLastError() );
+		retro_deinit();
+	}
+
+	return (int) bytesRead;
+#endif
 }
 
 /* Function to check the core's config states in the libretro frontend */
@@ -335,8 +407,8 @@ static void check_variables(bool first_time_startup)
 		else if (!strcmp(var.value, "Cyan"))   { pointerClickedColor = 0x00FFFF; }
 		else if (!strcmp(var.value, "Black"))  { pointerClickedColor = 0x000000; }
 	}
-	
-	
+
+
 	/* Prepare a string to pass those core options to the Java app */
 	snprintf(options_update, PIPE_MAX_LEN, "FJ2ME_LR_OPTS:|%lux%lu|%d|%d|%d|%d", screenRes[0], screenRes[1], rotateScreen, phoneType, gameFPS, soundEnabled);
 	optstrlen = strlen(options_update);
@@ -344,15 +416,17 @@ static void check_variables(bool first_time_startup)
 	/* 0xD = 13, which is the special case where the java app will receive the updated configs */
 	unsigned char optupdateevent[5] = { 0xD, (optstrlen>>24)&0xFF, (optstrlen>>16)&0xFF, (optstrlen>>8)&0xFF, optstrlen&0xFF };
 
-	/* Sends the event to set Java in core options read mode, then send the string containing those options*/
-	if(booted)
+	/* Sends the event to set Java in core options read mode, then send the string containing those options */
+	if(booted) /* Checks if the java app booted first, or else it'll fail to write to pipes as they don't exist yet. */
 	{
 		write_to_pipe(pWrite[1], optupdateevent, 5);
 		write_to_pipe(pWrite[1], options_update, optstrlen);
+		log_fn(RETRO_LOG_INFO, "Sent updated options to the Java app.\n");
 	}
 }
 
 /* Core exit function */
+#ifdef __linux__
 void quit(int state)
 {
 	if(isRunning(javaProcess))
@@ -361,6 +435,16 @@ void quit(int state)
 	}
 	/* exit(state); */
 }
+
+#elif _WIN32
+void quit(int state)
+{
+	if(isRunning())
+	{
+		TerminateProcess(javaProcess.hProcess, state);
+	}
+}
+#endif
 
 static void Keyboard(bool down, unsigned keycode, uint32_t character, uint16_t key_modifiers)
 {
@@ -376,23 +460,23 @@ void retro_init(void)
 	memset(frameBuffer, 0, frameBufferSize);
 	options_update = malloc(sizeof(char) * PIPE_MAX_LEN);
 
-	/* 
-	 * Those below are arguments sent to Java during init. Otherwise, games 
-	 * wouldn't get a res setting, rotation, fps, etc. that matched the 
-	 * frontend's core setting in cases where a game without a matching .conf 
+	/*
+	 * Those below are arguments sent to Java during init. Otherwise, games
+	 * wouldn't get a res setting, rotation, fps, etc. that matched the
+	 * frontend's core setting in cases where a game without a matching .conf
 	 * file was loaded, prompting FreeJ2ME to create a new config, but still
 	 * defaulting to the built-in config values, which are 240x320, rotation
-	 * off, etc. 
+	 * off, etc.
 	 */
 	check_variables(true);
-	
-	char resArg[2][4], rotateArg[2], phoneArg[2], fpsArg[2], soundArg[2];
+
+	char resArg[2][4], rotateArg[2], phoneArg[2], fpsArg[3], soundArg[2];
 	sprintf(resArg[0], "%lu", screenRes[0]); /* Libretro config Width  */
 	sprintf(resArg[1], "%lu", screenRes[1]); /* Libretro config Height */
-	sprintf(rotateArg, "%d", rotateScreen);
-	sprintf(phoneArg,  "%d", phoneType);
-	sprintf(fpsArg, "%d", gameFPS);
-	sprintf(soundArg, "%d", soundEnabled);
+	sprintf(rotateArg, "%d",  rotateScreen);
+	sprintf(phoneArg,  "%d",  phoneType);
+	sprintf(fpsArg,    "%d",  gameFPS);
+	sprintf(soundArg,  "%d",  soundEnabled);
 
 	/* start java process */
 	char *javapath;
@@ -400,28 +484,42 @@ void retro_init(void)
 	char *outPath = malloc(sizeof(char) * PATH_MAX_LENGTH);
 	fill_pathname_join(outPath, javapath, "freej2me-lr.jar", PATH_MAX_LENGTH);
 	char *params[] = { "java", "-jar", outPath, resArg[0], resArg[1], rotateArg, phoneArg, fpsArg, soundArg, NULL };
+
+	log_fn(RETRO_LOG_INFO, "Passing params: %s | %s | %s | %s | %s | %s \n", *(params+3),
+		*(params+4), *(params+5), *(params+6), *(params+7), *(params+8));
+	log_fn(RETRO_LOG_INFO, "Preparing to open FreeJ2ME's Java app (make sure freej2me-lr.jar is inside system/).\n");
+
+#ifdef __linux__
 	javaProcess = javaOpen(params[0], params);
+#elif _WIN32
+	javaOpen(params[2], params);
+#endif
 
 	/* wait for java process */
 	int t = 0;
 	int status = 0;
+#ifdef __linux__
 	while(status<1 && isRunning(javaProcess))
 	{
 		status = read_from_pipe(pRead[0], &t, 1);
-
-		if(status<0 && errno != EAGAIN)
-		{
-			quit(EXIT_FAILURE);
-		}
+		if(status<0 && errno != EAGAIN) { quit(EXIT_FAILURE); }
 	}
-	if(!isRunning(javaProcess))
+	if(!isRunning(javaProcess)) { quit(EXIT_FAILURE); }
+#elif _WIN32
+	while(status<1 && isRunning())
 	{
-		quit(EXIT_FAILURE);
+		log_fn(RETRO_LOG_INFO, "Reading status...\n");
+		status = read_from_pipe(pRead[0], &t, 1);
+		log_fn(RETRO_LOG_INFO, "Status read! It's %d\n", status);
+		if(status<0) { quit(EXIT_FAILURE); }
 	}
+	if(!isRunning()) { quit(EXIT_FAILURE); }
+#endif
 
 	/* Setup keyboard input */
 	struct retro_keyboard_callback kb = { Keyboard };
 	Environ(RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK, &kb);
+	log_fn(RETRO_LOG_INFO, "All preparations done and java app is ready. Keyboard callback set.\n");
 }
 
 bool retro_load_game(const struct retro_game_info *info)
@@ -454,6 +552,8 @@ bool retro_load_game(const struct retro_game_info *info)
 	unsigned char loadevent[5] = { 0xA, (len>>24)&0xFF, (len>>16)&0xFF, (len>>8)&0xFF, len&0xFF };
 	write_to_pipe(pWrite[1], loadevent, 5);
 	write_to_pipe(pWrite[1], (unsigned char*) info->path, len);
+
+	log_fn(RETRO_LOG_INFO, "Sent game file and save paths to Java app.\n");
 
 	return true;
 }
@@ -602,7 +702,7 @@ void retro_run(void)
 				write_to_pipe(pWrite[1], joyevent, 5);
 			}
 		}
-		
+
 
 		for(i=0; i<14; i++)
 		{
@@ -632,10 +732,10 @@ void retro_run(void)
 				}
 			}
 
-			/* 
-			 * With the libretro core's menu settings now working, this isn't as useful, 
+			/*
+			 * With the libretro core's menu settings now working, this isn't as useful,
 			 * and also froze the frontend on a restart. Also just isn't as intuitive to use, at least to me...
-			if(joypad[8]+joypad[10]+joypad[11]==3) 
+			if(joypad[8]+joypad[10]+joypad[11]==3)
 			{
 				// start+L+R = ESC
 				unsigned char event[5] = { 1, 0,0,0,27 };
@@ -644,10 +744,10 @@ void retro_run(void)
 			 */
 		}
 
-		/* 
+		/*
 		 * grab frame
 		 * some jars are noisy
-		 * wait for start of frame marker 0xFE 
+		 * wait for start of frame marker 0xFE
 		 */
 		i=0;
 		while(t!=0xFE && isRunning(javaProcess))
@@ -661,7 +761,7 @@ void retro_run(void)
 				framesDropped++;
 				if(framesDropped>250)
 				{
-					printf("More than 250 frames dropped. Exiting!");
+					log_fn(RETRO_LOG_ERROR, "More than 250 frames dropped. Exiting!\n");
 					quit(EXIT_FAILURE);
 				}
 				Video(frame, frameWidth, frameHeight, sizeof(unsigned int) * frameWidth);
@@ -669,7 +769,7 @@ void retro_run(void)
 			}
 			if(status<0 && errno != EAGAIN)
 			{
-				printf("Serious Error!");
+				log_fn(RETRO_LOG_ERROR, "Serious Error!\n");
 				fflush(stdout);
 				quit(EXIT_FAILURE);
 			}
@@ -678,7 +778,7 @@ void retro_run(void)
 			{
 				if((t<128 && t>31)||t==10) { printf("%c", t); }
 				else { printf("%u", t); }
-			} 
+			}
 			 */
 		}
 
@@ -820,7 +920,7 @@ void retro_get_system_info(struct retro_system_info *info)
 {
 	memset(info, 0, sizeof(*info));
 	info->library_name = "FreeJ2ME";
-	info->library_version = "1.1";
+	info->library_version = "1.2";
 	info->valid_extensions = "jar";
 	info->need_fullpath = true;
 }
@@ -866,14 +966,21 @@ void retro_set_controller_port_device(unsigned port, unsigned device) {  }
 
 
 /* Java Process */
+#ifdef __linux__
 pid_t javaOpen(char *cmd, char **params)
 {
     pid_t pid;
 
+	log_fn(RETRO_LOG_INFO, "Setting up java app's process and pipes...\n");
+
+	log_fn(RETRO_LOG_INFO, "Opening: %s %s %s ...\n", *(params+0), *(params+1), *(params+2));
+	log_fn(RETRO_LOG_INFO, "Params: %s | %s | %s | %s | %s | %s \n", *(params+3),
+		*(params+4), *(params+5), *(params+6), *(params+7), *(params+8));
+
 	int fd_stdin  = 0;
 	int fd_stdout = 1;
 
-	/* 
+	/*
 	 * parent <-- 0 --  pRead  <-- 1 --  child
 	 * parent  -- 1 --> pWrite  -- 0 --> child
 	 */
@@ -887,7 +994,7 @@ pid_t javaOpen(char *cmd, char **params)
 	{
 
 		dup2(pWrite[0], fd_stdin);  /* read from parent pWrite */
-		dup2(pRead[1], fd_stdout); /* write to parent pRead */
+		dup2(pRead[1], fd_stdout);  /* write to parent pRead */
 
 		close(pWrite[1]);
 		close(pRead[0]);
@@ -895,7 +1002,7 @@ pid_t javaOpen(char *cmd, char **params)
 		execvp(cmd, params);
 
 		/* execvp failure! */
-		quit(0);
+		retro_deinit();
 	}
 
 	if(pid>0) /* parent */
@@ -906,20 +1013,136 @@ pid_t javaOpen(char *cmd, char **params)
 
 	if(pid<0) /* error */
 	{
-		printf("Couldn't create child process!");
+		log_fn(RETRO_LOG_ERROR, "Couldn't create child process!\n");
 		quit(EXIT_FAILURE);
 	}
 
 	booted = true;
+	log_fn(RETRO_LOG_INFO, "Core and Java app started! Initializing game data... \n");
 	return pid;
 }
 
 bool isRunning(pid_t pid)
 {
 	int status;
-	if(waitpid(pid, &status, WNOHANG) == 0)
-	{
-		return true;
-	}
+
+	if(waitpid(pid, &status, WNOHANG) == 0) { return true; }
+
+	log_fn(RETRO_LOG_INFO, "Java app is not running anymore! Last known PID=%d \n", pid);
 	return false;
 }
+#elif _WIN32
+void javaOpen(char *cmd, char **params)
+{
+	SECURITY_ATTRIBUTES pipeSec;
+
+	log_fn(RETRO_LOG_INFO, "Setting up java app's process and pipes...\n");
+
+	ZeroMemory( &pipeSec, sizeof(pipeSec) );
+	ZeroMemory( &startInfo, sizeof(startInfo) );
+	ZeroMemory( &javaProcess, sizeof(javaProcess) );
+
+	startInfo.cb = sizeof(SECURITY_ATTRIBUTES);
+	pipeSec.nLength = sizeof(LPSECURITY_ATTRIBUTES);
+	pipeSec.lpSecurityDescriptor = NULL;
+	pipeSec.bInheritHandle = TRUE; /* Needed for IPC between java app and this core */
+
+	log_fn(RETRO_LOG_INFO, "Creating pipes...\n");
+
+	/* read from parent pWrite */
+	if(CreatePipe(&pWrite[0], &pWrite[1], &pipeSec, 0))
+	{
+		if(!DuplicateHandle(
+			GetCurrentProcess(),
+			pWrite[0],
+			GetCurrentProcess(),
+			NULL,
+			0,
+			FALSE,
+			DUPLICATE_SAME_ACCESS))
+		{
+			log_fn(RETRO_LOG_INFO, "Failed to create pWrite pipe... \n");
+			CloseHandle(pWrite[0]);
+			CloseHandle(pWrite[1]);
+			retro_deinit();
+		}
+	}
+
+	/* write to parent pRead */
+	if(CreatePipe(&pRead[0], &pRead[1], &pipeSec, 0))
+	{
+		if(!DuplicateHandle(
+			GetCurrentProcess(),
+			pRead[1],
+			GetCurrentProcess(),
+			NULL,
+			0,
+			FALSE,
+			DUPLICATE_SAME_ACCESS))
+		{
+			log_fn(RETRO_LOG_INFO, "Failed to create pRead pipe... \n");
+			CloseHandle(pRead[0]);
+			CloseHandle(pRead[1]);
+			retro_deinit();
+		}
+	}
+
+	log_fn(RETRO_LOG_INFO, "Created pipes! \n");
+
+	log_fn(RETRO_LOG_INFO, "Trying to create process... \n");
+	log_fn(RETRO_LOG_INFO, "Process name: %s \n", cmd);
+
+	/* Try starting the child process. */
+	char cmdWin[PATH_MAX_LENGTH];
+	/* resArg[0], resArg[1], rotateArg, phoneArg, fpsArg, soundArg */
+	sprintf(cmdWin, "java -jar %s", cmd);
+
+	log_fn(RETRO_LOG_INFO, "Opening: %s \n", cmd);
+	for (int i = 3; i <= 8; i++) /* There are 8 cmd arguments for now */
+	{
+		log_fn(RETRO_LOG_INFO, "Processing arg %d: %s \n", i, *(params+i));
+		sprintf(cmdWin, "%s %s", cmdWin, *(params+i));
+	}
+
+	log_fn(RETRO_LOG_INFO, "Creating proc: %s \n", cmdWin);
+	log_fn(RETRO_LOG_INFO, "Params: %s | %s | %s | %s | %s | %s \n", *(params+3),
+		*(params+4), *(params+5), *(params+6), *(params+7), *(params+8));
+
+	GetStartupInfo(&startInfo);
+	startInfo.dwFlags = STARTF_USESTDHANDLES;
+	startInfo.hStdInput = pWrite[0];
+	startInfo.hStdOutput = pRead[1];
+	startInfo.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+
+	if(!CreateProcess( NULL, /* Module name */
+		cmdWin,              /*Command line args */
+		NULL,                /* Process handle not inheritable */
+		NULL,                /* Thread handle not inheritable */
+		TRUE,                /* Set handle inheritance to TRUE */
+		0,                   /* No creation flags */
+		NULL,                /* Use parent's environment block */
+		NULL,                /* Use parent's starting directory */
+		&startInfo,          /* Pointer to STARTUPINFO structure */
+		&javaProcess ))       /*Pointer to PROCESS_INFORMATION structure */
+	{ /* If it fails, this block is executed */
+		log_fn(RETRO_LOG_ERROR, "Couldn't create process, error: %lu\n", GetLastError() );
+		retro_deinit();
+	}
+
+	booted = true;
+	log_fn(RETRO_LOG_INFO, "Created process! PID=%d \n", javaProcess.dwProcessId);
+	log_fn(RETRO_LOG_INFO, "Core and Java app started! Initializing game data... \n");
+}
+
+bool isRunning()
+{
+	/*
+		* On win32, receiving a WAIT_TIMEOUT signal before timing out means the process is
+		* still running and didn't face any issues that caused it to lock up or crash.
+		*/
+	if(WaitForSingleObject(javaProcess.hProcess, 0) == WAIT_TIMEOUT) { return true; }
+
+	log_fn(RETRO_LOG_INFO, "Java app is not running anymore! Last known PID=%d \n", javaProcess.dwProcessId);
+	return false;
+}
+#endif
