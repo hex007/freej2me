@@ -62,9 +62,10 @@ Development thread:
 >
 > SDL2 allows FreeJ2ME to run on a Raspberry Pi.
 
-**Building the Libretro core (Not working on Windows as of yet):**
->
->To build the libretro core, run the following commands from the root directory:
+**Building the Libretro core**
+
+> **For linux:**
+>To build the libretro core, open a terminal in freej2me's folder run the following commands from there:
 >```
 ># libretro core compilation
 > > cd src/libretro
@@ -75,6 +76,28 @@ Development thread:
 >Move it to your libretro frontend's `cores/` folder, with freej2me-lr.jar on `system/` and the frontend should be able to load j2me files afterwards.
 >
 >NOTE: The core DOES NOT WORK on containerized/sandboxed environments unless it can call a java runtime that also resides in the same sandbox or container, keep that in mind if you're running a libretro frontend through something like flatpak or snap for example.
+>
+
+> **For windows:**
+>To build the libretro core for windows, first you'll need mingw, or MSYS2 64. **`This guide uses MSYS2`** as it's easier to set up and works closer to linux syntax.
+>
+> Download MSYS2-x86_64 and install it on your computer. By default it will create a linux-like 'home' folder on C:\msys64\home\ and will put a folder with your username in there. This is where you have to move the freej2me folder to, so: `C:\msys64\home\USERNAME\freej2mefolder` for example.
+>
+> With the folder placed in there you can build the core, open the MSYS2 UCRT64 terminal from your pc's start menu, and run the following commands:
+>```
+> # Installing 'mingw-w64' and 'make' on msys2
+> > pacman -S mingw-w64-ucrt-x86_64-gcc
+> > pacman -S make
+>
+> # libretro core compilation
+> > cd freej2mefolder/src/libretro
+> > make
+>```
+>This will build `freej2me_libretro.dll` on `freej2mefolder/src/libretro/`, which is the core libretro will use to interface with `freej2me-lr.jar`.
+>
+>Move it to your libretro frontend's `cores/` folder, with freej2me-lr.jar on `system/` and the frontend should be able to load j2me files afterwards.
+>
+>NOTE: The windows core has only been tested on Windows 10 x64.
 
 ----
 **Usage (applies to AWT and SDL):**
