@@ -1095,7 +1095,7 @@ void javaOpen(char *cmd, char **params)
 	/* Try starting the child process. */
 	char cmdWin[PATH_MAX_LENGTH];
 	/* resArg[0], resArg[1], rotateArg, phoneArg, fpsArg, soundArg */
-	sprintf(cmdWin, "java -jar %s", cmd);
+	sprintf(cmdWin, "javaw -jar %s", cmd);
 
 	log_fn(RETRO_LOG_INFO, "Opening: %s \n", cmd);
 	for (int i = 3; i <= 8; i++) /* There are 8 cmd arguments for now */
