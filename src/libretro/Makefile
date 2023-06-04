@@ -100,7 +100,6 @@ else ifeq ($(platform), vita)
    CXXFLAGS += -Wl,-q -Wall -O3
 	STATIC_LINKING = 1
 else
-   CC = gcc
    TARGET := $(TARGET_NAME)_libretro.dll
    SHARED := -shared -static-libgcc -static-libstdc++ -s -Wl,--version-script=$(CORE_DIR)/link.T -Wl,--no-undefined
 endif
