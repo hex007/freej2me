@@ -174,7 +174,7 @@ public class WavImaAdpcmDecoder
 	 * Optionally it also returns some information about the audio format to help build a 
 	 * new header for the decoded stream.
 	*/
-	public static int[] readHeader(InputStream input) throws IOException 
+	public int[] readHeader(InputStream input) throws IOException 
 	{
 		/*
 			The header of a WAV (RIFF) file is 44 bytes long and has the following format:
