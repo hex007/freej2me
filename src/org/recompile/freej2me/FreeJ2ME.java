@@ -27,6 +27,8 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
+
 import javax.imageio.ImageIO;
 
 public class FreeJ2ME
@@ -77,6 +79,22 @@ public class FreeJ2ME
 		});
 
 		// Setup Device //
+
+		/* 
+		* If the directory for custom soundfonts doesn't exist, create it, no matter if the user
+		* is going to use it or not.
+		*/
+		try 
+		{
+			if(!PlatformPlayer.soundfontDir.exists()) 
+			{ 
+				PlatformPlayer.soundfontDir.mkdirs();
+				File dummyFile = new File(PlatformPlayer.soundfontDir + "/Put your sf2 bank here");
+				dummyFile.createNewFile();
+			}
+		}
+		catch(IOException e) { System.out.println("Failed to create custom midi info file:" + e.getMessage()); }
+		
 
 		lcdWidth = 240;
 		lcdHeight = 320;
@@ -327,6 +345,9 @@ public class FreeJ2ME
 		String rotate = config.settings.get("rotate");
 		if(rotate.equals("on")) { rotateDisplay = true; }
 		if(rotate.equals("off")) { rotateDisplay = false; }
+
+		String midiSoundfont = config.settings.get("soundfont");
+		if(midiSoundfont.equals("Custom")) { PlatformPlayer.customMidi = true; }
 
 		// Create a standard size LCD if not rotated, else invert window's width and height.
 		if(!rotateDisplay) 
