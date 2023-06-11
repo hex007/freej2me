@@ -19,6 +19,7 @@ package org.recompile.mobile;
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+
 import java.util.Arrays;
 
 public class WavImaAdpcmDecoder
@@ -56,14 +57,25 @@ public class WavImaAdpcmDecoder
 	{
 		byte[] output;
 		byte adpcmSample;
-		int inputIndex = 0, outputIndex = 0;
-		int outputSize, decodedSample; 
 		byte curChannel;
+		int inputIndex = 0, outputIndex = 44; /* Give some space for the header */
+		int decodedSample;
 
+		/* 
+		 * Make sure that the output size is 4 times as big as input's due to IMA ADPCM being able to pack 4 bytes of standard PCM 
+		 * data into a single one, with 44 additional bytes in place to accomodate for the new header that will be created afterwards.
+		 *
+		 * Also, calculate the final expected output size right here instead of decreasing the output size on each preamble read,
+		 * checking if the final size is doesn't match what was initially expected (if there's at least one preamble, it won't)
+		 * and then copying everything into a new byte array, which is too costly and can be cut entirely by just passing the 
+		 * correct output size right at the start. This is done because preamble data should not be added into the decoded stream,
+		 * and each preamble is 4 bytes long on IMA ADPCM, which means it would take 16 bytes on the decoded stream for each preamble added.
+		 */
+		final int outputSize = (inputSize * 4) + 44 - (16 * (int) java.lang.Math.floor(inputSize / frameSize));
+		
 		prevSample = new int[2];
 		prevStep = new int[2];
 		
-		outputSize = (inputSize * 4);
 		output = new byte[outputSize];
 
 		/* Decode until the whole input (ADPCM) stream is depleted */
@@ -82,19 +94,11 @@ public class WavImaAdpcmDecoder
 				else if (prevStep[0] > 88) { prevStep[0] = 88; }
 
 				/* 
-				 * Byte 3 is usually reserved and set as '0' (null) in the beginning of each 
-				 * IMA ADPCM chunk (https://wiki.multimedia.cx/index.php/Microsoft_IMA_ADPCM), 
-				 * so if it is not that, we reached the end of the stream.
-				 */
-				if(input[inputIndex+3] != 0) { return output; } 
-
-				/* 
 				 * For each 4 bits used in IMA ADPCM, 16 must be used for PCM so adjust 
 				 * indices and sizes accordingly. 
 				 */
 				inputIndex += 4;
 				inputSize -= 4;
-				outputSize -= 16;
 
 				if (numChannels == 2) /* If we're dealing with stereo IMA ADPCM: */
 				{
@@ -105,23 +109,18 @@ public class WavImaAdpcmDecoder
 					if (prevStep[1] < 0)       { prevStep[1] = 0; }
 					else if (prevStep[1] > 88) { prevStep[1] = 88; }
 
-					/* 
-					* Byte 7 is usually reserved and set as '0' (null) in the beginning of each 
-					* IMA ADPCM chunk, so if it is not that, we reached the end of the stream.
-					*/
-					if(input[inputIndex+3] != 0) { return output; } 
-
 					inputIndex += 4;
 					inputSize -= 4;
-					outputSize -= 16;
 				}
 			}
 
-			/* If the decoder isn't at the beginning of a chunk, or the preamble has already been read, 
+			/* 
+			 * If the decoder isn't at the beginning of a chunk, or the preamble has already been read, 
 			 * decode ADPCM samples inside that same chunk. 
 			 */
 
-			/* In the very rare (pretty much non-existent) cases where some j2me app 
+			/* 
+			 * In the very rare (pretty much non-existent) cases where some j2me app 
 			 * might use stereo IMA ADPCM, we should decode each audio channel. 
 			 * 
 			 * If the format is stereo, it is assumed to be interleaved, which means that
@@ -159,7 +158,7 @@ public class WavImaAdpcmDecoder
 			{
 				/* 
 				 * If it's mono, just decode nibbles from ADPCM into PCM data sequentially, there's no sample 
-				 * interleaving to worry about .
+				 * interleaving to worry about.
 				 */
 				curChannel = 0;
 				
@@ -177,7 +176,7 @@ public class WavImaAdpcmDecoder
 				inputSize--;
 			}
 		}
-		
+
 		return output;
 	}
 
@@ -218,8 +217,8 @@ public class WavImaAdpcmDecoder
 	}
 	
 	/*
-	 * Since the InputStream is always expected to be positioned right at the start
-	 * of the byte data, read WAV file's header to determine its type.
+	 * Since the header is always expected to be positioned right at the start
+	 * of a byte array, read it to determine the WAV type.
 	 * 
 	 * Optionally it also returns some information about the audio format to help build a 
 	 * new header for the decoded stream.
@@ -284,7 +283,7 @@ public class WavImaAdpcmDecoder
 		
 		/* 
 		 * We need the audio format to check if it's ADPCM or PCM, and the file's 
-		 * dataSize + SampleRate + audioChannels to decode ADPCM and build the new header. 
+		 * dataSize, SampleRate and audioChannels to decode ADPCM and build a new header. 
 		 */
 		return new int[] {audioFormat, sampleRate, audioChannels, frameSize};
 	}
@@ -337,7 +336,7 @@ public class WavImaAdpcmDecoder
 		/* 
 		 * We'll have 16 bits per sample, so each sample has 2 bytes, with that we just divide
 		 * the size of the byte buffer (minus the header) by 2, then multiply by the amount 
-		 * of channels... assuming i didn't mess anything up, which is likely with this much code.
+		 * of channels... assuming i didn't mess anything up on the calculus.
 		*/
 		final int samplesPerChannel = ((buffer.length-44) / 2) * numChannels;
 
