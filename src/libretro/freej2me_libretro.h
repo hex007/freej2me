@@ -144,7 +144,7 @@ struct retro_core_option_v2_definition core_options[] =
             { "15",   "15 FPS"   },
             { NULL, NULL },
         },
-        "60"
+        "Auto"
     },
     {
         "freej2me_sound",
@@ -159,6 +159,20 @@ struct retro_core_option_v2_definition core_options[] =
             { NULL, NULL },
         },
         "on"
+    },
+    {
+        "freej2me_midifont",
+        "Virtual Phone Settings > MIDI Soundfont",
+        "MIDI Soundfont",
+        "Selects which kind of MIDI soundfont to use. 'Default' uses the soundfont bundled with the system or Java VM, while 'Custom' allows you to place a custom soundfont on '<freej2me-lr.jar folder>/freej2me_system/customMIDI' and use it on J2ME apps to simulate a specific phone or improve MIDI sound quality. WARNING: Big soundfonts greatly increase the emulator's RAM footprint and processing requirements, while smaller ones can actually help it perform better.",
+        "Selects which kind of MIDI soundfont to use. 'Default' uses the soundfont bundled with the system or Java VM, while 'Custom' allows you to place a custom soundfont on '<freej2me-lr.jar folder>/freej2me_system/customMIDI' and use it on J2ME apps to simulate a specific phone or improve MIDI sound quality. WARNING: Big soundfonts greatly increase the emulator's RAM footprint and processing requirements, while smaller ones can actually help it perform better.",
+        "vphone_settings",
+        {
+            { "off", "Default" },
+            { "on",  "Custom" },
+            { NULL, NULL },
+        },
+        "Default"
     },
     {
         "freej2me_pointertype",
@@ -344,7 +358,7 @@ struct retro_core_option_definition core_options_v1 [] =
             { "15",   "15 FPS"   },
             { NULL, NULL },
         },
-        "60"
+        "Auto"
     },
     {
         "freej2me_sound",
@@ -356,6 +370,17 @@ struct retro_core_option_definition core_options_v1 [] =
             { NULL, NULL },
         },
         "on"
+    },
+    {
+        "freej2me_midifont",
+        "MIDI Soundfont",
+        "Selects which kind of MIDI soundfont to use. 'Default' uses the soundfont bundled with the system or Java VM, while 'Custom' allows you to place a custom soundfont on '<freej2me-lr.jar folder>/freej2me_system/customMIDI' and use it on J2ME apps to simulate a specific phone or improve MIDI sound quality. WARNING: Big soundfonts greatly increase the emulator's RAM footprint and processing requirements, while smaller ones can actually help it perform better.",
+        {
+            { "off", "Default" },
+            { "on",  "Custom" },
+            { NULL, NULL },
+        },
+        "Default"
     },
     {
         "freej2me_pointertype",
@@ -469,11 +494,15 @@ static const struct retro_variable vars[] =
     },
     { /* Game FPS limit */
         "freej2me_fps",
-        "Game FPS Limit; 60|30|15|Auto" 
+        "Game FPS Limit; Auto|60|30|15" 
     },
     { /* Virtual Phone Sound */
         "freej2me_sound",
         "Virtual Phone Sound; on|off"
+    },
+    { /* MIDI Soundfont */
+        "freej2me_midifont",
+        "MIDI Soundfont; off|on"
     },
     { /* Pointer Type */
         "freej2me_pointertype",

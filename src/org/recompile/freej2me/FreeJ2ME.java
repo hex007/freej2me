@@ -81,9 +81,9 @@ public class FreeJ2ME
 		// Setup Device //
 
 		/* 
-		* If the directory for custom soundfonts doesn't exist, create it, no matter if the user
-		* is going to use it or not.
-		*/
+		 * If the directory for custom soundfonts doesn't exist, create it, no matter if the user
+		 * is going to use it or not.
+		 */
 		try 
 		{
 			if(!PlatformPlayer.soundfontDir.exists()) 
@@ -347,7 +347,8 @@ public class FreeJ2ME
 		if(rotate.equals("off")) { rotateDisplay = false; }
 
 		String midiSoundfont = config.settings.get("soundfont");
-		if(midiSoundfont.equals("Custom")) { PlatformPlayer.customMidi = true; }
+		if(midiSoundfont.equals("Custom"))  { PlatformPlayer.customMidi = true; }
+		if(midiSoundfont.equals("Default")) { PlatformPlayer.customMidi = false; }
 
 		// Create a standard size LCD if not rotated, else invert window's width and height.
 		if(!rotateDisplay) 
