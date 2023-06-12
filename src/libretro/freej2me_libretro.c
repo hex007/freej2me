@@ -981,6 +981,10 @@ pid_t javaOpen(char *cmd, char **params)
 {
     pid_t pid;
 
+	char *systemPath;
+	Environ(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &systemPath);
+    log_fn(RETRO_LOG_INFO, "System Path: %s\n", systemPath);
+
 	log_fn(RETRO_LOG_INFO, "Setting up java app's process and pipes...\n");
 
 	log_fn(RETRO_LOG_INFO, "Opening: %s %s %s ...\n", *(params+0), *(params+1), *(params+2));
@@ -1008,6 +1012,9 @@ pid_t javaOpen(char *cmd, char **params)
 
 		close(pWrite[1]);
 		close(pRead[0]);
+
+		/* Change the working directory to libretro's 'system' folder */
+		chdir(systemPath);
 
 		execvp(cmd, params);
 
