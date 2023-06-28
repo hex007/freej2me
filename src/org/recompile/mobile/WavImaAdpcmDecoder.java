@@ -20,15 +20,30 @@ import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import java.util.Arrays;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class WavImaAdpcmDecoder
 {
+
 	/* Information about this audio format: https://wiki.multimedia.cx/index.php/IMA_ADPCM */
 
-	/* Variables to hold the previously decoded sample and step used, per channel (if needed) */
-	private static int[] prevSample;
-	private static int[] prevStep;
+	/* 
+	 * Variables to hold the previously decoded sample and step used, per channel (if needed) 
+	 * "NOTE: Arrays that won't be reassigned (but its values can still change) and variables 
+	 * that won't be changed are marked as final throughout the code to try and optimize the 
+	 * execution as much as possible since FreeJ2ME has a habit of freezing when adpcm samples 
+	 * are being decoded. So far only seems to happen in Java 8 and on my more limited devices."
+	 *     - @AShiningRay
+	 */
+	private static final int LEFTCHANNEL = 0;
+	private static final int RIGHTCHANNEL = 1;
+
+	private static final int HEADERSIZE = 44;
+	private static final int PCMPREAMBLESIZE = 16;
+
+	private static final int[] prevSample = {0, 0};
+	private static final int[] prevStep = {0, 0};
 	
 	private static final int[] ima_step_index_table = 
 	{
@@ -50,15 +65,13 @@ public class WavImaAdpcmDecoder
 	};
 
 	/* 
-	 * This method will decode IMA WAV ADPCM into linear PCM_S16LE. 
-	 * Note: Partially based on ffmpeg's implementation.
+	 * This method will decode IMA WAV ADPCM into linear PCM_S16LE.
 	 */
-	public static byte[] decodeADPCM(byte[] input, int inputSize, int numChannels, int frameSize)
+	public static byte[] decodeADPCM(final byte[] input, int inputSize, final int numChannels, final int frameSize)
 	{
-		byte[] output;
 		byte adpcmSample;
 		byte curChannel;
-		int inputIndex = 0, outputIndex = 44; /* Give some space for the header */
+		int inputIndex = 0, outputIndex = HEADERSIZE; /* Give some space for the header by starting from byte 44. */
 		int decodedSample;
 
 		/* 
@@ -71,43 +84,48 @@ public class WavImaAdpcmDecoder
 		 * correct output size right at the start. This is done because preamble data should not be added into the decoded stream,
 		 * and each preamble is 4 bytes long on IMA ADPCM, which means it would take 16 bytes on the decoded stream for each preamble added.
 		 */
-		final int outputSize = (inputSize * 4) + 44 - (16 * (int) java.lang.Math.floor(inputSize / frameSize));
-		
-		prevSample = new int[2];
-		prevStep = new int[2];
-		
-		output = new byte[outputSize];
+		final int outputSize = (inputSize * 4) + HEADERSIZE - (PCMPREAMBLESIZE * (int) java.lang.Math.floor(inputSize / frameSize));
+		final byte[] output = new byte[outputSize];
 
-		/* Decode until the whole input (ADPCM) stream is depleted */
+		/* Initialize the predictor's sample and step values. */
+		prevSample[LEFTCHANNEL] = 0;
+		prevStep[LEFTCHANNEL] = ima_step_size_table[2];
+
+		if(numChannels == 2) 
+		{
+			prevSample[RIGHTCHANNEL] = 0;
+			prevStep[RIGHTCHANNEL] = ima_step_size_table[2];
+		}
+
 		while (inputSize > 0) 
 		{
 			/* Check if the decoder reached the beginning of a new chunk to see if the preamble needs to be read. */
 			if (inputSize % frameSize == 0)
 			{
 				/* Bytes 0 and 1 describe the chunk's initial predictor value (little-endian) */
-				prevSample[0] = (int) ((input[inputIndex])) | ((input[inputIndex+1]) << 8);
-				/* Byte 1 is the chunk's initial index on the step_size_table */
-				prevStep[0]   = (int) (input[inputIndex+2]);
+				prevSample[LEFTCHANNEL] = ((input[inputIndex])) | ((input[inputIndex+1]) << 8);
+				/* Byte 2 is the chunk's initial index on the step_size_table */
+				prevStep[LEFTCHANNEL]   = (input[inputIndex+2]);
 
-				/* Make sure to clamp the step into the valid interval just in case */
-				if (prevStep[0] < 0)       { prevStep[0] = 0; }
-				else if (prevStep[0] > 88) { prevStep[0] = 88; }
+				if (prevStep[LEFTCHANNEL] < 0)       { prevStep[LEFTCHANNEL] = 0; }
+				else if (prevStep[LEFTCHANNEL] > 88) { prevStep[LEFTCHANNEL] = 88; }
 
 				/* 
 				 * For each 4 bits used in IMA ADPCM, 16 must be used for PCM so adjust 
-				 * indices and sizes accordingly. 
+				 * indices and sizes accordingly. Byte 3 is reserved and has no practical 
+				 * use for us.
 				 */
 				inputIndex += 4;
 				inputSize -= 4;
 
 				if (numChannels == 2) /* If we're dealing with stereo IMA ADPCM: */
 				{
-					/* Bytes 4 and 5 describe the chunk's initial predictor value (little-endian) */
-					prevSample[1] = (int) ((input[inputIndex])) | ((input[inputIndex+1]) << 8);
-					prevStep[1]   = (int) (input[inputIndex + 2]);
+					/* Bytes 4 and 5 describe the chunk's initial predictor value (little-endian) for the second channel */
+					prevSample[RIGHTCHANNEL] = ((input[inputIndex])) | ((input[inputIndex+1]) << 8);
+					prevStep[RIGHTCHANNEL]   = (input[inputIndex + 2]);
 
-					if (prevStep[1] < 0)       { prevStep[1] = 0; }
-					else if (prevStep[1] > 88) { prevStep[1] = 88; }
+					if (prevStep[RIGHTCHANNEL] < 0)       { prevStep[RIGHTCHANNEL] = 0; }
+					else if (prevStep[RIGHTCHANNEL] > 88) { prevStep[RIGHTCHANNEL] = 88; }
 
 					inputIndex += 4;
 					inputSize -= 4;
@@ -137,8 +155,8 @@ public class WavImaAdpcmDecoder
 				 */
 				for (short i = 0; i < 8; i++) 
 				{
-					if(i < 4) { curChannel = 0; }
-					else      { curChannel = 1; }
+					if(i < 4) { curChannel = LEFTCHANNEL; }
+					else      { curChannel = RIGHTCHANNEL; }
 
 					adpcmSample = (byte) (input[inputIndex] & 0x0f);
 					decodedSample = decodeSample(curChannel, adpcmSample);
@@ -158,17 +176,15 @@ public class WavImaAdpcmDecoder
 			{
 				/* 
 				 * If it's mono, just decode nibbles from ADPCM into PCM data sequentially, there's no sample 
-				 * interleaving to worry about.
+				 * interleaving to worry about, much less multiple channels, so we only use channel 0.
 				 */
-				curChannel = 0;
-				
 				adpcmSample = (byte)(input[inputIndex] & 0x0f);
-				decodedSample = decodeSample(curChannel, adpcmSample);
+				decodedSample = decodeSample(LEFTCHANNEL, adpcmSample);
 				output[outputIndex++] = (byte)(decodedSample & 0xff);
 				output[outputIndex++] = (byte)((decodedSample >> 8) & 0xff);
 
 				adpcmSample = (byte)((input[inputIndex] >> 4) & 0x0f);
-				decodedSample = decodeSample(curChannel, adpcmSample);
+				decodedSample = decodeSample(LEFTCHANNEL, adpcmSample);
 				output[outputIndex++] = (byte)(decodedSample & 0xff);
 				output[outputIndex++] = (byte)((decodedSample >> 8) & 0xff);
 
@@ -181,7 +197,7 @@ public class WavImaAdpcmDecoder
 	}
 
 	/* This method will decode a single IMA ADPCM sample to linear PCM_S16LE sample. */
-	static short decodeSample(int channel, byte adpcmSample)
+	static short decodeSample(final int channel, byte adpcmSample)
 	{
 		/* 
 		 * This decode procedure is based on the following document:
@@ -191,28 +207,36 @@ public class WavImaAdpcmDecoder
 		/* Get the step size to be used when decoding the given sample. */
 		int stepSize = ima_step_size_table[prevStep[channel]] & 0x0000FFFF;
 
-		/* This variable acts as 'difference' and then 'newSample' */
+		/* This variable acts as 'difference' and then 'newSample' on columbia's doc */
 		int decodedSample = (stepSize >> 3) & 0x1fff;
 		
-		/* Similar to cs.columbia doc's first code block on Page 32 */
+		/* 
+		 * Similar to cs.columbia doc's first code block on Page 32, multiplication through 
+		 * repetitive addition. Nowadays using multiplication is probably faster on most archs, 
+		 * but let's follow the reference implementation for the sake of improving documentation.
+		 */
 		if ((adpcmSample & 4) != 0) { decodedSample += stepSize; }
 		if ((adpcmSample & 2) != 0) { decodedSample += (stepSize >> 1) & 0x7fff; }
 		if ((adpcmSample & 1) != 0) { decodedSample += (stepSize >> 2) & 0x3fff; }
+		if ((adpcmSample & 8) != 0) { decodedSample  = -decodedSample; }
 		
-		if ((adpcmSample & 8) != 0) { decodedSample  = -(short) decodedSample; }
-		
-		decodedSample += (short) prevSample[channel];
-		
-		if ((short) decodedSample < -32768)     { decodedSample = -32768; }
-		else if ((short) decodedSample > 32767) { decodedSample = 32767; }
+		decodedSample += prevSample[channel];
 
-		prevSample[channel] = (short) decodedSample;
+		/* 
+		 * Clamps the value of decodedSample to that of a short data type. At this point, the decoded 
+		 * sample already should already fit nicely into a short type value range as per columbia's doc.
+		 */
+		if (decodedSample < -32768)     { decodedSample = -32768; }
+		else if (decodedSample > 32767) { decodedSample = 32767; }
+
+		prevSample[channel] = decodedSample;
+
+		/* Basically columbia doc's "calculate stepsize" snippet */
 		prevStep[channel] += ima_step_index_table[(int)(adpcmSample & 0x0FF)];
-
 		if (prevStep[channel] < 0)       { prevStep[channel] = 0; }
 		else if (prevStep[channel] > 88) { prevStep[channel] = 88; }
 
-		/* Return the decoded sample */
+		/* Return the decoded sample casted to short (16-bit) */
 		return (short) (decodedSample & 0xFFFF);
 	}
 	
@@ -323,95 +347,80 @@ public class WavImaAdpcmDecoder
 	 * Builds a WAV header that describes the decoded ADPCM file on the first 44 bytes. 
 	 * Data: little-endian, 16-bit, signed, same sample rate and channels as source IMA ADPCM.
 	 */
-	private void buildHeader(byte[] buffer, int numChannels, int sampleRate) 
+	private void buildHeader(final byte[] buffer, final short numChannels, final int sampleRate) 
 	{ 
 		final short bitsPerSample = 16;   /* 16-bit PCM */
 		final short audioFormat = 1;      /* WAV linear PCM */
-		final int subChunkSize = 16;      /* Fixed size for Wav Linear PCM*/
-		final int chunk = 0x46464952;     /* 'RIFF' */
-		final int format = 0x45564157;    /* 'WAVE' */
-		final int subChunk1 = 0x20746d66; /* 'fmt ' */
-		final int subChunk2 = 0x61746164; /* 'data' */
+		final int subChunkSize = 16;      /* Fixed size for Wav Linear PCM */
+		final int chunk = 0x52494646;     /* 'RIFF' */ 
+		final int format = 0x57415645;    /* 'WAVE' */ 
+		final int subChunk1 = 0x666d7420; /* 'fmt ' */ 
+		final int subChunk2 = 0x64617461; /* 'data' */ 
 
 		/* 
 		 * We'll have 16 bits per sample, so each sample has 2 bytes, with that we just divide
-		 * the size of the byte buffer (minus the header) by 2, then multiply by the amount 
+		 * the size of the byte buffer (minus the header) by (bitsPerSample/8), then multiply by the amount 
 		 * of channels... assuming i didn't mess anything up on the calculus.
 		*/
-		final int samplesPerChannel = ((buffer.length-44) / 2) * numChannels;
+		final int samplesPerChannel = buffer.length-44 / ((bitsPerSample/8) * numChannels);
 
-		final short frameSize = (short) (numChannels * bitsPerSample / 8);
-		final int sampleDataLength = samplesPerChannel * frameSize;
-		final int bytesPerSec = sampleRate * frameSize;
-		final int dataSize = 36 + sampleDataLength;
+		/* 
+		 * Frame size is fairly standard, and PCM's fixed sample size makes it so the frameSize is either 2 bytes 
+		 * for mono, or 4 bytes for stereo.
+		 */
+		final short frameSize = (short) (numChannels * (bitsPerSample / 8));
+
+		/* 
+		 * Previously only took into account mono streams. And since we know the framesize and
+		 * the amount of samples per channel, in a format that has a fixed amount of bits per sample,
+		 * we can account for multiple audio channels on sampleDataLength with a simpler calculus:
+		 */
+		final int sampleDataLength = (samplesPerChannel * numChannels) * frameSize;
+
+		/* 
+		 * Represents how many bytes are streamed per second. With all of the data above, it's trivial to
+		 * calculate by getting the sample rate, the amount of channels and bytes per sample (bitsPerSample / 8)
+		 */
+		final int bytesPerSec = sampleRate * numChannels * (bitsPerSample / 8);
+		
+		/* NOTE: ChunkSize includes the header, so sampleDataLength + 44, which is the byte size of our header */
 
 		/* ChunkID */
-		buffer[0]  = (byte)  (chunk & 0xff);
-		buffer[1]  = (byte) ((chunk >>> 8)  & 0xff);
-		buffer[2]  = (byte) ((chunk >>> 16) & 0xff);
-		buffer[3]  = (byte) ((chunk >>> 24) & 0xff);
+		ByteBuffer.wrap(buffer, 0, 4).order(ByteOrder.BIG_ENDIAN).putInt(chunk);
 		/* ChunkSize (or File size) */
-		buffer[4]  = (byte)  (dataSize & 0xff); 
-		buffer[5]  = (byte) ((dataSize >> 8)  & 0xff);
-		buffer[6]  = (byte) ((dataSize >> 16) & 0xff);
-		buffer[7]  = (byte) ((dataSize >> 24) & 0xff);
+		ByteBuffer.wrap(buffer, 4, 4).order(ByteOrder.LITTLE_ENDIAN).putInt(sampleDataLength + 44);
 		/* Format (WAVE) */
-		buffer[8]  = (byte)  (format & 0xff);
-		buffer[9]  = (byte) ((format >>> 8 ) & 0xff);
-		buffer[10] = (byte) ((format >>> 16) & 0xff);
-		buffer[11] = (byte) ((format >>> 24) & 0xff);
+		ByteBuffer.wrap(buffer, 8, 4).order(ByteOrder.BIG_ENDIAN).putInt(format);
 		/* SubchunkID (fmt) */
-		buffer[12] = (byte)  (subChunk1 & 0xff);
-		buffer[13] = (byte) ((subChunk1 >>> 8)  & 0xff);
-		buffer[14] = (byte) ((subChunk1 >>> 16) & 0xff);
-		buffer[15] = (byte) ((subChunk1 >>> 24) & 0xff);
+		ByteBuffer.wrap(buffer, 12, 4).order(ByteOrder.BIG_ENDIAN).putInt(subChunk1);
 		/* SubchunkSize (or format chunk size) */
-		buffer[16] = (byte)  (subChunkSize & 0xff);
-		buffer[17] = (byte) ((subChunkSize >> 8)  & 0xff);
-		buffer[18] = (byte) ((subChunkSize >> 16) & 0xff);
-		buffer[19] = (byte) ((subChunkSize >> 24) & 0xff);
+		ByteBuffer.wrap(buffer, 16, 4).order(ByteOrder.LITTLE_ENDIAN).putInt(subChunkSize);
 		/* Audioformat */
-		buffer[20] = (byte)  (audioFormat & 0xff);
-		buffer[21] = (byte) ((audioFormat >> 8) & 0xff);
+		ByteBuffer.wrap(buffer, 20, 2).order(ByteOrder.LITTLE_ENDIAN).putShort(audioFormat);
 		/* NumChannels (will be the same as source ADPCM) */
-		buffer[22] = (byte)  (numChannels & 0xff);
-		buffer[23] = (byte) ((numChannels >> 8) & 0xff);
+		ByteBuffer.wrap(buffer, 22, 2).order(ByteOrder.LITTLE_ENDIAN).putShort((short) numChannels);
 		/* SampleRate (will be the same as source ADPCM) */
-		buffer[24] = (byte)  (sampleRate & 0xff);
-		buffer[25] = (byte) ((sampleRate >> 8)  & 0xff);
-		buffer[26] = (byte) ((sampleRate >> 16) & 0xff);
-		buffer[27] = (byte) ((sampleRate >> 24) & 0xff);
+		ByteBuffer.wrap(buffer, 24, 4).order(ByteOrder.LITTLE_ENDIAN).putInt(sampleRate);
 		/* ByteRate (BytesPerSec) */
-		buffer[28] = (byte)  (bytesPerSec & 0xff);
-		buffer[29] = (byte) ((bytesPerSec >> 8)  & 0xff);
-		buffer[30] = (byte) ((bytesPerSec >> 16) & 0xff);
-		buffer[31] = (byte) ((bytesPerSec >> 24) & 0xff);
+		ByteBuffer.wrap(buffer, 28, 4).order(ByteOrder.LITTLE_ENDIAN).putInt(bytesPerSec);
 		/* BlockAlign (Frame Size) */
-		buffer[32] = (byte)  (frameSize & 0xff);
-		buffer[33] = (byte) ((frameSize >> 8) & 0xff);
+		ByteBuffer.wrap(buffer, 32, 2).order(ByteOrder.LITTLE_ENDIAN).putShort(frameSize);
 		/* BitsPerSample */
-		buffer[34] = (byte)  (bitsPerSample & 0xff);
-		buffer[35] = (byte) ((bitsPerSample >> 8) & 0xff);
+		ByteBuffer.wrap(buffer, 34, 2).order(ByteOrder.LITTLE_ENDIAN).putShort(bitsPerSample);
 		/* Subchunk2ID (data) */
-		buffer[36] = (byte)  (subChunk2 & 0xff);
-		buffer[37] = (byte) ((subChunk2 >>> 8)  & 0xff);
-		buffer[38] = (byte) ((subChunk2 >>> 16) & 0xff);
-		buffer[39] = (byte) ((subChunk2 >>> 24) & 0xff);
+		ByteBuffer.wrap(buffer, 36, 4).order(ByteOrder.BIG_ENDIAN).putInt(subChunk2);
 		/* Subchunk2 Size (sampledata length) */
-		buffer[40] = (byte)  (sampleDataLength & 0xff);
-		buffer[41] = (byte) ((sampleDataLength >> 8)  & 0xff);
-		buffer[42] = (byte) ((sampleDataLength >> 16) & 0xff);
-		buffer[43] = (byte) ((sampleDataLength >> 24) & 0xff);
+		ByteBuffer.wrap(buffer, 40, 4).order(ByteOrder.LITTLE_ENDIAN).putInt(sampleDataLength);
 	}
 
 	/* Decode the received IMA WAV ADPCM stream into a signed PCM16LE byte array, then return it to PlatformPlayer. */
 	public ByteArrayInputStream decodeImaAdpcm(InputStream stream, int[] wavHeaderData) throws IOException
 	{
-		byte[] input = new byte[stream.available()];
+		final byte[] input = new byte[stream.available()];
 		readInputStreamData(stream, input, 0, stream.available());
 
 		byte[] output = decodeADPCM(input, input.length, wavHeaderData[2], wavHeaderData[3]);
-		buildHeader(output, wavHeaderData[2], wavHeaderData[1]); /* Builds a new header for the decoded stream. */
+		buildHeader(output, (short) wavHeaderData[2], wavHeaderData[1]); /* Builds a new header for the decoded stream. */
 
 		return new ByteArrayInputStream(output);
 	}
