@@ -416,6 +416,9 @@ public class WavImaAdpcmDecoder
 	/* Decode the received IMA WAV ADPCM stream into a signed PCM16LE byte array, then return it to PlatformPlayer. */
 	public ByteArrayInputStream decodeImaAdpcm(InputStream stream, int[] wavHeaderData) throws IOException
 	{
+		/* Remove the header from the stream, we shouldn't "decode" it as if it was a sample */
+		readHeader(stream);
+
 		final byte[] input = new byte[stream.available()];
 		readInputStreamData(stream, input, 0, stream.available());
 

@@ -294,9 +294,12 @@ public class PlatformPlayer implements Player
 				/*
 				 * A wav header is generally 44-bytes long, and it is what we need to read in order to get
 				 * the stream's format, frame size, bit rate, number of channels, etc. which gives us information
-				 * on the kind of codec needed to play or decode the incoming stream.
+				 * on the kind of codec needed to play or decode the incoming stream. The stream needs to be reset
+				 * or else PCM files will be loaded without a header and it might cause issues with playback.
 				 */
+				stream.mark(48);
 				wavHeaderData = adpcmDec.readHeader(stream);
+				stream.reset();
 
 				/* We only check for IMA ADPCM at the moment. */
 				if(wavHeaderData[0] != 17) /* If it's not IMA ADPCM we don't need to do anything to the stream. */
