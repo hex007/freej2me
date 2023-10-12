@@ -65,14 +65,14 @@ public class Config
 		gc = lcd.getGraphics();
 
 		menu = new ArrayList<String[]>();
-		menu.add(new String[]{"Resume Game", "Display Size", "Sound", "Limit FPS", "Phone", "Rotate", "Exit"}); // 0 - Main Menu
+		menu.add(new String[]{"Resume Game", "Display Size", "Sound", "Limit FPS", "Phone", "Rotate", "MIDI", "Exit"}); // 0 - Main Menu
 		menu.add(new String[]{"96x65","96x96","104x80","128x128","132x176","128x160","176x208","176x220", "208x208", "240x320", "320x240", "240x400", "352x416", "360x640", "640x360" ,"480x800", "800x480"}); // 1 - Size
 		menu.add(new String[]{"Quit", "Main Menu"}); // 2 - Restart Notice
 		menu.add(new String[]{"On", "Off"}); // 3 - sound
 		menu.add(new String[]{"Standard", "Nokia", "Siemens","Motorola"}); // 4 - Phone 
 		menu.add(new String[]{"On", "Off"}); // 5 - rotate 
 		menu.add(new String[]{"Auto", "60 - Fast", "30 - Slow", "15 - Turtle"}); // 6 - FPS
-
+		menu.add(new String[]{"Default", "Custom"});  // 7 - MIDI soundfont
 
 		onChange = new Runnable()
 		{
@@ -111,6 +111,7 @@ public class Config
 				settings.put("phone", "Standard");
 				settings.put("rotate", "off");
 				settings.put("fps", "0");
+				settings.put("soundfont", "Default");
 				saveConfig();
 			}
 		}
@@ -150,6 +151,7 @@ public class Config
 			if(!settings.containsKey("phone")) { settings.put("phone", "Standard"); }
 			if(!settings.containsKey("rotate")) { settings.put("rotate", "off"); }
 			if(!settings.containsKey("fps")) { settings.put("fps", "0"); }
+			if(!settings.containsKey("soundfont")) { settings.put("soundfont", "Default"); }
 
 			int w = Integer.parseInt(settings.get("width"));
 			int h = Integer.parseInt(settings.get("height"));
@@ -319,6 +321,7 @@ public class Config
 					case 3: label = label+": "+settings.get("fps"); break;
 					case 4: label = label+": "+settings.get("phone"); break;
 					case 5: label = label+": "+settings.get("rotate"); break;
+					case 6: label = label+": "+settings.get("soundfont"); break;
 				}
 			}
 			if(i==itemid)
@@ -349,7 +352,8 @@ public class Config
 					case 3: menuid=6; itemid=0; break; // fps
 					case 4: menuid=4; itemid=0; break; // phone
 					case 5: menuid=5; itemid=0; break; // rotate
-					case 6: System.exit(0); break;
+					case 6: menuid=7; itemid=0; break; // MIDI soundfont
+					case 7: System.exit(0); break;
 				}
 			break;
 
@@ -395,6 +399,12 @@ public class Config
 				if(itemid==2) { updateFPS("30"); }
 				if(itemid==3) { updateFPS("15"); }
 				menuid=0; itemid=0;
+			break;
+
+			case 7: // Set MIDI Soundfont to System default or custom file
+				if(itemid==0) { updateSoundfont("Default"); }
+				if(itemid==1) { updateSoundfont("Custom"); }
+				menuid=2; itemid=0;
 			break;
 
 		}
@@ -443,6 +453,14 @@ public class Config
 	{
 		System.out.println("Config: fps "+value);
 		settings.put("fps", value);
+		saveConfig();
+		onChange.run();
+	}
+
+	private void updateSoundfont(String value)
+	{
+		System.out.println("Config: soundfont "+value);
+		settings.put("soundfont", value);
 		saveConfig();
 		onChange.run();
 	}

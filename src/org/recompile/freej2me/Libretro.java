@@ -24,13 +24,10 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 
 public class Libretro
@@ -79,6 +76,21 @@ public class Libretro
 		lcdHeight = 320;
 
 		/* 
+		 * If the directory for custom soundfonts doesn't exist, create it, no matter if the user
+		 * is going to use it or not.
+		 */
+		try 
+		{
+			if(!PlatformPlayer.soundfontDir.exists()) 
+			{ 
+				PlatformPlayer.soundfontDir.mkdirs();
+				File dummyFile = new File(PlatformPlayer.soundfontDir + "/Put your sf2 bank here");
+				dummyFile.createNewFile();
+			}
+		}
+		catch(IOException e) { System.out.println("Failed to create custom midi info file:" + e.getMessage()); }
+
+		/* 
 		 * Checks if the arguments were received from the commandline -> width, height, rotate, phonetype, fps, sound, ...
 		 * 
 		 * NOTE:
@@ -97,6 +109,8 @@ public class Libretro
 		limitFPS = Integer.parseInt(args[4]);
 
 		if(Integer.parseInt(args[5]) == 0) { soundEnabled = false; }
+
+		if(Integer.parseInt(args[6]) == 1) { PlatformPlayer.customMidi = true; }
 
 		/* Once it finishes parsing all arguments, it's time to set up freej2me-lr */
 
@@ -275,6 +289,10 @@ public class Libretro
 
 										config.settings.put("fps", ""+limitFPS);
 
+										if(!PlatformPlayer.customMidi) { config.settings.put("soundfont", "Default"); }
+										else                           { config.settings.put("soundfont", "Custom");  }
+										
+
 										config.saveConfig();
 										settingsChanged();
 
@@ -329,6 +347,9 @@ public class Libretro
 
 									if(Integer.parseInt(cfgtokens[6])==1) { config.settings.put("sound", "on");  }
 									if(Integer.parseInt(cfgtokens[6])==0) { config.settings.put("sound", "off"); }
+
+									if(Integer.parseInt(cfgtokens[7])==0) { config.settings.put("soundfont", "Default"); }
+									if(Integer.parseInt(cfgtokens[7])==1) { config.settings.put("soundfont", "Custom");  }
 
 									config.saveConfig();
 									settingsChanged();
@@ -414,6 +435,9 @@ public class Libretro
 		if(rotate.equals("on")) { rotateDisplay = true; frameHeader[5] = (byte)1; }
 		if(rotate.equals("off")) { rotateDisplay = false; frameHeader[5] = (byte)0; }
 
+		String midiSoundfont = config.settings.get("soundfont");
+		if(midiSoundfont.equals("Custom"))  { PlatformPlayer.customMidi = true; }
+		if(midiSoundfont.equals("Default")) { PlatformPlayer.customMidi = false; }
 
 		if(lcdWidth != w || lcdHeight != h)
 		{

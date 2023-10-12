@@ -17,9 +17,13 @@
 package org.recompile.mobile;
 
 import java.io.InputStream;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.Vector;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequencer;
+import javax.sound.midi.Soundbank;
+import javax.sound.midi.Synthesizer;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -42,6 +46,10 @@ public class PlatformPlayer implements Player
 	private Vector<PlayerListener> listeners;
 
 	private Control[] controls;
+
+	public static boolean customMidi = false;
+
+	public static File soundfontDir = new File("freej2me_system/customMIDI/");
 
 	public PlatformPlayer(InputStream stream, String type)
 	{
@@ -205,6 +213,8 @@ public class PlatformPlayer implements Player
 	private class midiPlayer extends audioplayer
 	{
 		private Sequencer midi;
+		private Soundbank soundfont;
+		Synthesizer synth;
 
 		private int loops = 0;
 
@@ -215,11 +225,48 @@ public class PlatformPlayer implements Player
 			try
 			{
 				midi = MidiSystem.getSequencer();
+
+				/* 
+				 * Check if the user wants to run a custom MIDI soundfont. Also, there's no harm 
+				 * in checking if the directory exists again.
+				 */
+				if(customMidi && soundfontDir.exists())
+				{
+					/* Get the first sf2 soundfont in the directory */
+					String[] fontfile = soundfontDir.list(new FilenameFilter()
+					{
+						@Override
+						public boolean accept(File f, String soundfont ) 
+						{
+							return soundfont.endsWith(".sf2");
+						}
+					});
+
+					/* 
+					 * Only really set the player to use a custom midi soundfont if there is one 
+					 * inside the directory.
+					 */
+					if(fontfile.length > 0) 
+					{
+						soundfont = MidiSystem.getSoundbank(new File(soundfontDir + "/" + fontfile[0]));
+						midi = MidiSystem.getSequencer(false);
+						synth = MidiSystem.getSynthesizer();
+						synth.open();
+						synth.loadAllInstruments(soundfont);
+						midi.getTransmitter().setReceiver(synth.getReceiver());
+					}
+				}
+
 				midi.open();
 				midi.setSequence(stream);
 				state = Player.PREFETCHED;
 			}
-			catch (Exception e) { }
+			catch (Exception e) 
+			{ 
+				System.out.println("Couldn't load midi file::" + e.getMessage());
+				if(customMidi) { synth.close(); }
+				midi.close();
+			}
 		}
 
 		public void start()
