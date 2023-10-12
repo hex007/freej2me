@@ -127,11 +127,11 @@ public class MIDletLoader extends URLClassLoader
 		{
 			while (start == null)
 			{
-			    try
+				try
 				{
-			        start = mainClass.getDeclaredMethod("startApp");
-			        start.setAccessible(true);
-			    }
+					start = mainClass.getDeclaredMethod("startApp");
+					start.setAccessible(true);
+				}
 				catch (NoSuchMethodException e)
 				{
 					mainClass = mainClass.getSuperclass();
