@@ -274,10 +274,15 @@ public class PlatformPlayer implements Player
 
 	private class wavPlayer extends audioplayer
 	{
-
+		/* PCM WAV variables */
 		private AudioInputStream wavStream;
 		private Clip wavClip;
-
+		/* IMA ADPCM WAV variables */
+		private WavImaAdpcmDecoder adpcmDec = new WavImaAdpcmDecoder();
+		InputStream decodedStream;
+		private int[] wavHeaderData = new int[4];
+		
+		/* Player control variables */
 		private int loops = 0;
 
 		private long time = 0L;
@@ -286,10 +291,32 @@ public class PlatformPlayer implements Player
 		{
 			try
 			{
-				wavStream = AudioSystem.getAudioInputStream(stream);
-				wavClip = AudioSystem.getClip();
-				wavClip.open(wavStream);
-				state = Player.PREFETCHED;
+				/*
+				 * A wav header is generally 44-bytes long, and it is what we need to read in order to get
+				 * the stream's format, frame size, bit rate, number of channels, etc. which gives us information
+				 * on the kind of codec needed to play or decode the incoming stream. The stream needs to be reset
+				 * or else PCM files will be loaded without a header and it might cause issues with playback.
+				 */
+				stream.mark(48);
+				wavHeaderData = adpcmDec.readHeader(stream);
+				stream.reset();
+
+				/* We only check for IMA ADPCM at the moment. */
+				if(wavHeaderData[0] != 17) /* If it's not IMA ADPCM we don't need to do anything to the stream. */
+				{
+					wavStream = AudioSystem.getAudioInputStream(stream);
+					wavClip = AudioSystem.getClip();
+					wavClip.open(wavStream);
+					state = Player.PREFETCHED;
+				}
+				else /* But if it is IMA ADPCM, we have to decode it manually. */
+				{
+					decodedStream = adpcmDec.decodeImaAdpcm(stream, wavHeaderData);
+					wavStream = AudioSystem.getAudioInputStream(decodedStream);
+					wavClip = AudioSystem.getClip();
+					wavClip.open(wavStream);
+					state = Player.PREFETCHED;
+				}
 			}
 			catch (Exception e) 
 			{ 
