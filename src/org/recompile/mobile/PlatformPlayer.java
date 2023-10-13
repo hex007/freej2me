@@ -60,17 +60,19 @@ public class PlatformPlayer implements Player
 			{
 				player = new midiPlayer(stream);
 			}
-			else
+			else if (type.equalsIgnoreCase("audio/x-wav") || type.equalsIgnoreCase("audio/wav"))
 			{
-				if(type.equalsIgnoreCase("audio/x-wav") || type.equalsIgnoreCase("audio/wav"))
-				{
-					player = new wavPlayer(stream);
-				}
-				else /* TODO: Implement a player for amr and mpeg audio types */
-				{
-					System.out.println("No Player For: "+contentType);
-					player = new audioplayer();
-				}
+				player = new wavPlayer(stream);
+			}
+			else if (type.equalsIgnoreCase("audio/x-tone-seq")) 
+			{
+				// 
+				player = new tonePlayer(stream);
+			}
+			else /* TODO: Implement a player for amr and mpeg audio types */
+			{
+				System.out.println("No Player For: "+contentType);
+				player = new audioplayer();
 			}
 		}
 		controls[0] = new volumeControl();
@@ -366,6 +368,35 @@ public class PlatformPlayer implements Player
 		public boolean isRunning()
 		{
 			return wavClip.isRunning();
+		}
+	}
+
+	/* Todo: Implement tone playing functionality */
+	private class tonePlayer extends audioplayer 
+	{
+		private InputStream toneStream;
+		private int loops = 0;
+
+		public tonePlayer(InputStream stream) { toneStream = stream; }
+
+		public void start() 
+		{  
+			// Todo implement functionality to play a tone sequence
+			state = Player.STARTED;
+		}
+
+		public void stop() 
+		{ 
+			// Todo implement functionality to stop playing a tone sequence
+			state = Player.PREFETCHED;
+		}
+
+		public void setLoopCount(int count) { if (count > -1) { loops = count; } }
+
+		public boolean isRunning() 
+		{ 
+			// Todo implementation depends on start()
+			return false; 
 		}
 	}
 

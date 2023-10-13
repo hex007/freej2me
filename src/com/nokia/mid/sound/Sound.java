@@ -16,6 +16,14 @@
 */
 package com.nokia.mid.sound;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
+import javax.microedition.media.Manager;
+import javax.microedition.media.MediaException;
+import javax.microedition.media.Player;
+
+
 public class Sound
 {
 	public static final int FORMAT_TONE = 1;
@@ -24,25 +32,63 @@ public class Sound
 	public static final int SOUND_STOPPED = 1;
 	public static final int SOUND_UNINITIALIZED = 3;
 
+	private Player player;
 
-	public Sound(byte[] data, int type) { }
+	public Sound(byte[] data, int type) 
+	{ 
+		try 
+		{
+			if (type == FORMAT_TONE) 
+			{
+				player = Manager.createPlayer(new ByteArrayInputStream(data), "audio/x-tone-seq");
+			}
+			else if (type == FORMAT_WAV) 
+			{
+				player = Manager.createPlayer(new ByteArrayInputStream(data), "audio/wav");
+			}
+		}
+		catch (MediaException exception) { }
+		catch (IOException exception) { }
+	}
 
 	public Sound(int freq, long duration) { }
-
 
 	public static int getConcurrentSoundCount(int type) { return 1; }
 
 	public int getGain() { return 0; }
 
-	public int getState() { return 1; }
+	public int getState() 
+	{ 
+		int state = player.getState();
+
+		switch (state)
+		{
+			case Player.STARTED:
+				return SOUND_PLAYING;
+			case Player.PREFETCHED:
+			case Player.REALIZED:
+				return SOUND_STOPPED;
+			case Player.UNREALIZED:
+			case Player.CLOSED:
+			default:
+				return SOUND_UNINITIALIZED;
+		}
+	}
 
 	public static int[] getSupportedFormats() { return new int[]{}; }
 
-	public void init(byte[] data, int type) { }
+	public void init(byte[] data, int type) 
+	{ 
+		// init's functionality is covered when Manager creates the player - leave empty
+	}
 
 	public void init(int freq, long duration) { }
 
-	public void play(int loop) { }
+	public void play(int loop) 
+	{ 
+		player.setLoopCount(loop);
+		player.start();
+	}
 
 	public void release() { }
 
@@ -52,6 +98,9 @@ public class Sound
 
 	public void setSoundListener(SoundListener listener) { }
 
-	public void stop() { }
+	public void stop() 
+	{
+		player.stop();
+	}
 
 }
