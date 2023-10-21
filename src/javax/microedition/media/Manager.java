@@ -25,12 +25,24 @@ public final class Manager
 {
 
 	public static final String TONE_DEVICE_LOCATOR = "device://tone";
-
+	public static Player midiChannel[] = new Player[36];
+	public static byte midiChannelIndex = 0;
 
 	public static Player createPlayer(InputStream stream, String type) throws IOException, MediaException
 	{
 		//System.out.println("Create Player Stream "+type);
-		return new PlatformPlayer(stream, type);
+		if(type.equalsIgnoreCase("audio/mid") || type.equalsIgnoreCase("audio/midi") || type.equalsIgnoreCase("sp-midi") || type.equalsIgnoreCase("audio/spmidi"))
+		{
+			if(midiChannelIndex >= midiChannel.length) { midiChannelIndex = 0; }
+			if(midiChannel[midiChannelIndex] != null)  { midiChannel[midiChannelIndex].deallocate(); }
+			midiChannel[midiChannelIndex] = new PlatformPlayer(stream, type);
+			midiChannelIndex++;
+			return midiChannel[midiChannelIndex-1];
+		}
+		else 
+		{
+			return new PlatformPlayer(stream, type);
+		}
 	}
 
 	public static Player createPlayer(String locator) throws MediaException
