@@ -36,16 +36,16 @@ public class WavImaAdpcmDecoder
 	 * are being decoded. So far only seems to happen in Java 8 and on my more limited devices."
 	 *     - @AShiningRay
 	 */
-	private static final int LEFTCHANNEL = 0;
-	private static final int RIGHTCHANNEL = 1;
+	private static final byte LEFTCHANNEL = 0;
+	private static final byte RIGHTCHANNEL = 1;
 
-	private static final int HEADERSIZE = 44;
-	private static final int PCMPREAMBLESIZE = 16;
+	private static final byte HEADERSIZE = 44;
+	private static final byte PCMPREAMBLESIZE = 16;
 
 	private static final int[] prevSample = {0, 0};
 	private static final int[] prevStep = {0, 0};
 	
-	private static final int[] ima_step_index_table = 
+	private static final byte[] ima_step_index_table = 
 	{
 		-1, -1, -1, -1, 2, 4, 6, 8, 
 		-1, -1, -1, -1, 2, 4, 6, 8
