@@ -23,9 +23,14 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+
 public class WavImaAdpcmDecoder
 {
-
 	/* Information about this audio format: https://wiki.multimedia.cx/index.php/IMA_ADPCM */
 
 	/* 
@@ -414,18 +419,28 @@ public class WavImaAdpcmDecoder
 	}
 
 	/* Decode the received IMA WAV ADPCM stream into a signed PCM16LE byte array, then return it to PlatformPlayer. */
-	public ByteArrayInputStream decodeImaAdpcm(InputStream stream, int[] wavHeaderData) throws IOException
+	public ByteArrayInputStream decodeImaAdpcm(InputStream stream, int[] wavHeaderData) throws IOException, InterruptedException, ExecutionException
 	{
-		/* Remove the header from the stream, we shouldn't "decode" it as if it was a sample */
-		readHeader(stream);
+		/* Offload IMA ADPCM decoding to a separate thread */
+		Callable<byte[]> threadedDecoder = () -> 
+		{
+			/* Remove the header from the stream, we shouldn't "decode" it as if it was a sample */
+			readHeader(stream);
 
-		final byte[] input = new byte[stream.available()];
-		readInputStreamData(stream, input, 0, stream.available());
+			final byte[] input = new byte[stream.available()];
+			readInputStreamData(stream, input, 0, stream.available());
 
-		byte[] output = decodeADPCM(input, input.length, wavHeaderData[2], wavHeaderData[3]);
+			return decodeADPCM(input, input.length, wavHeaderData[2], wavHeaderData[3]);
+		};		
+
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		Future<byte[]> future = executor.submit(threadedDecoder);
+        byte[] output = future.get(); /* Get the asynchronously decoded stream */
+
 		buildHeader(output, (short) wavHeaderData[2], wavHeaderData[1]); /* Builds a new header for the decoded stream. */
+
+		executor.shutdown();
 
 		return new ByteArrayInputStream(output);
 	}
-
 }
