@@ -256,7 +256,11 @@ public class PlatformPlayer implements Player
 				midi.setSequence(stream);
 				state = Player.PREFETCHED;
 			}
-			catch (Exception e) { System.out.println("Couldn't load MIDI file: " + e.getMessage()); }
+			catch (Exception e) 
+			{ 
+				System.out.println("Couldn't load MIDI file: " + e.getMessage());
+				midi.close();
+			}
 		}
 
 		public void start()
