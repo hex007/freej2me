@@ -111,11 +111,11 @@ public class Anbu
 
 	private static String getFormattedLocation(String loc)
 	{
-		if (loc.startsWith("file://") || loc.startsWith("http://"))
+		if (loc.startsWith("file://") || loc.startsWith("http://") || loc.startsWith("https://"))
 			return loc;
 
 		File file = new File(loc);
-		if(!file.exists() || file.isDirectory())
+		if(!file.isFile())
 		{
 			System.out.println("File not found...");
 			System.exit(0);
