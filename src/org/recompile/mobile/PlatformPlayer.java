@@ -279,6 +279,7 @@ public class PlatformPlayer implements Player
 
 		public void stop()
 		{
+			if(!isRunning()) { return; }
 			midi.stop();
 			state = Player.PREFETCHED;
 			tick = midi.getTickPosition();
@@ -382,6 +383,7 @@ public class PlatformPlayer implements Player
 
 		public void stop()
 		{
+			if(!isRunning()) { return; }
 			wavClip.stop();
 			time = wavClip.getMicrosecondPosition();
 			state = Player.PREFETCHED;
