@@ -84,7 +84,7 @@ public class FreeJ2ME
 		String jarfile = "";
 		if(args.length>=1)
 		{
-			jarfile = args[0];
+			jarfile = getFormattedLocation(args[0]);
 		}
 		if(args.length>=3)
 		{
@@ -299,6 +299,21 @@ public class FreeJ2ME
 		{
 			System.out.println("Couldn't load jar...");
 		}
+	}
+
+	private static String getFormattedLocation(String loc)
+	{
+		if (loc.startsWith("file://") || loc.startsWith("http://") || loc.startsWith("https://"))
+			return loc;
+
+		File file = new File(loc);
+		if(! file.isFile())
+		{
+			System.out.println("File not found...");
+			System.exit(0);
+		}
+
+		return "file://" + file.getAbsolutePath();
 	}
 
 	private void settingsChanged()
