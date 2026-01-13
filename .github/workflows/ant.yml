@@ -13,6 +13,7 @@ jobs:
       uses: actions/setup-java@v4
       with:
         java-version: 1.8
+        distribution: 'temurin'
     - name: Build with Ant
       run: ant -noinput -buildfile build.xml
     - name: Compute commit short SHA
