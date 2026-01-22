@@ -23,14 +23,39 @@ import org.recompile.mobile.PlatformPlayer;
 
 public final class Manager
 {
-
 	public static final String TONE_DEVICE_LOCATOR = "device://tone";
-
+	public static Player midiPlayers[] = new Player[32]; /* Default max amount of players in FreeJ2ME's config  */
+	public static byte midiPlayersIndex = 0;
 
 	public static Player createPlayer(InputStream stream, String type) throws IOException, MediaException
 	{
 		//System.out.println("Create Player Stream "+type);
-		return new PlatformPlayer(stream, type);
+		if(type.equalsIgnoreCase("audio/mid") || type.equalsIgnoreCase("audio/midi") || type.equalsIgnoreCase("sp-midi") || type.equalsIgnoreCase("audio/spmidi"))
+		{
+			if(midiPlayersIndex >= midiPlayers.length) { midiPlayersIndex = 0; }
+			for(; midiPlayersIndex < midiPlayers.length; midiPlayersIndex++) 
+			{
+				if(midiPlayers[midiPlayersIndex] == null) { break; } /* A null position means we can use it right away */
+				/* Otherwise, we only deallocate a position if it is not playing (running). */
+				else if(midiPlayers[midiPlayersIndex] != null && midiPlayers[midiPlayersIndex].getState() == Player.PREFETCHED)
+				{ 
+					midiPlayers[midiPlayersIndex].deallocate();
+					break;
+				}
+				/* If we ever reach this one, it's because all the other slots are used, and are playing */
+				else if(midiPlayersIndex == midiPlayers.length-1)
+				{
+					midiPlayers[midiPlayersIndex].deallocate();
+					break;
+				}
+			}
+			midiPlayers[midiPlayersIndex] = new PlatformPlayer(stream, type);
+			return midiPlayers[midiPlayersIndex++];
+		}
+		else 
+		{
+			return new PlatformPlayer(stream, type);
+		}
 	}
 
 	public static Player createPlayer(String locator) throws MediaException
@@ -57,4 +82,8 @@ public final class Manager
 		System.out.println("Play Tone");
 	}
 
+	public static void updatePlayerNum(byte num) 
+	{
+		midiPlayers = new Player[num];
+	}
 }
