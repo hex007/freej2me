@@ -26,7 +26,7 @@ static const struct retro_controller_description port_1[] =
 /* No use having more than one input port on this core */
 static const struct retro_controller_info ports[] =
 {
-    { port_1, 16 },
+    { port_1, sizeof(port_1) / sizeof(port_1[0]) },
     { 0 },
 };
 
