@@ -31,6 +31,7 @@ import java.nio.file.Paths;
 import java.nio.file.Path;
 
 import javax.microedition.lcdui.Graphics;
+import javax.microedition.media.Manager;
 
 import org.recompile.mobile.Mobile;
 import org.recompile.mobile.PlatformImage;
@@ -65,13 +66,14 @@ public class Config
 		gc = lcd.getGraphics();
 
 		menu = new ArrayList<String[]>();
-		menu.add(new String[]{"Resume Game", "Display Size", "Sound", "Limit FPS", "Phone", "Rotate", "Exit"}); // 0 - Main Menu
+		menu.add(new String[]{"Resume Game", "Display Size", "Sound", "Limit FPS", "Phone", "Rotate", "Max MIDI Players", "Exit"}); // 0 - Main Menu
 		menu.add(new String[]{"96x65","96x96","104x80","128x128","132x176","128x160","176x208","176x220", "208x208", "240x320", "320x240", "240x400", "352x416", "360x640", "640x360" ,"480x800", "800x480"}); // 1 - Size
 		menu.add(new String[]{"Quit", "Main Menu"}); // 2 - Restart Notice
 		menu.add(new String[]{"On", "Off"}); // 3 - sound
 		menu.add(new String[]{"Standard", "Nokia", "Siemens","Motorola"}); // 4 - Phone 
 		menu.add(new String[]{"On", "Off"}); // 5 - rotate 
 		menu.add(new String[]{"Auto", "60 - Fast", "30 - Slow", "15 - Turtle"}); // 6 - FPS
+		menu.add(new String[]{"1", "2", "4", "8", "16", "32", "48", "64", "96"}); // 7 - Max amount of MIDI Players
 
 
 		onChange = new Runnable()
@@ -150,6 +152,7 @@ public class Config
 			if(!settings.containsKey("phone")) { settings.put("phone", "Standard"); }
 			if(!settings.containsKey("rotate")) { settings.put("rotate", "off"); }
 			if(!settings.containsKey("fps")) { settings.put("fps", "0"); }
+			if(!settings.containsKey("maxmidiplayers")) { settings.put("maxmidiplayers", "32"); }
 
 			int w = Integer.parseInt(settings.get("width"));
 			int h = Integer.parseInt(settings.get("height"));
@@ -160,6 +163,7 @@ public class Config
 				lcd = new PlatformImage(width, height);
 				gc = lcd.getGraphics();
 			}
+
 		}
 		catch (Exception e)
 		{
@@ -311,7 +315,7 @@ public class Config
 		for(int i=start; (i<(start+max))&(i<t.length); i++)
 		{
 			label = t[i];
-			if(menuid==0 && i>1 && i<7)
+			if(menuid==0 && i>1 && i<8)
 			{
 				switch(i)
 				{
@@ -319,6 +323,7 @@ public class Config
 					case 3: label = label+": "+settings.get("fps"); break;
 					case 4: label = label+": "+settings.get("phone"); break;
 					case 5: label = label+": "+settings.get("rotate"); break;
+					case 6: label = label+": "+settings.get("maxmidiplayers"); break;
 				}
 			}
 			if(i==itemid)
@@ -349,7 +354,8 @@ public class Config
 					case 3: menuid=6; itemid=0; break; // fps
 					case 4: menuid=4; itemid=0; break; // phone
 					case 5: menuid=5; itemid=0; break; // rotate
-					case 6: System.exit(0); break;
+					case 6: menuid=7; itemid=0; break; // max MIDI Players
+					case 7: System.exit(0); break;
 				}
 			break;
 
@@ -395,6 +401,19 @@ public class Config
 				if(itemid==2) { updateFPS("30"); }
 				if(itemid==3) { updateFPS("15"); }
 				menuid=0; itemid=0;
+			break;
+
+			case 7: // Max Midi Players
+				if(itemid==0)  { updateMIDIPlayers("1"); }
+				if(itemid==1)  { updateMIDIPlayers("2"); }
+				if(itemid==2)  { updateMIDIPlayers("4"); }
+				if(itemid==3)  { updateMIDIPlayers("8"); }
+				if(itemid==4)  { updateMIDIPlayers("16"); }
+				if(itemid==5)  { updateMIDIPlayers("32"); }
+				if(itemid==6)  { updateMIDIPlayers("48"); }
+				if(itemid==7)  { updateMIDIPlayers("64"); }
+				if(itemid==8)  { updateMIDIPlayers("96"); }
+				menuid=2; itemid=0;
 			break;
 
 		}
@@ -443,6 +462,14 @@ public class Config
 	{
 		System.out.println("Config: fps "+value);
 		settings.put("fps", value);
+		saveConfig();
+		onChange.run();
+	}
+
+	private void updateMIDIPlayers(String value) 
+	{
+		System.out.println("Config: maxmidiplayers "+value);
+		settings.put("maxmidiplayers", value);
 		saveConfig();
 		onChange.run();
 	}

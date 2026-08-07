@@ -150,8 +150,8 @@ struct retro_core_option_v2_definition core_options[] =
         "freej2me_sound",
         "Virtual Phone Settings > Virtual Phone Sound",
         "Virtual Phone Sound",
-        "Enables or disables the virtual phone's ability to load and play audio samples/tones. Some games require support for codecs not yet implemented, or have issues that can be worked around by disabling audio in FreeJ2ME (ID Software games such as DOOM II RPG having memory leaks with MIDI samples being one example). If a game doesn't run or has issues during longer sessions, try disabling this option.",
-        "Enables or disables the virtual phone's ability to load and play audio samples/tones. Some games require support for codecs not yet implemented, or have issues that can be worked around by disabling audio in FreeJ2ME (ID Software games such as DOOM II RPG having memory leaks with MIDI samples being one example). If a game doesn't run or has issues during longer sessions, try disabling this option.",
+        "Enables or disables the virtual phone's ability to load and play audio samples/tones. Some games require support for codecs not yet implemented, or have issues that can be worked around by disabling audio in FreeJ2ME. If a game doesn't run or has issues during longer sessions, try disabling this option.",
+        "Enables or disables the virtual phone's ability to load and play audio samples/tones. Some games require support for codecs not yet implemented, or have issues that can be worked around by disabling audio in FreeJ2ME. If a game doesn't run or has issues during longer sessions, try disabling this option.",
         "vphone_settings",
         {
             { "on",  "On"  },
@@ -159,6 +159,27 @@ struct retro_core_option_v2_definition core_options[] =
             { NULL, NULL },
         },
         "on"
+    },
+    {
+        "freej2me_maxmidiplayers",
+        "Virtual Phone Settings > Max MIDI Players",
+        "Max MIDI Players",
+        "Sets the maximum amount of MIDI files that a given J2ME app can load up and play at any given time. Lower values may reduce memory usage and improve the VM's performance (especially on ID Software games like DOOM II RPG where setting this to 1 vastly reduces memory usage compared to the default), but some games might need bigger values.",
+        "Sets the maximum amount of MIDI files that a given J2ME app can load up and play at any given time. Lower values may reduce memory usage and improve the VM's performance (especially on ID Software games like DOOM II RPG where setting this to 1 vastly reduces memory usage compared to the default), but some games might need bigger values.",
+        "vphone_settings",
+        {
+            {  "1",  "1" },
+            {  "2",  "2" },
+            {  "4",  "4" },
+            {  "8",  "8" },
+            { "16", "16" },
+            { "32", "32" },
+            { "48", "48" },
+            { "64", "64" },
+            { "96", "96" },
+            { NULL, NULL },
+        },
+        "32"
     },
     {
         "freej2me_pointertype",
@@ -358,6 +379,24 @@ struct retro_core_option_definition core_options_v1 [] =
         "on"
     },
     {
+        "freej2me_maxmidiplayers",
+        "Max MIDI Players",
+        "Sets the maximum amount of MIDI files that a given J2ME app can load up and play at any given time. Lower values may reduce memory usage and improve the VM's performance (especially on ID Software games like DOOM II RPG where setting this to 1 vastly reduces memory usage compared to the default), but some games might need bigger values.",
+        {
+            {  "1",  "1" },
+            {  "2",  "2" },
+            {  "4",  "4" },
+            {  "8",  "8" },
+            { "16", "16" },
+            { "32", "32" },
+            { "48", "48" },
+            { "64", "64" },
+            { "96", "96" },
+            { NULL, NULL },
+        },
+        "32"
+    },
+    {
         "freej2me_pointertype",
         "Pointer Type",
         "This option sets the type of pointer used by FreeJ2ME, can be set to use a Mouse, a Touchscreen or neither. Please note that only Mouse supports drag and drop motions",
@@ -474,6 +513,10 @@ static const struct retro_variable vars[] =
     { /* Virtual Phone Sound */
         "freej2me_sound",
         "Virtual Phone Sound; on|off"
+    },
+    { /* Max MIDI Players */
+        "freej2me_maxmidiplayers",
+        "Max MIDI Players: 32|1|2|4|8|16|48|64|96"
     },
     { /* Pointer Type */
         "freej2me_pointertype",
