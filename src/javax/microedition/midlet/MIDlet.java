@@ -17,6 +17,9 @@
 package javax.microedition.midlet;
 
 import java.util.HashMap;
+import java.awt.Desktop;
+import java.net.URI;
+import java.io.IOException;
 
 import javax.microedition.io.*;
 import javax.microedition.lcdui.*;
@@ -66,7 +69,17 @@ public abstract class MIDlet
 
 	protected abstract void pauseApp();
 
-	public final boolean platformRequest(String URL) { return false; }
+	public final boolean platformRequest(String URL) throws ConnectionNotFoundException { 
+		try {
+			Desktop desktop = Desktop.getDesktop();
+			if (desktop.isSupported(Desktop.Action.BROWSE)) {
+				desktop.browse(URI.create(URL));
+			}
+		} catch (IOException ex) {
+			throw new ConnectionNotFoundException(URL);
+		}
+		return false;
+	}
 
 	public final void resumeRequest() { }
 
