@@ -22,12 +22,12 @@ import java.io.IOException;
 public class ConnectionNotFoundException extends IOException
 {
 
-	ConnectionNotFoundException()
+	public ConnectionNotFoundException()
 	{
 		super();
 	}
 
-	ConnectionNotFoundException(String s)
+	public ConnectionNotFoundException(String s)
 	{
 		super(s);
 	}
