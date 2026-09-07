@@ -33,6 +33,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.net.URL;
 
+import javax.microedition.media.Manager;
+
 public class Libretro
 {
 	private int lcdWidth;
@@ -50,6 +52,7 @@ public class Libretro
 	private boolean rotateDisplay = false;
 	private boolean soundEnabled = true;
 	private int limitFPS = 0;
+	private int maxmidiplayers = 32;
 
 	private boolean[] pressedKeys = new boolean[128];
 
@@ -97,6 +100,9 @@ public class Libretro
 		limitFPS = Integer.parseInt(args[4]);
 
 		if(Integer.parseInt(args[5]) == 0) { soundEnabled = false; }
+
+		maxmidiplayers = Integer.parseInt(args[6]);
+		Manager.updatePlayerNum((byte) maxmidiplayers);
 
 		/* Once it finishes parsing all arguments, it's time to set up freej2me-lr */
 
@@ -275,6 +281,8 @@ public class Libretro
 
 										config.settings.put("fps", ""+limitFPS);
 
+										config.settings.put("maxmidiplayers", ""+maxmidiplayers);
+
 										config.saveConfig();
 										settingsChanged();
 
@@ -329,6 +337,16 @@ public class Libretro
 
 									if(Integer.parseInt(cfgtokens[6])==1) { config.settings.put("sound", "on");  }
 									if(Integer.parseInt(cfgtokens[6])==0) { config.settings.put("sound", "off"); }
+
+									if(Integer.parseInt(cfgtokens[7])==0) { config.settings.put("maxmidiplayers", "1");}
+									if(Integer.parseInt(cfgtokens[7])==1) { config.settings.put("maxmidiplayers", "2");}
+									if(Integer.parseInt(cfgtokens[7])==2) { config.settings.put("maxmidiplayers", "4");}
+									if(Integer.parseInt(cfgtokens[7])==3) { config.settings.put("maxmidiplayers", "8");}
+									if(Integer.parseInt(cfgtokens[7])==4) { config.settings.put("maxmidiplayers", "16");}
+									if(Integer.parseInt(cfgtokens[7])==5) { config.settings.put("maxmidiplayers", "32");}
+									if(Integer.parseInt(cfgtokens[7])==6) { config.settings.put("maxmidiplayers", "48");}
+									if(Integer.parseInt(cfgtokens[7])==7) { config.settings.put("maxmidiplayers", "64");}
+									if(Integer.parseInt(cfgtokens[7])==8) { config.settings.put("maxmidiplayers", "96");}
 
 									config.saveConfig();
 									settingsChanged();
@@ -423,6 +441,8 @@ public class Libretro
 			surface = new BufferedImage(lcdWidth, lcdHeight, BufferedImage.TYPE_INT_ARGB); // libretro display
 			gc = (Graphics2D)surface.getGraphics();
 		}
+
+		Manager.updatePlayerNum((byte) Integer.parseInt(config.settings.get("maxmidiplayers")));
 	}
 
 	private void keyDown(int key)
