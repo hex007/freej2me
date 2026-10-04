@@ -27,6 +27,10 @@
 #include <windows.h>
 #endif
 #include "freej2me_libretro.h"
+#include "bundled_jre.h"
+
+/* The java started: one unpacked from an archive, or the one on PATH */
+static char javaExe[BUNDLED_JRE_PATH_MAX];
 #include <file/file_path.h>
 #include <retro_miscellaneous.h>
 
@@ -483,7 +487,19 @@ void retro_init(void)
 	Environ(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &javapath);
 	char *outPath = malloc(sizeof(char) * PATH_MAX_LENGTH);
 	fill_pathname_join(outPath, javapath, "freej2me-lr.jar", PATH_MAX_LENGTH);
-	char *params[] = { "java", "-jar", outPath, resArg[0], resArg[1], rotateArg, phoneArg, fpsArg, soundArg, NULL };
+	/* A Java runtime from an archive in system/freej2me_system, unpacked there
+	 * too (bundled_jre.c); without one, the java on PATH */
+	{
+		char archiveDir[PATH_MAX_LENGTH];
+		fill_pathname_join(archiveDir, javapath, "freej2me_system", sizeof(archiveDir));
+		if (!bundled_jre_find(archiveDir, archiveDir, javaExe, sizeof(javaExe), Environ, log_fn))
+#ifdef _WIN32
+			strcpy(javaExe, "javaw");
+#else
+			strcpy(javaExe, "java");
+#endif
+	}
+	char *params[] = { javaExe, "-jar", outPath, resArg[0], resArg[1], rotateArg, phoneArg, fpsArg, soundArg, NULL };
 
 	log_fn(RETRO_LOG_INFO, "Passing params: %s | %s | %s | %s | %s | %s \n", *(params+3),
 		*(params+4), *(params+5), *(params+6), *(params+7), *(params+8));
@@ -1095,7 +1111,7 @@ void javaOpen(char *cmd, char **params)
 	/* Try starting the child process. */
 	char cmdWin[PATH_MAX_LENGTH];
 	/* resArg[0], resArg[1], rotateArg, phoneArg, fpsArg, soundArg */
-	sprintf(cmdWin, "javaw -jar %s", cmd);
+	sprintf(cmdWin, "\"%s\" -jar %s", javaExe, cmd); /* quoted, as a bundled runtime's path can hold spaces */
 
 	log_fn(RETRO_LOG_INFO, "Opening: %s \n", cmd);
 	for (int i = 3; i <= 8; i++) /* There are 8 cmd arguments for now */
