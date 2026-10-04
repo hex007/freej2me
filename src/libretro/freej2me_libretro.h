@@ -66,6 +66,7 @@ struct retro_core_option_v2_category option_categories[] =
         "Advanced Settings",
         "Options related to FreeJ2ME's libretro core, such as the on-screen pointer type and speed."
     },
+    { NULL, NULL, NULL },
 };
 
 /* Core config options if running on a frontend with support for config version 2 */
